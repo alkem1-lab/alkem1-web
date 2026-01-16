@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { DemoBar } from "@/components/demo";
+import { DemoScenario } from "@/lib/demo/scenarios";
 
 // Mock data for demo
 const mockResults = [
@@ -66,8 +68,47 @@ export default function LegalVaultPage() {
     }
   };
 
+  // Demo Mode handlers
+  const handleLoadScenario = useCallback((scenario: DemoScenario) => {
+    // Load scenario filters into UI
+    setQuery(scenario.query);
+    setHybridWeight(scenario.filters.hybridWeight ?? 0.7);
+    setSelectedJurisdictions(scenario.filters.jurisdiction ?? ["RS"]);
+    
+    // Map source types
+    const typeMap: Record<string, string> = {
+      law: "Law",
+      case_law: "Case Law",
+      doctrine: "Doctrine",
+      internal: "Internal",
+      guideline: "Doctrine",
+      protocol: "Internal",
+    };
+    setSelectedTypes(
+      scenario.filters.sourceTypes?.map((t) => typeMap[t] || t) ?? ["Law", "Case Law"]
+    );
+    
+    setCiteableOnly(scenario.filters.citeableOnly ?? true);
+    setRequirePrimary(scenario.filters.requirePrimary ?? false);
+    setRerank(scenario.filters.rerank ?? true);
+    setDedupe(scenario.filters.dedupe ?? true);
+  }, []);
+
+  const handleRunWorkflow = useCallback((scenario: DemoScenario) => {
+    // Simulate running workflow - trigger search and show results
+    setHasSearched(true);
+    setSelectedResult(mockResults[0]);
+  }, []);
+
   return (
     <div className="min-h-screen bg-void">
+      {/* Demo Bar */}
+      <DemoBar
+        vertical="legal"
+        onLoadScenario={handleLoadScenario}
+        onRunWorkflow={handleRunWorkflow}
+      />
+
       {/* Hero Header */}
       <section className="pt-20 pb-8 px-6 border-b border-border-subtle">
         <div className="max-w-7xl mx-auto">

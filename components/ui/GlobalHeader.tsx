@@ -13,8 +13,9 @@ const navLinks = [
 const solutionsLinks: Array<{ href: string; label: string; sub?: boolean }> = [
   { href: "/solutions/legal", label: "Legal Hydra" },
   { href: "/solutions/legal/vault", label: "Legal Vault", sub: true },
-  { href: "/solutions/private", label: "Private AI" },
   { href: "/solutions/medical", label: "Medical" },
+  { href: "/solutions/medical/vault", label: "Clinical Vault", sub: true },
+  { href: "/solutions/private", label: "Private AI" },
 ];
 
 const moreLinks = [

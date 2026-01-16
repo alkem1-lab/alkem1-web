@@ -183,10 +183,10 @@ export default function MedicalSolutionPage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="#pilot"
+                href="/solutions/medical/vault"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-crimson text-white font-mono text-sm rounded-lg hover:bg-crimson/80 transition-colors"
               >
-                Book a 30-day Pilot →
+                Open Clinical Vault →
               </Link>
               <Link
                 href="/proof"

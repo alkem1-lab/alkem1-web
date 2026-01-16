@@ -47,7 +47,7 @@ export default function PlaygroundPage() {
             transition={{ delay: 0.2 }}
             className="text-lg text-text-body max-w-2xl mx-auto"
           >
-            Experience the core technologies that make ALKEM1 unhackable. 
+            Experience the core technologies that make ALKEM1 unhackable.
             These aren&apos;t simulations—they&apos;re the actual algorithms we use.
           </motion.p>
         </div>
@@ -63,8 +63,8 @@ export default function PlaygroundPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`
                   flex items-center gap-2 px-6 py-3 rounded-lg font-mono text-sm transition-all
-                  ${activeTab === tab.id 
-                    ? `bg-${tab.color}/10 text-${tab.color} border border-${tab.color}/30` 
+                  ${activeTab === tab.id
+                    ? `bg-${tab.color}/10 text-${tab.color} border border-${tab.color}/30`
                     : "text-text-ghost hover:text-text-body hover:bg-surface-2"
                   }
                 `}

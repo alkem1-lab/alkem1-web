@@ -66,7 +66,7 @@ export function EvidenceChainBuilder() {
   // Attempt to tamper with a block
   const tamperBlock = (blockId: number, newData: string) => {
     setTamperAttempts(prev => prev + 1);
-    
+
     const newBlocks = blocks.map((block, index) => {
       if (block.id === blockId) {
         // Tampered block
@@ -126,8 +126,8 @@ export function EvidenceChainBuilder() {
       {/* Chain Status */}
       <motion.div
         className={`p-4 rounded-xl border-2 mb-8 flex items-center justify-between ${
-          chainIntegrity 
-            ? "border-phosphor/30 bg-phosphor/5" 
+          chainIntegrity
+            ? "border-phosphor/30 bg-phosphor/5"
             : "border-crimson/50 bg-crimson/10"
         }`}
         animate={!chainIntegrity ? { scale: [1, 1.01, 1] } : {}}
@@ -297,9 +297,9 @@ export function EvidenceChainBuilder() {
       <div className="p-4 border border-neural-2/20 rounded-lg bg-neural-2/5">
         <p className="text-sm text-text-body">
           <span className="text-neural-2 font-semibold">How ALKEM1 uses this:</span>{" "}
-          Every AI operation creates a new block in our evidence chain. Each block contains 
-          the hash of the previous block, creating an unbreakable link. If anyone tries to 
-          alter historical records, all subsequent hashes become invalid—making tampering 
+          Every AI operation creates a new block in our evidence chain. Each block contains
+          the hash of the previous block, creating an unbreakable link. If anyone tries to
+          alter historical records, all subsequent hashes become invalid—making tampering
           mathematically impossible to hide.
         </p>
       </div>

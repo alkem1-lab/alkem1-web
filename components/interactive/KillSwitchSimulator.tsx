@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 
 type SystemState = "NOMINAL" | "ELEVATED" | "WARNING" | "CRITICAL" | "KILLED";
 
-const stateConfig: Record<SystemState, { 
-  color: string; 
-  bg: string; 
+const stateConfig: Record<SystemState, {
+  color: string;
+  bg: string;
   border: string;
   message: string;
   defcon: number;
@@ -67,7 +67,7 @@ export function KillSwitchSimulator() {
 
     if (newState !== state) {
       setState(newState);
-      
+
       // Add log entry
       const timestamp = new Date().toLocaleTimeString();
       setLogs(prev => [`[${timestamp}] State: ${state} → ${newState}`, ...prev.slice(0, 9)]);
@@ -168,7 +168,7 @@ export function KillSwitchSimulator() {
             {threatLevel}%
           </span>
         </div>
-        
+
         <div className="relative">
           {/* Track background with zones */}
           <div className="absolute inset-0 h-3 rounded-full overflow-hidden flex">
@@ -178,7 +178,7 @@ export function KillSwitchSimulator() {
             <div className="w-[20%] bg-orange-500/30" />
             <div className="w-[20%] bg-crimson/30" />
           </div>
-          
+
           <input
             type="range"
             min="0"
@@ -256,8 +256,8 @@ export function KillSwitchSimulator() {
       <div className="mt-6 p-4 border border-crimson/20 rounded-lg bg-crimson/5">
         <p className="text-sm text-text-body">
           <span className="text-crimson font-semibold">Real-world behavior:</span>{" "}
-          In production, ALKEM1's XCK module monitors dozens of threat signals simultaneously. 
-          When thresholds are breached, the kill switch activates in under 50ms—faster than 
+          In production, ALKEM1's XCK module monitors dozens of threat signals simultaneously.
+          When thresholds are breached, the kill switch activates in under 50ms—faster than
           a human can blink. All actions are logged to an immutable evidence chain.
         </p>
       </div>

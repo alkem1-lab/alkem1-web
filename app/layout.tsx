@@ -24,7 +24,7 @@ const instrumentSerif = Instrument_Serif({
 // Metadata
 export const metadata: Metadata = {
   title: "ALKEM1 | The Glass Box AI",
-  description: "Trust is Dead. Verification is Alive. The only AI system with a built-in kill switch and mathematical proof of integrity.",
+  description: "Trust is Dead. Verification is Alive. A provable control stack for AI: kill switch, evidence chain, and deterministic replay.",
   keywords: ["AI", "Enterprise AI", "Kill Switch", "XCK", "Verification", "Glass Box"],
   authors: [{ name: "ALKEM1" }],
   openGraph: {

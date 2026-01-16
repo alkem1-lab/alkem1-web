@@ -75,10 +75,10 @@ export function Hero() {
           className="text-lg md:text-xl text-text-body max-w-2xl mx-auto mb-10 leading-relaxed"
           variants={itemVariants}
         >
-          The only AI system with a built-in{" "}
-          <span className="text-crimson font-medium">kill switch</span> and{" "}
-          <span className="text-phosphor font-medium">mathematical proof</span>{" "}
-          of integrity.
+          A provable control stack for AI:{" "}
+          <span className="text-crimson font-medium">kill switch</span>,{" "}
+          <span className="text-phosphor font-medium">evidence chain</span>, and{" "}
+          <span className="text-neural-2 font-medium">deterministic replay</span>.
         </motion.p>
 
         {/* CTA */}

@@ -6,6 +6,8 @@ import {
   Hero,
   BeforeAfter,
   Problem,
+  Workflow,
+  MemoryVault,
   Pillars,
   HumanBody,
   LiveDemo,
@@ -26,25 +28,31 @@ export default function Home() {
         {/* 2. Before/After - Trust vs Verify (Main selling point) */}
         <BeforeAfter />
 
-        {/* 3. Problem - Stats that create urgency */}
+        {/* 3. Measured Results - Real metrics, not marketing */}
         <Problem />
 
-        {/* 4. Three Pillars - Brief overview */}
+        {/* 4. Day-to-Day Workflow - How teams use ALKEM1 */}
+        <Workflow />
+
+        {/* 5. Memory Vault - Controlled knowledge */}
+        <MemoryVault />
+
+        {/* 6. Three Pillars - Brief overview */}
         <Pillars />
 
-        {/* 5. Human Body - Emotional analogy */}
+        {/* 7. Human Body - Emotional analogy */}
         <HumanBody />
 
-        {/* 6. Live Demo - Interactive threat simulation */}
+        {/* 8. Live Demo - Interactive threat simulation */}
         <LiveDemo />
 
-        {/* 7. Math Proof - Q.E.D. Certificate teaser */}
+        {/* 9. Math Proof - Q.E.D. Certificate teaser */}
         <MathProof />
 
-        {/* 8. Joker - Adversarial testing */}
+        {/* 10. Joker - Adversarial testing */}
         <Joker />
 
-        {/* 9. CTA - Request Audit + Proof Pack */}
+        {/* 11. CTA - Request Audit + Proof Pack */}
         <CTA />
       </main>
     </LenisProvider>

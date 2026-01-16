@@ -55,10 +55,10 @@ export default function ProofPackPage() {
             "Trust is Dead. Verification is Alive."
           </p>
           <p className="text-gray-700 leading-relaxed">
-            ALKEM1 is the only enterprise AI system with a built-in kill switch, 
-            mathematical proof of integrity, and real-time evidence chain. Unlike 
-            traditional "black box" AI systems, ALKEM1 provides verifiable control 
-            at every layer.
+            ALKEM1 is a provable control stack for enterprise AI: kill switch,
+            mathematical proof of integrity, and real-time evidence chain. Unlike
+            traditional "black box" AI systems, ALKEM1 provides verifiable control
+            at every layer—with measured metrics you can audit.
           </p>
         </div>
       </section>
@@ -126,7 +126,7 @@ export default function ProofPackPage() {
 ╚══════════════════════════════════════════════════════════════╝`}</pre>
         </div>
         <p className="text-sm text-gray-500 mt-2">
-          Every AI operation produces a verifiable certificate. Tamper attempts are 
+          Every AI operation produces a verifiable certificate. Tamper attempts are
           mathematically detectable.
         </p>
       </section>

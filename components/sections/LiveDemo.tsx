@@ -114,6 +114,13 @@ export function LiveDemo() {
               Don&apos;t Trust Us.{" "}
               <span className="gradient-text">Watch Us.</span>
             </h2>
+            {/* SIMULATED DATA badge */}
+            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/10">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-xs font-mono text-amber-500 uppercase tracking-wider">
+                Simulated Data • For Demonstration
+              </span>
+            </div>
           </motion.div>
 
           {/* Dashboard Widget */}

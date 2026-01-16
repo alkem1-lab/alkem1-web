@@ -12,6 +12,8 @@ export { GlobalHeader } from "./ui/GlobalHeader";
 export { Hero } from "./sections/Hero";
 export { BeforeAfter } from "./sections/BeforeAfter";
 export { Problem } from "./sections/Problem";
+export { Workflow } from "./sections/Workflow";
+export { MemoryVault } from "./sections/MemoryVault";
 export { Pillars } from "./sections/Pillars";
 export { HumanBody } from "./sections/HumanBody";
 export { LiveDemo } from "./sections/LiveDemo";

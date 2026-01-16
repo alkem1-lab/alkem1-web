@@ -70,7 +70,7 @@ export function LiveHashDemo() {
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="w-full h-32 p-4 bg-surface-1 border border-border-subtle rounded-lg 
+            className="w-full h-32 p-4 bg-surface-1 border border-border-subtle rounded-lg
                        text-text-bright font-mono text-lg resize-none
                        focus:outline-none focus:border-phosphor/50 focus:ring-1 focus:ring-phosphor/20
                        transition-all duration-200"
@@ -161,8 +161,8 @@ export function LiveHashDemo() {
       <div className="mt-6 p-4 border border-phosphor/20 rounded-lg bg-phosphor/5">
         <p className="text-sm text-text-body">
           <span className="text-phosphor font-semibold">Why this matters:</span>{" "}
-          ALKEM1 uses SHA-256 to create an unbreakable chain of evidence. 
-          Change one character in any previous record, and the entire chain breaks. 
+          ALKEM1 uses SHA-256 to create an unbreakable chain of evidence.
+          Change one character in any previous record, and the entire chain breaks.
           This is how we guarantee mathematical proof of integrity.
         </p>
       </div>

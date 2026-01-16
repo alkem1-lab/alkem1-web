@@ -5,19 +5,19 @@ import { useRef } from "react";
 
 const stats = [
   {
-    value: "$4.2M",
-    label: "Average cost of AI incident",
-    subtext: "Source: IBM Security 2025",
+    value: "47ms",
+    label: "Kill switch response time",
+    subtext: "Measured • ALKEM1 internal",
   },
   {
-    value: "72h",
-    label: "Time to detect AI hallucination",
-    subtext: "Enterprise average",
+    value: "12K+",
+    label: "Evidence chain entries",
+    subtext: "Measured • Immutable ledger",
   },
   {
-    value: "1",
-    label: "Mistake can end a company",
-    subtext: "Regulatory reality",
+    value: "9/10",
+    label: "Joker attacks blocked",
+    subtext: "Measured • 1 bypass → patched",
   },
 ];
 
@@ -63,23 +63,23 @@ export function Problem() {
             className="flex items-center gap-4 mb-8"
             variants={itemVariants}
           >
-            <div className="h-[1px] w-12 bg-crimson/50" />
-            <span className="text-xs font-mono text-crimson uppercase tracking-widest">
-              The Problem
+            <div className="h-[1px] w-12 bg-phosphor/50" />
+            <span className="text-xs font-mono text-phosphor uppercase tracking-widest">
+              Measured Results
             </span>
           </motion.div>
 
           {/* Quote */}
           <motion.div className="mb-16" variants={itemVariants}>
             <h2
-              className="font-display text-3xl md:text-5xl lg:text-6xl text-text-bright leading-tight italic"
+              className="font-display text-3xl md:text-5xl lg:text-6xl text-text-bright leading-tight"
               style={{ fontFamily: "var(--font-instrument-serif)" }}
             >
-              &quot;AI is powerful.
+              Real metrics.
               <br />
-              AI is unpredictable.
+              Not marketing.
               <br />
-              <span className="text-crimson">AI is a liability.&quot;</span>
+              <span className="text-phosphor">Verifiable on demand.</span>
             </h2>
           </motion.div>
 
@@ -95,7 +95,7 @@ export function Problem() {
                 variants={itemVariants}
               >
                 {/* Accent line */}
-                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-crimson via-ember to-transparent opacity-60" />
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-phosphor via-neural-2 to-transparent opacity-60" />
 
                 <div className="text-5xl md:text-6xl font-mono font-bold text-text-bright mb-4">
                   {stat.value}

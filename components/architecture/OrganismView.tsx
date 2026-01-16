@@ -326,44 +326,44 @@ export function OrganismView() {
                 </defs>
 
                 {/* Head */}
-                <ellipse cx="200" cy="60" rx="45" ry="50" 
+                <ellipse cx="200" cy="60" rx="45" ry="50"
                   fill="url(#bodyGradient)" stroke="#475569" strokeWidth="1" />
-                
+
                 {/* Neck */}
-                <path d="M 180 105 L 180 130 L 220 130 L 220 105" 
+                <path d="M 180 105 L 180 130 L 220 130 L 220 105"
                   fill="url(#bodyGradient)" stroke="#475569" strokeWidth="1" />
-                
+
                 {/* Torso */}
-                <path d="M 140 130 
-                         Q 120 150 120 200 
-                         L 130 320 
-                         L 160 380 
-                         L 200 400 
-                         L 240 380 
-                         L 270 320 
-                         L 280 200 
-                         Q 280 150 260 130 
-                         Z" 
+                <path d="M 140 130
+                         Q 120 150 120 200
+                         L 130 320
+                         L 160 380
+                         L 200 400
+                         L 240 380
+                         L 270 320
+                         L 280 200
+                         Q 280 150 260 130
+                         Z"
                   fill="url(#bodyGradient)" stroke="#475569" strokeWidth="1" />
 
                 {/* Left Arm */}
-                <path d="M 140 140 Q 80 160 60 250 Q 50 300 70 340" 
+                <path d="M 140 140 Q 80 160 60 250 Q 50 300 70 340"
                   fill="none" stroke="#475569" strokeWidth="1" />
-                
+
                 {/* Right Arm */}
-                <path d="M 260 140 Q 320 160 340 250 Q 350 300 330 340" 
+                <path d="M 260 140 Q 320 160 340 250 Q 350 300 330 340"
                   fill="none" stroke="#475569" strokeWidth="1" />
 
                 {/* Left Leg */}
-                <path d="M 160 380 L 140 480" 
+                <path d="M 160 380 L 140 480"
                   fill="none" stroke="#475569" strokeWidth="1" />
-                
+
                 {/* Right Leg */}
-                <path d="M 240 380 L 260 480" 
+                <path d="M 240 380 L 260 480"
                   fill="none" stroke="#475569" strokeWidth="1" />
 
                 {/* Spine (subtle) */}
-                <line x1="200" y1="130" x2="200" y2="380" 
+                <line x1="200" y1="130" x2="200" y2="380"
                   stroke="#22d3ee" strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
 
                 {/* Organ hotspots on body */}
@@ -371,7 +371,7 @@ export function OrganismView() {
                   const colors = colorMap[organ.color];
                   const isHovered = hoveredOrgan === organ.id;
                   const yPos = (organ.position.cy / 100) * 500;
-                  
+
                   return (
                     <g key={organ.id}>
                       {/* Connection line to label */}
@@ -384,7 +384,7 @@ export function OrganismView() {
                         opacity={isHovered ? 1 : 0.3}
                         animate={{ opacity: isHovered ? 1 : 0.3 }}
                       />
-                      
+
                       {/* Organ dot on body */}
                       <motion.circle
                         cx="200" cy={yPos}
@@ -397,7 +397,7 @@ export function OrganismView() {
                         animate={isHovered ? { scale: [1, 1.2, 1] } : {}}
                         transition={{ duration: 1, repeat: Infinity }}
                       />
-                      
+
                       {/* Pulse ring */}
                       {isHovered && (
                         <motion.circle
@@ -432,9 +432,9 @@ export function OrganismView() {
                     style={{ top: `${topPercent}%` }}
                     onMouseEnter={() => setHoveredOrgan(organ.id)}
                     onMouseLeave={() => setHoveredOrgan(null)}
-                    animate={{ 
+                    animate={{
                       x: isHovered ? 0 : 10,
-                      opacity: isHovered ? 1 : 0.7 
+                      opacity: isHovered ? 1 : 0.7
                     }}
                     transition={{ duration: 0.2 }}
                   >
@@ -462,7 +462,7 @@ export function OrganismView() {
                         <span className="text-xs font-mono text-text-ghost">
                           {organ.layer}
                         </span>
-                        
+
                         {/* Expanded info on hover */}
                         {isHovered && (
                           <motion.div

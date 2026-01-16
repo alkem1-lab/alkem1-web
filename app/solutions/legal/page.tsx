@@ -159,12 +159,12 @@ export default function LegalSolutionPage() {
             </h1>
 
             <p className="text-lg md:text-xl text-text-body max-w-3xl mx-auto mb-4">
-              Detective finds facts. Lawyer argues. Opponent attacks. 
+              Detective finds facts. Lawyer argues. Opponent attacks.
               Judge verifies. Evidence officer seals proof.
             </p>
 
             <p className="text-sm text-text-ghost max-w-2xl mx-auto mb-8">
-              Every role runs through the same verified pipeline: Memory retrieval → 
+              Every role runs through the same verified pipeline: Memory retrieval →
               Gatekeeper policy → SPICE execution → Judge validation → Ledger seal.
             </p>
 
@@ -219,8 +219,8 @@ export default function LegalSolutionPage() {
                   onClick={() => setActiveRole(role.id)}
                   className={`
                     p-4 rounded-xl border text-center transition-all
-                    ${isActive 
-                      ? `${roleColors.border} bg-surface-1` 
+                    ${isActive
+                      ? `${roleColors.border} bg-surface-1`
                       : "border-border-subtle bg-surface-1/30 hover:border-text-ghost/30"
                     }
                   `}
@@ -252,7 +252,7 @@ export default function LegalSolutionPage() {
                     {currentRole.icon}
                   </div>
                 </div>
-                
+
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className={`text-2xl font-display ${colors.text}`}>
@@ -262,7 +262,7 @@ export default function LegalSolutionPage() {
                       ({currentRole.title})
                     </span>
                   </div>
-                  
+
                   <div className="mb-4 p-3 bg-surface-2 rounded-lg">
                     <span className="text-xs font-mono text-text-ghost uppercase tracking-wider">
                       Output →
@@ -319,11 +319,11 @@ export default function LegalSolutionPage() {
                   Case #2026-0116
                 </span>
               </div>
-              
+
               {/* Role Switch */}
               <div className="flex items-center gap-2">
                 <span className="text-xs text-text-ghost">Role:</span>
-                <select 
+                <select
                   value={activeRole}
                   onChange={(e) => setActiveRole(e.target.value as RoleId)}
                   className="px-3 py-1 bg-surface-2 border border-border-subtle rounded text-sm text-text-body"
@@ -345,8 +345,8 @@ export default function LegalSolutionPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`
                     px-4 py-3 text-sm font-mono whitespace-nowrap transition-colors
-                    ${activeTab === tab.id 
-                      ? "text-phosphor border-b-2 border-phosphor bg-phosphor/5" 
+                    ${activeTab === tab.id
+                      ? "text-phosphor border-b-2 border-phosphor bg-phosphor/5"
                       : "text-text-ghost hover:text-text-body"
                     }
                   `}
@@ -565,7 +565,7 @@ export default function LegalSolutionPage() {
                 </div>
                 <div className="text-text-bright font-medium">{item.action}</div>
                 <div className="text-xs text-text-ghost">{item.desc}</div>
-                
+
                 {index < 4 && (
                   <div className="hidden md:block absolute top-4 -right-2 text-text-ghost">→</div>
                 )}

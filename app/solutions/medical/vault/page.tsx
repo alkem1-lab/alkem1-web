@@ -70,13 +70,15 @@ export default function MedicalVaultPage() {
   const [selectedResult, setSelectedResult] = useState<typeof mockResults[0] | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [showSafetyGate, setShowSafetyGate] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showViewer, setShowViewer] = useState(false);
 
   const handleSearch = () => {
     if (query.trim()) {
       setHasSearched(true);
       setSelectedResult(mockResults[0]);
       // Show safety gate for high-risk queries
-      if (query.toLowerCase().includes("sepsis") || 
+      if (query.toLowerCase().includes("sepsis") ||
           query.toLowerCase().includes("escalate") ||
           query.toLowerCase().includes("hypotension")) {
         setShowSafetyGate(true);
@@ -91,7 +93,7 @@ export default function MedicalVaultPage() {
     setApprovedOnly(true);
     setRequirePrimary(scenario.filters.requirePrimary ?? true);
     setRerank(scenario.filters.rerank ?? true);
-    
+
     const typeMap: Record<string, string> = {
       guideline: "Guideline",
       protocol: "Protocol",
@@ -118,12 +120,12 @@ export default function MedicalVaultPage() {
       />
 
       {/* Hero Header */}
-      <section className="pt-20 pb-8 px-6 border-b border-border-subtle">
+      <section className="pt-20 pb-6 md:pb-8 px-4 md:px-6 border-b border-border-subtle">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-2xl font-display text-text-bright">Clinical Vault</h1>
+              <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2">
+                <h1 className="text-xl md:text-2xl font-display text-text-bright">Clinical Vault</h1>
                 <span className="px-2 py-0.5 text-xs font-mono bg-crimson/10 text-crimson rounded">
                   Guideline-bound
                 </span>
@@ -146,31 +148,31 @@ export default function MedicalVaultPage() {
           </div>
 
           {/* Search Bar */}
-          <div className="mt-6">
-            <div className="flex gap-3">
+          <div className="mt-4 md:mt-6">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <div className="flex-1 relative">
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  placeholder="Search guidelines… (e.g., 'adult fever escalation sepsis screen')"
-                  className="w-full px-4 py-3 bg-surface-1 border border-border-subtle rounded-lg
-                             text-text-bright placeholder:text-text-ghost
+                  placeholder="Search guidelines…"
+                  className="w-full px-3 md:px-4 py-2.5 md:py-3 bg-surface-1 border border-border-subtle rounded-lg
+                             text-text-bright placeholder:text-text-ghost text-sm md:text-base
                              focus:outline-none focus:border-crimson/50 focus:ring-1 focus:ring-crimson/20"
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-ghost">
-                  Press Enter
+                <div className="hidden sm:block absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-ghost">
+                  Enter
                 </div>
               </div>
               <button
                 onClick={handleSearch}
-                className="px-6 py-3 bg-crimson text-white font-mono text-sm rounded-lg hover:bg-crimson/80 transition-colors"
+                className="px-4 md:px-6 py-2.5 md:py-3 bg-crimson text-white font-mono text-sm rounded-lg hover:bg-crimson/80 transition-colors"
               >
                 Search
               </button>
             </div>
-            <div className="flex items-center gap-4 mt-3 text-xs text-text-ghost">
+            <div className="hidden md:flex items-center gap-4 mt-3 text-xs text-text-ghost">
               <span>Approved guidelines only. Every result includes citations and safety flags.</span>
             </div>
           </div>
@@ -197,16 +199,32 @@ export default function MedicalVaultPage() {
         )}
       </AnimatePresence>
 
-      {/* Main 3-Column Layout */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="grid grid-cols-12 gap-6">
+      {/* Main Layout - Responsive */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
           
-          {/* Left Column - Filters */}
-          <aside className="col-span-3 space-y-6">
-            <div className="sticky top-20">
+          {/* Left Column - Filters (collapsible on mobile) */}
+          <aside className="lg:col-span-3 order-2 lg:order-1">
+            {/* Mobile Filter Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="lg:hidden w-full mb-4 p-3 bg-surface-1/30 rounded-xl border border-border-subtle flex items-center justify-between"
+            >
+              <span className="text-sm font-mono text-text-bright">Filters</span>
+              <svg
+                className={`w-4 h-4 text-text-ghost transition-transform ${showFilters ? "rotate-180" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <div className={`lg:sticky lg:top-20 ${showFilters ? "block" : "hidden lg:block"}`}>
               <div className="p-4 bg-surface-1/30 rounded-xl border border-border-subtle">
-                <h3 className="text-sm font-mono text-text-bright mb-1">Filters</h3>
-                <p className="text-xs text-text-ghost mb-4">
+                <h3 className="text-sm font-mono text-text-bright mb-1 hidden lg:block">Filters</h3>
+                <p className="text-xs text-text-ghost mb-4 hidden lg:block">
                   Only approved guidelines. Keep it protocol-safe.
                 </p>
 
@@ -292,7 +310,7 @@ export default function MedicalVaultPage() {
           </aside>
 
           {/* Center Column - Results */}
-          <main className="col-span-5">
+          <main className="lg:col-span-5 order-1 lg:order-2">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-sm font-mono text-text-bright">Results</h3>
               <p className="text-xs text-text-ghost">
@@ -373,9 +391,27 @@ export default function MedicalVaultPage() {
           </main>
 
           {/* Right Column - Document Viewer */}
-          <aside className="col-span-4">
-            <div className="sticky top-20">
-              <div className="p-4 bg-surface-1/30 rounded-xl border border-border-subtle min-h-[500px]">
+          <aside className="lg:col-span-4 order-3">
+            {/* Mobile toggle when result selected */}
+            {selectedResult && (
+              <button
+                onClick={() => setShowViewer(!showViewer)}
+                className="lg:hidden w-full mb-4 p-3 bg-crimson/10 border border-crimson/30 rounded-xl flex items-center justify-between"
+              >
+                <span className="text-sm font-mono text-crimson truncate">View: {selectedResult.title.slice(0, 25)}...</span>
+                <svg
+                  className={`w-4 h-4 text-crimson transition-transform flex-shrink-0 ${showViewer ? "rotate-180" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            )}
+
+            <div className={`lg:sticky lg:top-20 ${selectedResult && showViewer ? "block" : "hidden lg:block"}`}>
+              <div className="p-4 bg-surface-1/30 rounded-xl border border-border-subtle min-h-[300px] lg:min-h-[500px]">
                 <h3 className="text-sm font-mono text-text-bright mb-1">Guideline Viewer</h3>
                 <p className="text-xs text-text-ghost mb-4">
                   Approved text with highlighted passages.

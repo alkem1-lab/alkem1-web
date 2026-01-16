@@ -259,6 +259,39 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
     directorLine:
       "Decision support, ne dijagnoza. Sve vezano za protokole, sve auditovano.",
   },
+
+  // ============================================
+  // MEDICAL TRIAGE DEMO (Bulletproof for presentations)
+  // ============================================
+  {
+    id: "medical-triage-001",
+    label: "Medical: Guideline-Bound Triage (Review Gate)",
+    vertical: "medical",
+    description: "30-60s demo: every suggestion has citation, high-risk flagged, proof link",
+    query: "adult fever tachycardia hypotension when to escalate sepsis screen",
+    filters: {
+      sourceTypes: ["guideline"],
+      requirePrimary: true,
+      rerank: true,
+      dedupe: true,
+      citeableOnly: true,
+      hybridWeight: 0.75,
+      maxResults: 10,
+    },
+    workflow: ["search", "pinTopSources", "generateMemo", "review", "proofVerify"],
+    expected: [
+      "3 guideline-cited suggestions",
+      "HIGH-RISK flag → human review required",
+      "Safety Gate visible with rule ID",
+      "Proof link + VALID verification",
+    ],
+    proof: {
+      route: "/proof",
+      note: "Show Review flag (rule ID + triggers), then Q.E.D. certificate verification.",
+    },
+    directorLine:
+      "Sistem ne daje medicinske tvrdnje bez odobrene smernice. Ako je high-risk, traži human review. Sve ima dokazni trag.",
+  },
 ];
 
 // Helper to get scenarios by vertical

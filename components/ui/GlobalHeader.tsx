@@ -7,13 +7,13 @@ import { useState } from "react";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/playground", label: "Playground 🎮" },
+  { href: "/playground", label: "Playground" },
 ];
 
 const solutionsLinks = [
-  { href: "/solutions/legal", label: "Legal", icon: "⚖️" },
-  { href: "/solutions/private", label: "Private AI", icon: "🔒" },
-  { href: "/solutions/medical", label: "Medical", icon: "🏥" },
+  { href: "/solutions/legal", label: "Legal" },
+  { href: "/solutions/private", label: "Private AI" },
+  { href: "/solutions/medical", label: "Medical" },
 ];
 
 const moreLinks = [
@@ -95,11 +95,10 @@ function SolutionsDropdown() {
                 key={link.href}
                 href={link.href}
                 className={`
-                  flex items-center gap-3 px-4 py-2 text-sm font-mono transition-colors
+                  block px-4 py-2 text-sm font-mono transition-colors
                   ${pathname === link.href ? "text-phosphor bg-phosphor/5" : "text-text-body hover:text-phosphor hover:bg-surface-2"}
                 `}
               >
-                <span>{link.icon}</span>
                 {link.label}
               </Link>
             ))}
@@ -185,9 +184,8 @@ export function GlobalHeader() {
                       key={link.href}
                       href={link.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-2 text-sm font-mono text-text-body hover:text-phosphor transition-colors"
+                      className="block text-sm font-mono text-text-body hover:text-phosphor transition-colors"
                     >
-                      <span>{link.icon}</span>
                       {link.label}
                     </Link>
                   ))}

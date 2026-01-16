@@ -3,7 +3,7 @@
 import { LenisProvider } from "../../lib/lenis";
 import { GridBackground } from "../../components";
 import { ArchitectureHeader } from "../../components/architecture/ArchitectureHeader";
-import { LayerDiagram } from "../../components/architecture/LayerDiagram";
+import { OrganismView } from "../../components/architecture/OrganismView";
 import { DataFlow } from "../../components/architecture/DataFlow";
 import { SecurityLayer } from "../../components/architecture/SecurityLayer";
 
@@ -16,8 +16,8 @@ export default function ArchitecturePage() {
         {/* Header */}
         <ArchitectureHeader />
 
-        {/* 5-Layer Interactive Diagram */}
-        <LayerDiagram />
+        {/* Organism View - Interactive Anatomy Blueprint */}
+        <OrganismView />
 
         {/* Data Flow Visualization */}
         <DataFlow />

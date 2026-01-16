@@ -168,12 +168,20 @@ export default function LegalSolutionPage() {
               Gatekeeper policy → SPICE execution → Judge validation → Ledger seal.
             </p>
 
-            <Link
-              href="/playground"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-phosphor text-void font-mono text-sm rounded-lg hover:bg-phosphor-dim transition-colors"
-            >
-              Open a Case Workspace →
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/solutions/legal/vault"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-phosphor text-void font-mono text-sm rounded-lg hover:bg-phosphor-dim transition-colors"
+              >
+                Open Legal Vault →
+              </Link>
+              <Link
+                href="/proof"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-border-subtle text-text-body font-mono text-sm rounded-lg hover:border-phosphor/30 hover:text-phosphor transition-colors"
+              >
+                See Proof (Q.E.D.) →
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -436,9 +444,80 @@ export default function LegalSolutionPage() {
                     </div>
                   )}
 
-                  {(activeTab === "issues" || activeTab === "law") && (
-                    <div className="flex items-center justify-center h-48 text-text-ghost">
-                      <span className="text-sm font-mono">Tab content: {activeTab}</span>
+                  {activeTab === "issues" && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-neural-2 text-sm font-mono">
+                        <span>📋</span> Legal Issues
+                      </div>
+                      <p className="text-xs text-text-ghost mb-4">
+                        The legal questions that decide the outcome.
+                      </p>
+                      <div className="space-y-3">
+                        <div className="p-3 bg-surface-2 rounded-lg">
+                          <span className="text-xs text-neural-2 font-mono">Issue #1</span>
+                          <p className="text-text-body text-sm mt-1">
+                            Is the contract void due to lack of material terms (delivery date)?
+                          </p>
+                        </div>
+                        <div className="p-3 bg-surface-2 rounded-lg">
+                          <span className="text-xs text-neural-2 font-mono">Issue #2</span>
+                          <p className="text-text-body text-sm mt-1">
+                            Does prior course of dealing establish implicit timeline?
+                          </p>
+                        </div>
+                        <div className="p-3 bg-surface-2 rounded-lg">
+                          <span className="text-xs text-neural-2 font-mono">Issue #3</span>
+                          <p className="text-text-body text-sm mt-1">
+                            Is partial performance evidence of acceptance?
+                          </p>
+                        </div>
+                      </div>
+                      <button className="mt-4 px-4 py-2 bg-neural-2/10 border border-neural-2/30 rounded text-neural-2 text-sm">
+                        + Generate additional issues
+                      </button>
+                    </div>
+                  )}
+
+                  {activeTab === "law" && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 text-phosphor text-sm font-mono">
+                        <span>📚</span> Law & Sources
+                      </div>
+                      <p className="text-xs text-text-ghost mb-4">
+                        Pinned statutes, decisions, doctrine — with quality signals.
+                      </p>
+                      <div className="space-y-3">
+                        <div className="p-3 bg-surface-2 rounded-lg flex items-start justify-between">
+                          <div>
+                            <span className="inline-flex px-2 py-0.5 bg-phosphor/20 text-phosphor text-xs rounded mb-1">LAW</span>
+                            <p className="text-text-body text-sm">Civil Code §234(2) — Material Terms</p>
+                            <span className="text-xs text-text-ghost">RS • Primary source</span>
+                          </div>
+                          <span className="text-xs text-phosphor">✓ Citeable</span>
+                        </div>
+                        <div className="p-3 bg-surface-2 rounded-lg flex items-start justify-between">
+                          <div>
+                            <span className="inline-flex px-2 py-0.5 bg-neural-2/20 text-neural-2 text-xs rounded mb-1">CASE</span>
+                            <p className="text-text-body text-sm">Smith v. Jones (2023) — Contract Void</p>
+                            <span className="text-xs text-text-ghost">RS • VKS • High relevance</span>
+                          </div>
+                          <span className="text-xs text-phosphor">✓ Citeable</span>
+                        </div>
+                        <div className="p-3 bg-surface-2 rounded-lg flex items-start justify-between">
+                          <div>
+                            <span className="inline-flex px-2 py-0.5 bg-amber-400/20 text-amber-400 text-xs rounded mb-1">DOCTRINE</span>
+                            <p className="text-text-body text-sm">Prof. Perović — Commentary on §234</p>
+                            <span className="text-xs text-text-ghost">RS • Secondary source</span>
+                          </div>
+                          <span className="text-xs text-amber-400">⚠ Review</span>
+                        </div>
+                      </div>
+                      <Link
+                        href="/solutions/legal/vault"
+                        className="inline-flex items-center mt-4 px-4 py-2 bg-phosphor/10 border border-phosphor/30 rounded text-phosphor text-sm hover:bg-phosphor/20 transition-colors"
+                      >
+                        Search Legal Vault →
+                      </Link>
                     </div>
                   )}
                 </motion.div>

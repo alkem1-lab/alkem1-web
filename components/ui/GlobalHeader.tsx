@@ -10,8 +10,9 @@ const navLinks = [
   { href: "/playground", label: "Playground" },
 ];
 
-const solutionsLinks = [
-  { href: "/solutions/legal", label: "Legal" },
+const solutionsLinks: Array<{ href: string; label: string; sub?: boolean }> = [
+  { href: "/solutions/legal", label: "Legal Hydra" },
+  { href: "/solutions/legal/vault", label: "Legal Vault", sub: true },
   { href: "/solutions/private", label: "Private AI" },
   { href: "/solutions/medical", label: "Medical" },
 ];
@@ -95,11 +96,12 @@ function SolutionsDropdown() {
                 key={link.href}
                 href={link.href}
                 className={`
-                  block px-4 py-2 text-sm font-mono transition-colors
+                  block py-2 text-sm font-mono transition-colors
+                  ${link.sub ? "px-6 text-xs" : "px-4"}
                   ${pathname === link.href ? "text-phosphor bg-phosphor/5" : "text-text-body hover:text-phosphor hover:bg-surface-2"}
                 `}
               >
-                {link.label}
+                {link.sub && "└ "}{link.label}
               </Link>
             ))}
           </motion.div>
@@ -184,9 +186,9 @@ export function GlobalHeader() {
                       key={link.href}
                       href={link.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block text-sm font-mono text-text-body hover:text-phosphor transition-colors"
+                      className={`block font-mono text-text-body hover:text-phosphor transition-colors ${link.sub ? "text-xs pl-4" : "text-sm"}`}
                     >
-                      {link.label}
+                      {link.sub && "└ "}{link.label}
                     </Link>
                   ))}
                 </div>

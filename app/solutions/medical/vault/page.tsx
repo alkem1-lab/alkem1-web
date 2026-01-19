@@ -202,7 +202,7 @@ export default function MedicalVaultPage() {
       {/* Main Layout - Responsive */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
-          
+
           {/* Left Column - Filters (collapsible on mobile) */}
           <aside className="lg:col-span-3 order-2 lg:order-1">
             {/* Mobile Filter Toggle */}

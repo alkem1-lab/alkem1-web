@@ -22,11 +22,29 @@ const moreLinks = [
   { href: "/proof", label: "Proof" },
   { href: "/architecture", label: "Architecture" },
   { href: "/about", label: "About" },
+  { href: "/investors", label: "Investors", highlight: true },
 ];
 
-function NavLink({ href, label }: { href: string; label: string }) {
+function NavLink({ href, label, highlight }: { href: string; label: string; highlight?: boolean }) {
   const pathname = usePathname();
   const active = pathname === href;
+
+  if (highlight) {
+    return (
+      <Link
+        href={href}
+        className={`
+          relative text-sm font-mono transition-all duration-300 px-4 py-1.5 rounded-full
+          ${active 
+            ? "bg-ember text-void" 
+            : "bg-ember/20 text-ember hover:bg-ember/30 border border-ember/50"
+          }
+        `}
+      >
+        {label}
+      </Link>
+    );
+  }
 
   return (
     <Link
@@ -135,7 +153,7 @@ export function GlobalHeader() {
           ))}
           <SolutionsDropdown />
           {moreLinks.map((link) => (
-            <NavLink key={link.href} href={link.href} label={link.label} />
+            <NavLink key={link.href} href={link.href} label={link.label} highlight={(link as {highlight?: boolean}).highlight} />
           ))}
         </nav>
 
@@ -202,9 +220,13 @@ export function GlobalHeader() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block text-sm font-mono text-text-body hover:text-phosphor transition-colors"
+                    className={`block text-sm font-mono transition-colors ${
+                      (link as {highlight?: boolean}).highlight 
+                        ? "text-ember hover:text-ember-bright" 
+                        : "text-text-body hover:text-phosphor"
+                    }`}
                   >
-                    {link.label}
+                    {(link as {highlight?: boolean}).highlight ? "🎯 " : ""}{link.label}
                   </Link>
                 ))}
               </div>

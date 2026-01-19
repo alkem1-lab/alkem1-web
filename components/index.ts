@@ -21,6 +21,12 @@ export { MathProof } from "./sections/MathProof";
 export { Joker } from "./sections/Joker";
 export { CTA } from "./sections/CTA";
 
+// Investor-focused sections (v2)
+export { DataFlywheel } from "./sections/DataFlywheel";
+export { AuditorScore } from "./sections/AuditorScore";
+export { InvestmentThesis } from "./sections/InvestmentThesis";
+export { EnterpriseHardening } from "./sections/EnterpriseHardening";
+
 // Proof page components
 export { ProofHeader, EvidenceChain, TamperDemo, QEDCertificate } from "./proof";
 

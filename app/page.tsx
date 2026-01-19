@@ -9,6 +9,7 @@ import {
   Workflow,
   MemoryVault,
   Pillars,
+  DataFlywheel,
   HumanBody,
   LiveDemo,
   MathProof,
@@ -40,19 +41,22 @@ export default function Home() {
         {/* 6. Three Pillars - Brief overview */}
         <Pillars />
 
-        {/* 7. Human Body - Emotional analogy */}
+        {/* 7. Data Flywheel - Self-improving AI (NEW for v2) */}
+        <DataFlywheel />
+
+        {/* 8. Human Body - Emotional analogy */}
         <HumanBody />
 
-        {/* 8. Live Demo - Interactive threat simulation */}
+        {/* 9. Live Demo - Interactive threat simulation */}
         <LiveDemo />
 
-        {/* 9. Math Proof - Q.E.D. Certificate teaser */}
+        {/* 10. Math Proof - Q.E.D. Certificate teaser */}
         <MathProof />
 
-        {/* 10. Joker - Adversarial testing */}
+        {/* 11. Joker - Adversarial testing */}
         <Joker />
 
-        {/* 11. CTA - Request Audit + Proof Pack */}
+        {/* 12. CTA - Request Audit + Proof Pack */}
         <CTA />
       </main>
     </LenisProvider>

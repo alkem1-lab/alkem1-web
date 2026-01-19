@@ -1,388 +1,465 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
+
+// Custom animated SVG icons
+const TwoPhaseIcon = ({ active }: { active: boolean }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {/* Outer ring */}
+    <motion.circle
+      cx="50"
+      cy="50"
+      r="40"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      opacity={0.2}
+    />
+    {/* Progress arc - phase indicator */}
+    <motion.circle
+      cx="50"
+      cy="50"
+      r="40"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeDasharray="251"
+      initial={{ strokeDashoffset: 251 }}
+      animate={{ strokeDashoffset: active ? 0 : 126 }}
+      transition={{ duration: 1.5, ease: "easeInOut" }}
+      style={{ transformOrigin: "center", transform: "rotate(-90deg)" }}
+    />
+    {/* Lock body */}
+    <motion.rect
+      x="35"
+      y="45"
+      width="30"
+      height="25"
+      rx="4"
+      fill="currentColor"
+      initial={{ opacity: 0.6 }}
+      animate={{ opacity: active ? 1 : 0.6 }}
+    />
+    {/* Lock shackle */}
+    <motion.path
+      d="M40 45 V35 A10 10 0 0 1 60 35 V45"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="4"
+      strokeLinecap="round"
+      initial={{ y: 0 }}
+      animate={{ y: active ? -5 : 0 }}
+      transition={{ duration: 0.3 }}
+    />
+    {/* Phase 1 dot */}
+    <motion.circle
+      cx="25"
+      cy="50"
+      r="4"
+      fill="currentColor"
+      animate={{ 
+        opacity: active ? [0.3, 1, 0.3] : 0.3,
+        scale: active ? [1, 1.2, 1] : 1 
+      }}
+      transition={{ duration: 1.5, repeat: active ? Infinity : 0 }}
+    />
+    {/* Phase 2 dot */}
+    <motion.circle
+      cx="75"
+      cy="50"
+      r="4"
+      fill="currentColor"
+      animate={{ 
+        opacity: active ? [0.3, 1, 0.3] : 0.3,
+        scale: active ? [1, 1.2, 1] : 1 
+      }}
+      transition={{ duration: 1.5, delay: 0.75, repeat: active ? Infinity : 0 }}
+    />
+  </svg>
+);
+
+const MerkleIcon = ({ active }: { active: boolean }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {/* Root node */}
+    <motion.circle
+      cx="50"
+      cy="20"
+      r="8"
+      fill="currentColor"
+      animate={{ scale: active ? [1, 1.1, 1] : 1 }}
+      transition={{ duration: 2, repeat: active ? Infinity : 0 }}
+    />
+    {/* Level 2 nodes */}
+    <motion.circle
+      cx="30"
+      cy="50"
+      r="6"
+      fill="currentColor"
+      opacity={0.7}
+      animate={{ opacity: active ? [0.5, 0.9, 0.5] : 0.7 }}
+      transition={{ duration: 1.5, delay: 0.2, repeat: active ? Infinity : 0 }}
+    />
+    <motion.circle
+      cx="70"
+      cy="50"
+      r="6"
+      fill="currentColor"
+      opacity={0.7}
+      animate={{ opacity: active ? [0.5, 0.9, 0.5] : 0.7 }}
+      transition={{ duration: 1.5, delay: 0.4, repeat: active ? Infinity : 0 }}
+    />
+    {/* Level 3 nodes (leaves) */}
+    {[15, 35, 55, 75].map((x, i) => (
+      <motion.circle
+        key={i}
+        cx={x + 5}
+        cy="80"
+        r="4"
+        fill="currentColor"
+        opacity={0.5}
+        animate={{ opacity: active ? [0.3, 0.7, 0.3] : 0.5 }}
+        transition={{ duration: 1.5, delay: i * 0.15, repeat: active ? Infinity : 0 }}
+      />
+    ))}
+    {/* Connecting lines */}
+    <motion.path
+      d="M50 28 L30 44 M50 28 L70 44 M30 56 L20 74 M30 56 L40 74 M70 56 L60 74 M70 56 L80 74"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      opacity={0.3}
+      animate={{ opacity: active ? [0.2, 0.5, 0.2] : 0.3 }}
+      transition={{ duration: 2, repeat: active ? Infinity : 0 }}
+    />
+    {/* Hash symbol */}
+    <motion.text
+      x="50"
+      y="52"
+      textAnchor="middle"
+      fill="currentColor"
+      fontSize="10"
+      fontFamily="monospace"
+      opacity={0.4}
+      animate={{ opacity: active ? [0.2, 0.6, 0.2] : 0.4 }}
+      transition={{ duration: 2, repeat: active ? Infinity : 0 }}
+    >
+      #
+    </motion.text>
+  </svg>
+);
+
+const KillSwitchIcon = ({ active }: { active: boolean }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {/* Outer pulse rings */}
+    <motion.circle
+      cx="50"
+      cy="50"
+      r="45"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1"
+      opacity={0.1}
+      animate={{ 
+        r: active ? [45, 48, 45] : 45,
+        opacity: active ? [0.1, 0.3, 0.1] : 0.1 
+      }}
+      transition={{ duration: 1, repeat: active ? Infinity : 0 }}
+    />
+    <motion.circle
+      cx="50"
+      cy="50"
+      r="38"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1"
+      opacity={0.15}
+      animate={{ 
+        r: active ? [38, 42, 38] : 38,
+        opacity: active ? [0.15, 0.4, 0.15] : 0.15 
+      }}
+      transition={{ duration: 1, delay: 0.2, repeat: active ? Infinity : 0 }}
+    />
+    {/* Main button */}
+    <motion.circle
+      cx="50"
+      cy="50"
+      r="30"
+      fill="currentColor"
+      opacity={0.15}
+      animate={{ opacity: active ? [0.15, 0.25, 0.15] : 0.15 }}
+      transition={{ duration: 0.8, repeat: active ? Infinity : 0 }}
+    />
+    {/* Power symbol - line */}
+    <motion.line
+      x1="50"
+      y1="32"
+      x2="50"
+      y2="48"
+      stroke="currentColor"
+      strokeWidth="4"
+      strokeLinecap="round"
+      animate={{ opacity: active ? [0.8, 1, 0.8] : 0.8 }}
+      transition={{ duration: 0.5, repeat: active ? Infinity : 0 }}
+    />
+    {/* Power symbol - arc */}
+    <motion.path
+      d="M35 42 A20 20 0 1 0 65 42"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="4"
+      strokeLinecap="round"
+      animate={{ opacity: active ? [0.8, 1, 0.8] : 0.8 }}
+      transition={{ duration: 0.5, repeat: active ? Infinity : 0 }}
+    />
+  </svg>
+);
+
+const GatekeeperIcon = ({ active }: { active: boolean }) => (
+  <svg viewBox="0 0 100 100" className="w-full h-full">
+    {/* Shield outline */}
+    <motion.path
+      d="M50 10 L85 25 L85 50 Q85 80 50 95 Q15 80 15 50 L15 25 Z"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      opacity={0.3}
+    />
+    {/* Shield fill */}
+    <motion.path
+      d="M50 15 L80 28 L80 50 Q80 75 50 88 Q20 75 20 50 L20 28 Z"
+      fill="currentColor"
+      opacity={0.1}
+      animate={{ opacity: active ? [0.1, 0.2, 0.1] : 0.1 }}
+      transition={{ duration: 1.5, repeat: active ? Infinity : 0 }}
+    />
+    {/* Scan line */}
+    <motion.line
+      x1="25"
+      x2="75"
+      stroke="currentColor"
+      strokeWidth="2"
+      opacity={0.6}
+      initial={{ y1: 30, y2: 30 }}
+      animate={{ 
+        y1: active ? [30, 70, 30] : 50,
+        y2: active ? [30, 70, 30] : 50,
+        opacity: active ? [0.4, 0.8, 0.4] : 0.6 
+      }}
+      transition={{ duration: 2, repeat: active ? Infinity : 0, ease: "easeInOut" }}
+    />
+    {/* Checkmark */}
+    <motion.path
+      d="M35 50 L45 60 L65 40"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      initial={{ pathLength: 0 }}
+      animate={{ pathLength: active ? 1 : 0.7, opacity: active ? 1 : 0.5 }}
+      transition={{ duration: 0.5 }}
+    />
+  </svg>
+);
 
 const securityFeatures = [
   {
     id: "two-phase",
-    name: "Two-Phase Signed Transition",
-    icon: "🔐",
-    category: "SSOT Protection",
-    description: "Distinguishes legitimate deploys from attacks. Deploy token (60s TTL) enables PENDING_DEPLOY state - system enters read-only mode during transition.",
-    flow: [
-      { step: "1", action: "CI issues deploy token", state: "PENDING_DEPLOY" },
-      { step: "2", action: "SSOT hash mismatch detected", state: "READ_ONLY" },
-      { step: "3", action: "Manifest regenerated & signed", state: "NONE (OK)" },
-    ],
-    attackFlow: [
-      { step: "!", action: "Attacker modifies SSOT", state: "STOP" },
-      { step: "×", action: "No valid token", state: "KILL SWITCH" },
-    ],
+    name: "Two-Phase Transition",
+    subtitle: "SSOT Protection",
+    description: "Deploy token enables PENDING_DEPLOY state. System enters read-only during transition. No token = Kill Switch.",
+    Icon: TwoPhaseIcon,
     color: "#6ee7b7",
+    metrics: [
+      { value: "60s", label: "Token TTL" },
+      { value: "2", label: "Phases" },
+    ],
   },
   {
     id: "merkle",
     name: "Merkle Checkpoints",
-    icon: "🌳",
-    category: "Forensic Integrity",
-    description: "Unified Ledger with Operational (fast, rotating) and Forensic (WORM) layers. Merkle roots + Ed25519 signatures for tamper-evident audit trail.",
-    components: [
-      { name: "Operational Ledger", desc: "Max 10K entries, real-time dashboard" },
-      { name: "Forensic Segments", desc: ".jsonl.gz archives, immutable" },
-      { name: "Checkpoint", desc: "Merkle root + signature every M segments" },
-    ],
+    subtitle: "Forensic Integrity",
+    description: "Unified Ledger with Operational and Forensic layers. Merkle roots + Ed25519 signatures for tamper-evident audit.",
+    Icon: MerkleIcon,
     color: "#818cf8",
+    metrics: [
+      { value: "10K", label: "Max entries" },
+      { value: "WORM", label: "Storage" },
+    ],
   },
   {
     id: "kill-switch",
-    name: "Kill Switch 2-Step Clear",
-    icon: "🛑",
-    category: "Human Override",
-    description: "Sub-100ms emergency shutdown with 2-step verification to prevent accidental deactivation. Challenge → Confirm pattern like nuclear launch codes.",
-    steps: [
-      { phase: "Challenge", action: "POST /challenge → returns confirm_phrase (120s TTL)" },
-      { phase: "Confirm", action: "POST /clear with challenge_id + phrase + reason" },
-    ],
-    metrics: [
-      { value: "47ms", label: "Average response" },
-      { value: "2-step", label: "Verification" },
-      { value: "120s", label: "Challenge TTL" },
-    ],
+    name: "Kill Switch",
+    subtitle: "Human Override",
+    description: "Sub-100ms emergency shutdown with 2-step verification. Challenge → Confirm pattern.",
+    Icon: KillSwitchIcon,
     color: "#ef4444",
+    metrics: [
+      { value: "47ms", label: "Response" },
+      { value: "120s", label: "Challenge" },
+    ],
   },
   {
     id: "gatekeeper",
     name: "Gatekeeper",
-    icon: "🛡️",
-    category: "Diplomatic Courier",
-    description: "Single privileged mediator between all components. Sanitizes inputs, routes requests, and maintains complete audit trail.",
-    responsibilities: [
-      "Prompt injection scanning",
-      "Rate limiting & validation",
-      "Privileged mediation (Ledger write, Kill Switch)",
-      "Complete audit logging",
-    ],
+    subtitle: "Diplomatic Courier",
+    description: "Single privileged mediator. Sanitizes inputs, routes requests, maintains complete audit trail.",
+    Icon: GatekeeperIcon,
     color: "#f97316",
+    metrics: [
+      { value: "100%", label: "Coverage" },
+      { value: "0", label: "Bypass" },
+    ],
   },
 ];
 
 export function EnterpriseHardening() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [activeFeature, setActiveFeature] = useState<string>("two-phase");
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
-  };
-
-  const activeData = securityFeatures.find((f) => f.id === activeFeature)!;
+  const [activeFeature, setActiveFeature] = useState<string | null>(null);
+  const [hoveredFeature, setHoveredFeature] = useState<string | null>(null);
 
   return (
-    <section ref={ref} className="relative py-32 px-6 bg-surface-1/30">
-      {/* Background pattern */}
-      <div className="absolute inset-0 bg-grid opacity-30 pointer-events-none" />
-      
-      <div className="max-w-6xl mx-auto relative">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+    <section ref={ref} className="relative py-40 px-6 bg-black/20">
+      <div className="max-w-7xl mx-auto">
+        {/* Minimal header */}
+        <motion.div 
+          className="mb-32"
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
         >
-          {/* Header */}
-          <motion.div className="text-center mb-16" variants={itemVariants}>
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <div className="h-[1px] w-12 bg-crimson/50" />
-              <span className="text-xs font-mono text-crimson uppercase tracking-widest">
-                XCK Security Platform
-              </span>
-              <div className="h-[1px] w-12 bg-crimson/50" />
-            </div>
-            <h2
-              className="font-display text-4xl md:text-5xl lg:text-6xl text-text-bright mb-4"
-              style={{ fontFamily: "var(--font-instrument-serif)" }}
-            >
-              Enterprise Hardening
-            </h2>
-            <p className="text-text-body max-w-2xl mx-auto">
-              Production-grade security infrastructure. Not an afterthought - built into the foundation.
-            </p>
-          </motion.div>
-
-          {/* Feature selector + detail */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left: Feature list */}
-            <motion.div className="space-y-3" variants={itemVariants}>
-              {securityFeatures.map((feature) => {
-                const isActive = activeFeature === feature.id;
-                
-                return (
-                  <button
-                    key={feature.id}
-                    className={`
-                      w-full p-4 rounded-xl text-left transition-all duration-300
-                      ${isActive 
-                        ? "bg-surface-2 border-2" 
-                        : "bg-surface-1/50 border border-border-subtle hover:border-phosphor/30"
-                      }
-                    `}
-                    style={{
-                      borderColor: isActive ? feature.color : undefined,
-                    }}
-                    onClick={() => setActiveFeature(feature.id)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{feature.icon}</span>
-                      <div>
-                        <div className="font-semibold text-text-bright">
-                          {feature.name}
-                        </div>
-                        <div 
-                          className="text-xs"
-                          style={{ color: feature.color }}
-                        >
-                          {feature.category}
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </motion.div>
-
-            {/* Right: Detail panel */}
-            <motion.div 
-              className="lg:col-span-2"
-              variants={itemVariants}
-              key={activeFeature}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div 
-                className="p-8 rounded-2xl bg-surface-2 border-2"
-                style={{ borderColor: `${activeData.color}50` }}
-              >
-                {/* Header */}
-                <div className="flex items-start gap-4 mb-6">
-                  <div 
-                    className="w-16 h-16 rounded-xl flex items-center justify-center text-3xl"
-                    style={{ backgroundColor: `${activeData.color}20` }}
-                  >
-                    {activeData.icon}
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-text-bright">
-                      {activeData.name}
-                    </h3>
-                    <span 
-                      className="text-sm font-mono"
-                      style={{ color: activeData.color }}
-                    >
-                      {activeData.category}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <p className="text-text-body mb-8 leading-relaxed">
-                  {activeData.description}
-                </p>
-
-                {/* Feature-specific content */}
-                {activeData.id === "two-phase" && activeData.flow && (
-                  <div className="space-y-6">
-                    {/* Legitimate flow */}
-                    <div>
-                      <div className="text-sm text-text-ghost uppercase tracking-wider mb-3">
-                        Legitimate Deploy Flow
-                      </div>
-                      <div className="space-y-2">
-                        {activeData.flow.map((item, i) => (
-                          <div 
-                            key={i}
-                            className="flex items-center gap-4 p-3 rounded-lg bg-surface-1/50"
-                          >
-                            <div 
-                              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-                              style={{ backgroundColor: `${activeData.color}30`, color: activeData.color }}
-                            >
-                              {item.step}
-                            </div>
-                            <div className="flex-1 text-text-body text-sm">
-                              {item.action}
-                            </div>
-                            <div 
-                              className="px-3 py-1 rounded-full text-xs font-mono"
-                              style={{ 
-                                backgroundColor: `${activeData.color}20`,
-                                color: activeData.color,
-                              }}
-                            >
-                              {item.state}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    {/* Attack flow */}
-                    <div>
-                      <div className="text-sm text-text-ghost uppercase tracking-wider mb-3">
-                        Attack Scenario
-                      </div>
-                      <div className="space-y-2">
-                        {activeData.attackFlow?.map((item, i) => (
-                          <div 
-                            key={i}
-                            className="flex items-center gap-4 p-3 rounded-lg bg-crimson/10 border border-crimson/30"
-                          >
-                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-crimson/30 text-crimson">
-                              {item.step}
-                            </div>
-                            <div className="flex-1 text-text-body text-sm">
-                              {item.action}
-                            </div>
-                            <div className="px-3 py-1 rounded-full text-xs font-mono bg-crimson/20 text-crimson">
-                              {item.state}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeData.id === "merkle" && activeData.components && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {activeData.components.map((comp, i) => (
-                      <div 
-                        key={i}
-                        className="p-4 rounded-xl bg-surface-1/50 border border-border-subtle"
-                      >
-                        <div className="text-lg mb-2" style={{ color: activeData.color }}>
-                          📁
-                        </div>
-                        <div className="font-semibold text-text-bright text-sm mb-1">
-                          {comp.name}
-                        </div>
-                        <div className="text-xs text-text-ghost">
-                          {comp.desc}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {activeData.id === "kill-switch" && (
-                  <div className="space-y-6">
-                    {/* Steps */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {activeData.steps?.map((step, i) => (
-                        <div 
-                          key={i}
-                          className="p-4 rounded-xl bg-surface-1/50 border border-crimson/30"
-                        >
-                          <div className="text-xs text-crimson font-mono mb-2">
-                            STEP {i + 1}: {step.phase}
-                          </div>
-                          <div className="text-sm text-text-body font-mono">
-                            {step.action}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* Metrics */}
-                    <div className="flex justify-center gap-8">
-                      {activeData.metrics?.map((m, i) => (
-                        <div key={i} className="text-center">
-                          <div 
-                            className="text-3xl font-bold"
-                            style={{ color: activeData.color }}
-                          >
-                            {m.value}
-                          </div>
-                          <div className="text-xs text-text-ghost">
-                            {m.label}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {activeData.id === "gatekeeper" && activeData.responsibilities && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {activeData.responsibilities.map((resp, i) => (
-                      <div 
-                        key={i}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-surface-1/50"
-                      >
-                        <div 
-                          className="w-2 h-2 rounded-full"
-                          style={{ backgroundColor: activeData.color }}
-                        />
-                        <span className="text-text-body text-sm">{resp}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Analogy box */}
-                <div className="mt-8 p-4 rounded-xl bg-surface-1/30 border border-border-subtle">
-                  <div className="text-xs text-text-ghost uppercase tracking-wider mb-2">
-                    💡 Analogy
-                  </div>
-                  <p className="text-text-body text-sm italic">
-                    {activeData.id === "two-phase" && 
-                      "Like a bank vault - authorized worker has the key (token), but everything is locked (read-only) while vault is open."}
-                    {activeData.id === "merkle" && 
-                      "Like accounting - daily cashbook (operational) + main ledger (forensic) + certified statement (checkpoint)."}
-                    {activeData.id === "kill-switch" && 
-                      "Like nuclear launch - two keys, two operators, must match."}
-                    {activeData.id === "gatekeeper" && 
-                      "Like a diplomatic courier - only one with the passport to cross all borders."}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Bottom summary */}
-          <motion.div 
-            className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4"
-            variants={itemVariants}
+          <p className="text-xs font-mono text-text-ghost tracking-[0.3em] uppercase mb-6">
+            Security Infrastructure
+          </p>
+          <h2 
+            className="text-5xl md:text-7xl lg:text-8xl text-text-bright leading-none"
+            style={{ fontFamily: "var(--font-instrument-serif)" }}
           >
-            {[
-              { value: "47ms", label: "Kill Switch", icon: "⚡" },
-              { value: "SHA-256", label: "Hash Chain", icon: "🔗" },
-              { value: "Ed25519", label: "Signatures", icon: "✍️" },
-              { value: "WORM", label: "Forensic Storage", icon: "📦" },
-            ].map((stat, i) => (
-              <div 
-                key={i}
-                className="p-4 rounded-xl bg-surface-1/50 border border-border-subtle text-center"
+            Enterprise
+            <br />
+            <span className="text-text-ghost">Hardening</span>
+          </h2>
+        </motion.div>
+
+        {/* Feature grid - large cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+          {securityFeatures.map((feature, index) => {
+            const isActive = activeFeature === feature.id;
+            const isHovered = hoveredFeature === feature.id;
+            const Icon = feature.Icon;
+
+            return (
+              <motion.div
+                key={feature.id}
+                className="relative group cursor-pointer"
+                initial={{ opacity: 0, y: 60 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                onClick={() => setActiveFeature(isActive ? null : feature.id)}
+                onMouseEnter={() => setHoveredFeature(feature.id)}
+                onMouseLeave={() => setHoveredFeature(null)}
               >
-                <div className="text-2xl mb-2">{stat.icon}</div>
-                <div className="text-xl font-bold text-phosphor">{stat.value}</div>
-                <div className="text-xs text-text-ghost">{stat.label}</div>
-              </div>
-            ))}
-          </motion.div>
+                <motion.div
+                  className="relative p-12 md:p-16 bg-surface-1/30 border border-border-subtle overflow-hidden"
+                  animate={{
+                    backgroundColor: isActive || isHovered 
+                      ? `${feature.color}08` 
+                      : "rgba(255,255,255,0.02)",
+                    borderColor: isActive 
+                      ? `${feature.color}40` 
+                      : isHovered 
+                        ? `${feature.color}20` 
+                        : "rgba(255,255,255,0.05)",
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {/* Icon - large */}
+                  <div 
+                    className="w-24 h-24 md:w-32 md:h-32 mb-12"
+                    style={{ color: feature.color }}
+                  >
+                    <Icon active={isActive || isHovered} />
+                  </div>
+
+                  {/* Text content */}
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-2xl md:text-3xl font-light text-text-bright mb-1">
+                        {feature.name}
+                      </h3>
+                      <p 
+                        className="text-xs font-mono tracking-wider"
+                        style={{ color: feature.color }}
+                      >
+                        {feature.subtitle}
+                      </p>
+                    </div>
+
+                    {/* Description - shows on active */}
+                    <AnimatePresence>
+                      {(isActive || isHovered) && (
+                        <motion.p
+                          className="text-text-body text-sm leading-relaxed max-w-md"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {feature.description}
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Metrics - bottom right */}
+                  <div className="absolute bottom-12 right-12 md:bottom-16 md:right-16 flex gap-8">
+                    {feature.metrics.map((metric, i) => (
+                      <div key={i} className="text-right">
+                        <div 
+                          className="text-2xl md:text-3xl font-light"
+                          style={{ color: isActive || isHovered ? feature.color : "rgba(255,255,255,0.4)" }}
+                        >
+                          {metric.value}
+                        </div>
+                        <div className="text-[10px] text-text-ghost uppercase tracking-wider">
+                          {metric.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Corner accent */}
+                  <motion.div
+                    className="absolute top-0 right-0 w-20 h-20"
+                    style={{
+                      background: `linear-gradient(135deg, transparent 50%, ${feature.color}10 50%)`,
+                    }}
+                    animate={{ opacity: isActive || isHovered ? 1 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Bottom line */}
+        <motion.div
+          className="mt-32 flex items-center justify-between text-text-ghost"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.6 }}
+        >
+          <p className="text-xs font-mono tracking-wider">
+            SHA-256 · Ed25519 · WORM
+          </p>
+          <div className="flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-emerald-500/60" />
+            <span className="text-xs font-mono">Production Ready</span>
+          </div>
         </motion.div>
       </div>
     </section>

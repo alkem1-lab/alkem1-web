@@ -3,6 +3,78 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 
+// Custom SVG Icons for Flywheel
+const FlywheelIcons = {
+  spice: ({ color, size = 28 }: { color: string; size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <circle cx="12" cy="12" r="3" fill={color} fillOpacity="0.3" />
+      <path d="M12 2v4M12 18v4M2 12h4M18 12h4" strokeLinecap="round" />
+      <path d="M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="8" strokeDasharray="4 2" />
+    </svg>
+  ),
+  memory: ({ color, size = 28 }: { color: string; size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <rect x="4" y="4" width="16" height="16" rx="2" fill={color} fillOpacity="0.15" />
+      <path d="M4 9h16M9 4v16" />
+      <circle cx="6.5" cy="6.5" r="1" fill={color} />
+      <circle cx="6.5" cy="12" r="1" fill={color} />
+      <circle cx="6.5" cy="17.5" r="1" fill={color} />
+      <path d="M12 12h6M12 16h4" strokeLinecap="round" />
+    </svg>
+  ),
+  arena: ({ color, size = 28 }: { color: string; size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="5" fill={color} fillOpacity="0.2" />
+      <circle cx="12" cy="12" r="2" fill={color} />
+      <path d="M12 3v2M12 19v2M3 12h2M19 12h2" strokeLinecap="round" />
+    </svg>
+  ),
+  factory: ({ color, size = 28 }: { color: string; size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <motion.g
+        animate={{ rotate: 360 }}
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        style={{ transformOrigin: "12px 12px" }}
+      >
+        <circle cx="12" cy="12" r="6" fill={color} fillOpacity="0.15" />
+        <path d="M12 6v2M12 16v2M6 12h2M16 12h2M7.76 7.76l1.41 1.41M14.83 14.83l1.41 1.41M7.76 16.24l1.41-1.41M14.83 9.17l1.41-1.41" strokeLinecap="round" />
+      </motion.g>
+      <circle cx="12" cy="12" r="2" fill={color} />
+    </svg>
+  ),
+  forge: ({ color, size = 28 }: { color: string; size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M12 2L2 7l10 5 10-5-10-5z" fill={color} fillOpacity="0.2" />
+      <path d="M2 17l10 5 10-5" />
+      <path d="M2 12l10 5 10-5" />
+      <motion.path
+        d="M12 12v10"
+        strokeDasharray="2 2"
+        animate={{ strokeDashoffset: [0, -8] }}
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+      />
+    </svg>
+  ),
+  flywheel: ({ size = 40 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <motion.g
+        animate={{ rotate: 360 }}
+        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        style={{ transformOrigin: "12px 12px" }}
+      >
+        <circle cx="12" cy="12" r="10" stroke="#6ee7b7" strokeWidth="1" strokeDasharray="4 2" />
+        <path d="M12 4a8 8 0 0 1 8 8" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" />
+        <path d="M20 12a8 8 0 0 1-8 8" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" />
+        <path d="M12 20a8 8 0 0 1-8-8" stroke="#f97316" strokeWidth="2" strokeLinecap="round" />
+        <path d="M4 12a8 8 0 0 1 8-8" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" />
+      </motion.g>
+      <circle cx="12" cy="12" r="3" fill="#6ee7b7" fillOpacity="0.3" stroke="#6ee7b7" strokeWidth="1" />
+    </svg>
+  ),
+};
+
 const flywheelStages = [
   {
     id: "spice",
@@ -10,7 +82,7 @@ const flywheelStages = [
     role: "Brain",
     description: "Generiše zadatke i rešava ih sa 8 paralelnih glava (Hydra). Sniper bira najkraće + najtačnije rešenje.",
     color: "#a78bfa", // neural-2
-    icon: "⚡",
+    Icon: FlywheelIcons.spice,
     metrics: ["8 parallel heads", "Sniper selection", "Judge Dredd verification"],
   },
   {
@@ -19,7 +91,7 @@ const flywheelStages = [
     role: "Store",
     description: "Vector baza (PostgreSQL + pgvector) čuva najbolja rešenja. Semantic search vraća relevantno znanje.",
     color: "#6ee7b7", // phosphor
-    icon: "📦",
+    Icon: FlywheelIcons.memory,
     metrics: ["Vector embeddings", "Semantic search", "Knowledge retention"],
   },
   {
@@ -28,7 +100,7 @@ const flywheelStages = [
     role: "Judge",
     description: "Testira model na novim zadacima. Quality gate - samo proverena rešenja idu dalje.",
     color: "#818cf8", // neural-1
-    icon: "🎯",
+    Icon: FlywheelIcons.arena,
     metrics: ["Automated testing", "Quality gate", "Regression suite"],
   },
   {
@@ -37,7 +109,7 @@ const flywheelStages = [
     role: "Refine",
     description: "Priprema podatke za trening. Habituation sprečava duplikate. Annoyance Score penalizuje over-engineering.",
     color: "#f97316", // ember
-    icon: "⚙️",
+    Icon: FlywheelIcons.factory,
     metrics: ["Deduplication", "Data refinement", "Smart export"],
   },
   {
@@ -46,7 +118,7 @@ const flywheelStages = [
     role: "Train",
     description: "LoRA fine-tuning na prečišćenim podacima. Novi model se vraća u SPICE - krug je zatvoren.",
     color: "#ef4444", // crimson
-    icon: "🔨",
+    Icon: FlywheelIcons.forge,
     metrics: ["LoRA training", "Model evolution", "Feedback loop"],
   },
 ];
@@ -146,9 +218,9 @@ export function DataFlywheel() {
                   }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <div className="text-center">
-                    <div className="text-3xl mb-1">🔄</div>
-                    <div className="text-xs font-mono text-phosphor">FLYWHEEL</div>
+                  <div className="text-center flex flex-col items-center">
+                    <FlywheelIcons.flywheel size={48} />
+                    <div className="text-[10px] font-mono text-phosphor mt-1">FLYWHEEL</div>
                   </div>
                 </motion.div>
               </div>
@@ -196,9 +268,11 @@ export function DataFlywheel() {
                         boxShadow: `0 0 30px ${stage.color}60`,
                       } : {}}
                     >
-                      <span className="text-2xl mb-1">{stage.icon}</span>
+                      <div className="mb-1">
+                        <stage.Icon color={stage.color} size={isActive ? 32 : 28} />
+                      </div>
                       <span 
-                        className="text-xs font-mono font-bold"
+                        className="text-[10px] font-mono font-bold uppercase tracking-wider"
                         style={{ color: stage.color }}
                       >
                         {stage.name}
@@ -251,13 +325,16 @@ export function DataFlywheel() {
             >
               <div className="mb-4">
                 <span 
-                  className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-mono"
+                  className="inline-flex items-center gap-3 px-4 py-2 rounded-full text-sm font-mono"
                   style={{ 
                     backgroundColor: `${flywheelStages[activeStage].color}20`,
                     color: flywheelStages[activeStage].color,
                   }}
                 >
-                  <span className="text-lg">{flywheelStages[activeStage].icon}</span>
+                  {(() => {
+                    const ActiveIcon = flywheelStages[activeStage].Icon;
+                    return <ActiveIcon color={flywheelStages[activeStage].color} size={20} />;
+                  })()}
                   Step {activeStage + 1} of {flywheelStages.length}
                 </span>
               </div>

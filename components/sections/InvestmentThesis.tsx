@@ -3,10 +3,84 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 
+// Custom SVG Icons
+const Icons = {
+  moat: ({ color }: { color: string }) => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M3 21h18M4 21V10l8-6 8 6v11M9 21v-6h6v6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12 4v2M7 10h10" strokeLinecap="round" />
+      <circle cx="12" cy="14" r="1.5" fill={color} />
+    </svg>
+  ),
+  market: ({ color }: { color: string }) => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M3 20l4-4 4 2 4-6 6-4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M17 8l4-4m0 0v4m0-4h-4" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="7" cy="16" r="1.5" fill={color} />
+      <circle cx="11" cy="14" r="1.5" fill={color} />
+      <circle cx="15" cy="10" r="1.5" fill={color} />
+    </svg>
+  ),
+  speed: ({ color }: { color: string }) => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 3" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12 3v1M21 12h-1M12 21v-1M3 12h1" strokeLinecap="round" />
+    </svg>
+  ),
+  loop: ({ color }: { color: string }) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M17 2l4 4-4 4M7 22l-4-4 4-4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M21 6H8a4 4 0 0 0-4 4v1M3 18h13a4 4 0 0 0 4-4v-1" strokeLinecap="round" />
+    </svg>
+  ),
+  proof: ({ color }: { color: string }) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
+      <path d="M14 2v6h6M9 15l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  timer: ({ color }: { color: string }) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <circle cx="12" cy="13" r="8" />
+      <path d="M12 9v4l2 2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9 2h6M12 2v3" strokeLinecap="round" />
+    </svg>
+  ),
+  shield: ({ color }: { color: string }) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M12 2l8 4v6c0 5.5-3.8 10.7-8 12-4.2-1.3-8-6.5-8-12V6l8-4z" />
+      <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  watchdog: ({ color }: { color: string }) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8v4M12 16h.01" strokeLinecap="round" />
+      <path d="M8.5 8.5L6 6M15.5 8.5L18 6" strokeLinecap="round" />
+    </svg>
+  ),
+  target: ({ color }: { color: string }) => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" fill={color} />
+    </svg>
+  ),
+  cta: ({ color }: { color: string }) => (
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" fill={color} />
+      <path d="M12 2v2M22 12h-2M12 22v-2M2 12h2" strokeLinecap="round" />
+    </svg>
+  ),
+};
+
 const thesisPoints = [
   {
     id: "moat",
-    icon: "🏰",
+    Icon: Icons.moat,
     title: "Defensible Moat",
     tagline: "Not a GPT wrapper",
     color: "#a78bfa",
@@ -33,7 +107,7 @@ const thesisPoints = [
   },
   {
     id: "market",
-    icon: "📈",
+    Icon: Icons.market,
     title: "Market Timing",
     tagline: "Regulation creates opportunity",
     color: "#6ee7b7",
@@ -60,7 +134,7 @@ const thesisPoints = [
   },
   {
     id: "team",
-    icon: "⚡",
+    Icon: Icons.speed,
     title: "Execution Speed",
     tagline: "Battle-tested infrastructure",
     color: "#f97316",
@@ -88,12 +162,12 @@ const thesisPoints = [
 ];
 
 const comparisons = [
-  { us: "Self-improving", them: "Static models", icon: "🔄" },
-  { us: "Verifiable proofs", them: "Trust us", icon: "📜" },
-  { us: "Sub-100ms kill switch", them: "Manual shutdown", icon: "⏱️" },
-  { us: "Compliance-native", them: "Retrofitting", icon: "✅" },
-  { us: "Watchdog + DEFCON", them: "Silent degradation", icon: "🐕" },
-  { us: "76.5% Determinism", them: "Non-reproducible", icon: "🎯" },
+  { us: "Self-improving", them: "Static models", Icon: Icons.loop },
+  { us: "Verifiable proofs", them: "Trust us", Icon: Icons.proof },
+  { us: "Sub-100ms kill switch", them: "Manual shutdown", Icon: Icons.timer },
+  { us: "Compliance-native", them: "Retrofitting", Icon: Icons.shield },
+  { us: "Watchdog + DEFCON", them: "Silent degradation", Icon: Icons.watchdog },
+  { us: "76.5% Determinism", them: "Non-reproducible", Icon: Icons.target },
 ];
 
 export function InvestmentThesis() {
@@ -188,10 +262,10 @@ export function InvestmentThesis() {
                     {/* Icon and title */}
                     <div className="flex items-start gap-4 mb-6">
                       <div 
-                        className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl"
+                        className="w-14 h-14 rounded-xl flex items-center justify-center"
                         style={{ backgroundColor: `${point.color}20` }}
                       >
-                        {point.icon}
+                        <point.Icon color={point.color} />
                       </div>
                       <div>
                         <h3 className="text-xl font-bold text-text-bright">
@@ -284,8 +358,10 @@ export function InvestmentThesis() {
                       transition={{ delay: 0.5 + index * 0.1 }}
                     >
                       <td className="p-4 text-text-body">
-                        <span className="mr-3">{row.icon}</span>
-                        {row.us}
+                        <span className="inline-flex items-center gap-3">
+                          <row.Icon color="#6ee7b7" />
+                          {row.us}
+                        </span>
                       </td>
                       <td className="p-4 text-center">
                         <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-phosphor/20 text-phosphor">
@@ -308,7 +384,9 @@ export function InvestmentThesis() {
             variants={itemVariants}
           >
             <div className="inline-block p-8 rounded-2xl bg-gradient-to-br from-surface-1 to-surface-2 border border-phosphor/30">
-              <div className="text-4xl mb-4">🎯</div>
+              <div className="mb-4 flex justify-center">
+                <Icons.cta color="#6ee7b7" />
+              </div>
               <h3 className="text-2xl font-bold text-text-bright mb-2">
                 Ready to Discuss?
               </h3>

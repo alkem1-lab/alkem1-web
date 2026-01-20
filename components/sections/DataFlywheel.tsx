@@ -199,44 +199,145 @@ export function DataFlywheel() {
             className="relative flex flex-col lg:flex-row items-center gap-12 lg:gap-20"
             variants={itemVariants}
           >
-            {/* Flywheel circle */}
+            {/* Universe/Solar System Flywheel */}
             <div 
               className="relative w-[400px] h-[400px] lg:w-[500px] lg:h-[500px]"
               onMouseEnter={() => setIsAnimating(false)}
               onMouseLeave={() => setIsAnimating(true)}
             >
-              {/* Center hub */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+              {/* Background stars */}
+              <div className="absolute inset-0 overflow-hidden rounded-full">
+                {[...Array(30)].map((_, i) => (
+                  <motion.div
+                    key={`star-${i}`}
+                    className="absolute w-1 h-1 bg-white rounded-full"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      opacity: 0.3 + Math.random() * 0.5,
+                    }}
+                    animate={{
+                      opacity: [0.2, 0.8, 0.2],
+                      scale: [1, 1.5, 1],
+                    }}
+                    transition={{
+                      duration: 2 + Math.random() * 3,
+                      repeat: Infinity,
+                      delay: Math.random() * 2,
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Orbital rings */}
+              <motion.div
+                className="absolute inset-[15%] rounded-full border border-white/10"
+                style={{ borderStyle: "dashed" }}
+              />
+              <motion.div
+                className="absolute inset-[5%] rounded-full border border-white/5"
+              />
+              <motion.div
+                className="absolute inset-[-5%] rounded-full border border-white/5"
+              />
+
+              {/* Comet trails */}
+              {[...Array(3)].map((_, i) => (
                 <motion.div
-                  className="w-32 h-32 rounded-full bg-surface-2 border-2 border-phosphor/50 flex items-center justify-center"
+                  key={`comet-${i}`}
+                  className="absolute top-1/2 left-1/2 pointer-events-none"
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 15 + i * 5,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                >
+                  <motion.div
+                    className="absolute"
+                    style={{
+                      left: 140 + i * 30,
+                      top: -2,
+                    }}
+                  >
+                    {/* Comet head */}
+                    <div 
+                      className="w-2 h-2 rounded-full"
+                      style={{ 
+                        backgroundColor: flywheelStages[i % flywheelStages.length].color,
+                        boxShadow: `0 0 8px ${flywheelStages[i % flywheelStages.length].color}`,
+                      }}
+                    />
+                    {/* Comet tail */}
+                    <div 
+                      className="absolute top-0.5 right-2 w-12 h-1 rounded-full"
+                      style={{
+                        background: `linear-gradient(to left, transparent, ${flywheelStages[i % flywheelStages.length].color}60)`,
+                      }}
+                    />
+                  </motion.div>
+                </motion.div>
+              ))}
+
+              {/* Central Sun (Flywheel Hub) */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                {/* Sun corona/glow layers */}
+                <motion.div
+                  className="absolute -inset-8 rounded-full opacity-20"
+                  style={{
+                    background: `radial-gradient(circle, ${flywheelStages[activeStage].color} 0%, transparent 70%)`,
+                  }}
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.2, 0.3, 0.2],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                />
+                <motion.div
+                  className="absolute -inset-4 rounded-full opacity-30"
+                  style={{
+                    background: `radial-gradient(circle, ${flywheelStages[activeStage].color} 0%, transparent 70%)`,
+                  }}
+                  animate={{
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                
+                {/* Sun core */}
+                <motion.div
+                  className="w-28 h-28 rounded-full flex items-center justify-center relative overflow-hidden"
+                  style={{
+                    background: `radial-gradient(circle at 30% 30%, ${flywheelStages[activeStage].color}40 0%, #1a1a2e 100%)`,
+                    border: `2px solid ${flywheelStages[activeStage].color}60`,
+                  }}
                   animate={{
                     boxShadow: [
-                      `0 0 30px ${flywheelStages[activeStage].color}40`,
-                      `0 0 50px ${flywheelStages[activeStage].color}60`,
-                      `0 0 30px ${flywheelStages[activeStage].color}40`,
+                      `0 0 40px ${flywheelStages[activeStage].color}40, inset 0 0 30px ${flywheelStages[activeStage].color}20`,
+                      `0 0 60px ${flywheelStages[activeStage].color}60, inset 0 0 40px ${flywheelStages[activeStage].color}30`,
+                      `0 0 40px ${flywheelStages[activeStage].color}40, inset 0 0 30px ${flywheelStages[activeStage].color}20`,
                     ],
                   }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <div className="text-center flex flex-col items-center">
-                    <FlywheelIcons.flywheel size={48} />
-                    <div className="text-[10px] font-mono text-phosphor mt-1">FLYWHEEL</div>
+                  {/* Inner rotating pattern */}
+                  <motion.div
+                    className="absolute inset-2 rounded-full border border-white/10"
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  />
+                  <div className="text-center flex flex-col items-center z-10">
+                    <FlywheelIcons.flywheel size={40} />
+                    <div className="text-[9px] font-mono text-white/80 mt-0.5 tracking-wider">CORE</div>
                   </div>
                 </motion.div>
               </div>
 
-              {/* Rotating outer ring */}
-              <motion.div
-                className="absolute inset-0 rounded-full border border-border-subtle"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-              />
-
-              {/* Stage nodes */}
+              {/* Planet nodes (stages) */}
               {flywheelStages.map((stage, index) => {
                 const angle = (index * 360) / flywheelStages.length - 90;
                 const radian = (angle * Math.PI) / 180;
-                const radius = 180; // Distance from center (responsive for lg: 220)
+                const radius = 170;
                 const x = Math.cos(radian) * radius;
                 const y = Math.sin(radian) * radius;
                 const isActive = activeStage === index;
@@ -244,39 +345,81 @@ export function DataFlywheel() {
                 return (
                   <motion.div
                     key={stage.id}
-                    className="absolute top-1/2 left-1/2 cursor-pointer"
+                    className="absolute top-1/2 left-1/2 cursor-pointer z-20"
                     style={{
-                      x: x - 40,
-                      y: y - 40,
+                      x: x - 36,
+                      y: y - 36,
                     }}
-                    whileHover={{ scale: 1.1 }}
+                    whileHover={{ scale: 1.15 }}
                     onClick={() => {
                       setActiveStage(index);
                       setIsAnimating(false);
                     }}
                   >
-                    <motion.div
-                      className={`
-                        w-20 h-20 rounded-xl flex flex-col items-center justify-center
-                        border-2 transition-all duration-300
-                        ${isActive 
-                          ? "bg-surface-2 border-phosphor scale-110" 
-                          : "bg-surface-1 border-border-subtle hover:border-phosphor/50"
-                        }
-                      `}
-                      animate={isActive ? {
-                        boxShadow: `0 0 30px ${stage.color}60`,
-                      } : {}}
-                    >
-                      <div className="mb-1">
-                        <stage.Icon color={stage.color} size={isActive ? 32 : 28} />
-                      </div>
-                      <span 
-                        className="text-[10px] font-mono font-bold uppercase tracking-wider"
-                        style={{ color: stage.color }}
+                    {/* Planet ring (for active) */}
+                    {isActive && (
+                      <motion.div
+                        className="absolute -inset-3 rounded-full border"
+                        style={{ 
+                          borderColor: `${stage.color}40`,
+                          transform: "rotateX(60deg)",
+                        }}
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                      />
+                    )}
+                    
+                    {/* Moon (small orbiting dot for active) */}
+                    {isActive && (
+                      <motion.div
+                        className="absolute top-1/2 left-1/2"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                       >
-                        {stage.name}
-                      </span>
+                        <div 
+                          className="absolute w-2 h-2 rounded-full"
+                          style={{ 
+                            left: 40,
+                            top: -4,
+                            backgroundColor: stage.color,
+                            boxShadow: `0 0 6px ${stage.color}`,
+                          }}
+                        />
+                      </motion.div>
+                    )}
+
+                    {/* Planet body */}
+                    <motion.div
+                      className="w-[72px] h-[72px] rounded-full flex flex-col items-center justify-center relative overflow-hidden"
+                      style={{
+                        background: isActive
+                          ? `radial-gradient(circle at 30% 30%, ${stage.color}60 0%, ${stage.color}20 50%, #0d0d1a 100%)`
+                          : `radial-gradient(circle at 30% 30%, ${stage.color}30 0%, #1a1a2e 70%)`,
+                        border: `2px solid ${isActive ? stage.color : `${stage.color}40`}`,
+                      }}
+                      animate={isActive ? {
+                        boxShadow: `0 0 30px ${stage.color}60, inset -5px -5px 20px rgba(0,0,0,0.5)`,
+                      } : {
+                        boxShadow: `inset -5px -5px 15px rgba(0,0,0,0.4)`,
+                      }}
+                    >
+                      {/* Surface texture lines */}
+                      <div 
+                        className="absolute inset-0 opacity-20"
+                        style={{
+                          background: `repeating-linear-gradient(0deg, transparent, transparent 8px, ${stage.color}20 8px, ${stage.color}20 9px)`,
+                        }}
+                      />
+                      
+                      <div className="relative z-10 flex flex-col items-center">
+                        <stage.Icon color={isActive ? "#fff" : stage.color} size={isActive ? 28 : 24} />
+                        <span 
+                          className="text-[8px] font-mono font-bold uppercase tracking-wider mt-0.5"
+                          style={{ color: isActive ? "#fff" : stage.color }}
+                        >
+                          {stage.name}
+                        </span>
+                      </div>
                     </motion.div>
                   </motion.div>
                 );

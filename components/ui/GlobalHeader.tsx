@@ -22,6 +22,7 @@ const solutionsLinks: Array<{ href: string; label: string; sub?: boolean }> = [
 const moreLinks = [
   { href: "/proof", label: "Proof" },
   { href: "/architecture", label: "Architecture" },
+  { href: "/innovation", label: "Innovation" },
   { href: "/about", label: "About" },
   { href: "/investors", label: "Investors", highlight: true },
 ];

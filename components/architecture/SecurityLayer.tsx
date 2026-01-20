@@ -186,42 +186,80 @@ export function SecurityLayer() {
             </div>
 
             {/* Category Tabs */}
-            <div className="grid grid-cols-2 md:grid-cols-4 border-b border-border-subtle">
-              {toolCategories.map((category) => (
-                <button
-                  key={category.name}
-                  onClick={() => setExpandedCategory(
-                    expandedCategory === category.name ? null : category.name
-                  )}
-                  className={`
-                    p-4 text-left transition-all border-r border-border-subtle last:border-r-0
-                    ${expandedCategory === category.name 
-                      ? 'bg-surface-1/50' 
-                      : 'hover:bg-surface-1/30'
-                    }
-                  `}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xl">{category.icon}</span>
-                    <span 
-                      className="text-xs font-mono"
-                      style={{ color: category.color }}
-                    >
-                      {category.tools.length}
-                    </span>
-                  </div>
-                  <div className="text-sm text-text-bright font-medium">{category.name}</div>
-                  <div className="text-[10px] text-text-ghost mt-1 line-clamp-2">
-                    {category.description}
-                  </div>
-                  <div 
-                    className="mt-2 text-[10px] font-mono flex items-center gap-1"
-                    style={{ color: category.color }}
+            <div className="grid grid-cols-2 md:grid-cols-4">
+              {toolCategories.map((category) => {
+                const isExpanded = expandedCategory === category.name;
+                return (
+                  <button
+                    key={category.name}
+                    onClick={() => setExpandedCategory(
+                      isExpanded ? null : category.name
+                    )}
+                    className="relative p-4 text-left transition-all border-r border-b border-border-subtle last:border-r-0 group"
+                    style={{
+                      backgroundColor: isExpanded ? `${category.color}15` : undefined,
+                    }}
                   >
-                    {expandedCategory === category.name ? '▼ Collapse' : '▶ Expand'}
-                  </div>
-                </button>
-              ))}
+                    {/* Active indicator - left border */}
+                    {isExpanded && (
+                      <div 
+                        className="absolute left-0 top-0 bottom-0 w-1"
+                        style={{ backgroundColor: category.color }}
+                      />
+                    )}
+                    
+                    {/* Hover overlay */}
+                    <div 
+                      className={`
+                        absolute inset-0 transition-opacity pointer-events-none
+                        ${isExpanded ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'}
+                      `}
+                      style={{ backgroundColor: `${category.color}08` }}
+                    />
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span 
+                          className={`text-xl transition-transform ${isExpanded ? 'scale-110' : 'group-hover:scale-105'}`}
+                        >
+                          {category.icon}
+                        </span>
+                        <span 
+                          className={`text-sm font-mono font-bold ${isExpanded ? '' : 'group-hover:brightness-125'}`}
+                          style={{ color: category.color }}
+                        >
+                          {category.tools.length}
+                        </span>
+                      </div>
+                      <div 
+                        className={`text-sm font-medium transition-colors ${isExpanded ? '' : 'text-text-bright group-hover:text-white'}`}
+                        style={{ color: isExpanded ? category.color : undefined }}
+                      >
+                        {category.name}
+                      </div>
+                      <div className={`text-[10px] mt-1 line-clamp-2 transition-colors ${isExpanded ? 'text-text-body' : 'text-text-ghost'}`}>
+                        {category.description}
+                      </div>
+                      <div 
+                        className={`
+                          mt-3 text-[10px] font-mono flex items-center gap-1 
+                          px-2 py-1 rounded-md w-fit transition-all
+                          ${isExpanded 
+                            ? 'bg-white/10' 
+                            : 'bg-transparent group-hover:bg-white/5'
+                          }
+                        `}
+                        style={{ color: category.color }}
+                      >
+                        <span className={`transition-transform ${isExpanded ? 'rotate-0' : 'group-hover:translate-x-0.5'}`}>
+                          {isExpanded ? '▼' : '▶'}
+                        </span>
+                        <span>{isExpanded ? 'Collapse' : 'Expand'}</span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Expanded Tool Details */}

@@ -134,10 +134,10 @@ function InvestorHero() {
           variants={itemVariants}
         >
           {[
-            { icon: "🐕", text: "Watchdog Engine" },
-            { icon: "🔄", text: "Replay Lifecycle" },
-            { icon: "🛡️", text: "SBOM + CVE Gate" },
-            { icon: "✅", text: "Auditor 9.5/10" },
+            { icon: "👁️", text: "Watchdog Engine" },
+            { icon: "⏪", text: "Replay Lifecycle" },
+            { icon: "🔐", text: "SBOM + CVE Gate" },
+            { icon: "📊", text: "Auditor 9.5/10" },
           ].map((badge, i) => (
             <div
               key={i}
@@ -229,17 +229,17 @@ function ExecutiveSummary() {
                 {
                   problem: "Hallucinations",
                   solution: "Memory Service with verified knowledge",
-                  icon: "🧠",
+                  icon: "🎭",
                 },
                 {
                   problem: "No Control",
                   solution: "Sub-100ms Kill Switch + Circuit Breaker",
-                  icon: "🛑",
+                  icon: "⚡",
                 },
                 {
                   problem: "Black Box",
                   solution: "Cryptographic audit trail + Merkle proofs",
-                  icon: "📜",
+                  icon: "🔍",
                 },
               ].map((item, i) => (
                 <div key={i} className="p-4 rounded-xl bg-surface-1/50 border border-border-subtle">

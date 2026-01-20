@@ -10,7 +10,7 @@ const flywheelStages = [
     role: "Brain",
     description: "Generiše zadatke i rešava ih sa 8 paralelnih glava (Hydra). Sniper bira najkraće + najtačnije rešenje.",
     color: "#a78bfa", // neural-2
-    icon: "🧠",
+    icon: "⚡",
     metrics: ["8 parallel heads", "Sniper selection", "Judge Dredd verification"],
   },
   {
@@ -19,7 +19,7 @@ const flywheelStages = [
     role: "Store",
     description: "Vector baza (PostgreSQL + pgvector) čuva najbolja rešenja. Semantic search vraća relevantno znanje.",
     color: "#6ee7b7", // phosphor
-    icon: "💾",
+    icon: "📦",
     metrics: ["Vector embeddings", "Semantic search", "Knowledge retention"],
   },
   {
@@ -28,7 +28,7 @@ const flywheelStages = [
     role: "Judge",
     description: "Testira model na novim zadacima. Quality gate - samo proverena rešenja idu dalje.",
     color: "#818cf8", // neural-1
-    icon: "⚔️",
+    icon: "🎯",
     metrics: ["Automated testing", "Quality gate", "Regression suite"],
   },
   {
@@ -37,7 +37,7 @@ const flywheelStages = [
     role: "Refine",
     description: "Priprema podatke za trening. Habituation sprečava duplikate. Annoyance Score penalizuje over-engineering.",
     color: "#f97316", // ember
-    icon: "🏭",
+    icon: "⚙️",
     metrics: ["Deduplication", "Data refinement", "Smart export"],
   },
   {
@@ -46,7 +46,7 @@ const flywheelStages = [
     role: "Train",
     description: "LoRA fine-tuning na prečišćenim podacima. Novi model se vraća u SPICE - krug je zatvoren.",
     color: "#ef4444", // crimson
-    icon: "🔥",
+    icon: "🔨",
     metrics: ["LoRA training", "Model evolution", "Feedback loop"],
   },
 ];
@@ -147,7 +147,7 @@ export function DataFlywheel() {
                   transition={{ duration: 2, repeat: Infinity }}
                 >
                   <div className="text-center">
-                    <div className="text-3xl mb-1">♾️</div>
+                    <div className="text-3xl mb-1">🔄</div>
                     <div className="text-xs font-mono text-phosphor">FLYWHEEL</div>
                   </div>
                 </motion.div>

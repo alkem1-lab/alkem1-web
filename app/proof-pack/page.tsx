@@ -202,7 +202,7 @@ export default function ProofPackPage() {
       {/* Footer */}
       <footer className="mt-12 pt-6 border-t border-gray-200 text-center text-sm text-gray-500">
         <p>© 2026 ALKEM1. All rights reserved.</p>
-        <p className="mt-1">www.alkem1.com | "We don't sell AI. We sell control over AI."</p>
+        <p className="mt-1">www.alkem1.com | "We don't just build AI. We deliver control over AI."</p>
       </footer>
 
       {/* No-print button to go back */}

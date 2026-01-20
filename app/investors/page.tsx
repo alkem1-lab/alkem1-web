@@ -285,9 +285,8 @@ function ExecutiveSummary() {
 
             <div className="pt-4 border-t border-border-subtle">
               <p className="text-sm text-text-ghost italic">
-                &quot;We don&apos;t just sell AI. We sell <span className="text-phosphor">control over AI</span>. 
-                That&apos;s what enterprises need. That&apos;s what regulators demand. 
-                That&apos;s what Google wants to buy.&quot;
+                &quot;We don&apos;t just build AI. We deliver <span className="text-phosphor">control over AI</span>. 
+                That&apos;s what enterprises need. That&apos;s what regulators demand.&quot;
               </p>
             </div>
           </div>

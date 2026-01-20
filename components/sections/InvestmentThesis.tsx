@@ -313,9 +313,7 @@ export function InvestmentThesis() {
                 Ready to Discuss?
               </h3>
               <p className="text-text-body mb-6 max-w-md">
-                We don&apos;t just sell AI. We sell control over AI.
-                <br />
-                <span className="text-phosphor">That&apos;s what Google wants to buy.</span>
+                We don&apos;t just build AI. We deliver <span className="text-phosphor">control over AI</span>.
               </p>
               <button className="px-8 py-3 rounded-lg bg-phosphor text-void font-semibold hover:bg-phosphor-bright transition-colors">
                 Request Technical Deep Dive

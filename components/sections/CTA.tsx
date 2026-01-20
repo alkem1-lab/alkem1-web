@@ -27,9 +27,9 @@ export function CTA() {
               className="font-display text-3xl md:text-4xl lg:text-5xl text-text-bright leading-tight"
               style={{ fontFamily: "var(--font-instrument-serif)" }}
             >
-              &ldquo;We don&apos;t sell AI.
+              &ldquo;We don&apos;t just build AI.
               <br />
-              <span className="text-phosphor">We sell control over AI.</span>&rdquo;
+              <span className="text-phosphor">We deliver control over AI.</span>&rdquo;
             </p>
           </blockquote>
 

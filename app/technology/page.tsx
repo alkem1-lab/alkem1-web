@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 // ═══════════════════════════════════════════════════════════════
 // CUSTOM SVG ICONS
@@ -656,18 +656,16 @@ function TierSection({
 // ═══════════════════════════════════════════════════════════════
 
 export default function TechnologyPage() {
-  const heroRef = useRef(null);
-  const isHeroInView = useInView(heroRef, { once: true });
   const [activeTier, setActiveTier] = useState<string | null>("tier1");
 
   return (
     <main className="min-h-screen bg-void pt-14">
       {/* Hero */}
-      <section ref={heroRef} className="relative py-32 md:py-48 px-6">
+      <section className="relative py-32 md:py-48 px-6">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
-            animate={isHeroInView ? { opacity: 1, y: 0 } : {}}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
             <p className="text-xs font-mono text-text-ghost tracking-[0.3em] uppercase mb-8">
@@ -704,10 +702,9 @@ export default function TechnologyPage() {
       <section className="py-24 px-6 bg-surface-1/20">
         <div className="max-w-5xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
             className="mb-12"
           >
             <p className="text-xs font-mono text-text-ghost tracking-[0.3em] uppercase mb-4">
@@ -723,18 +720,16 @@ export default function TechnologyPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
             >
               <StateMachineVisualizer />
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
             >
               <HashChainVisualizer />
             </motion.div>
@@ -746,10 +741,9 @@ export default function TechnologyPage() {
       <section className="py-24 px-6">
         <div className="max-w-5xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
             className="mb-16"
           >
             <p className="text-xs font-mono text-text-ghost tracking-[0.3em] uppercase mb-4">
@@ -767,10 +761,9 @@ export default function TechnologyPage() {
             {tiers.map((tier, i) => (
               <motion.div
                 key={tier.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.7 + i * 0.1 }}
               >
                 <TierSection
                   tier={tier}
@@ -787,10 +780,9 @@ export default function TechnologyPage() {
       <section className="py-24 px-6 bg-surface-1/20">
         <div className="max-w-3xl mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.2 }}
           >
             <p className="text-6xl mb-8">🏆</p>
             <h2 

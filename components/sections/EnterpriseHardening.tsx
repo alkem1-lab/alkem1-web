@@ -363,7 +363,7 @@ export function EnterpriseHardening() {
                 onMouseLeave={() => setHoveredFeature(null)}
               >
                 <motion.div
-                  className="relative p-12 md:p-16 bg-surface-1/30 border border-border-subtle overflow-hidden"
+                  className="relative p-8 md:p-12 bg-surface-1/30 border border-border-subtle overflow-hidden min-h-[320px] md:min-h-[380px] flex flex-col"
                   animate={{
                     backgroundColor: isActive || isHovered 
                       ? `${feature.color}08` 
@@ -376,64 +376,61 @@ export function EnterpriseHardening() {
                   }}
                   transition={{ duration: 0.3 }}
                 >
-                  {/* Icon - large */}
-                  <div 
-                    className="w-24 h-24 md:w-32 md:h-32 mb-12"
-                    style={{ color: feature.color }}
-                  >
-                    <Icon active={isActive || isHovered} />
+                  {/* Top row: Icon + Metrics */}
+                  <div className="flex items-start justify-between mb-6">
+                    {/* Icon */}
+                    <div 
+                      className="w-16 h-16 md:w-20 md:h-20"
+                      style={{ color: feature.color }}
+                    >
+                      <Icon active={isActive || isHovered} />
+                    </div>
+                    
+                    {/* Metrics - top right */}
+                    <div className="flex gap-6">
+                      {feature.metrics.map((metric, i) => (
+                        <div key={i} className="text-right">
+                          <div 
+                            className="text-xl md:text-2xl font-light"
+                            style={{ color: isActive || isHovered ? feature.color : "rgba(255,255,255,0.4)" }}
+                          >
+                            {metric.value}
+                          </div>
+                          <div className="text-[9px] text-text-ghost uppercase tracking-wider">
+                            {metric.label}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Text content */}
-                  <div className="space-y-4">
+                  {/* Text content - grows to fill space */}
+                  <div className="flex-1 flex flex-col justify-end">
                     <div>
-                      <h3 className="text-2xl md:text-3xl font-light text-text-bright mb-1">
+                      <h3 className="text-xl md:text-2xl font-light text-text-bright mb-1">
                         {feature.name}
                       </h3>
                       <p 
-                        className="text-xs font-mono tracking-wider"
+                        className="text-xs font-mono tracking-wider mb-3"
                         style={{ color: feature.color }}
                       >
                         {feature.subtitle}
                       </p>
                     </div>
 
-                    {/* Description - shows on active */}
-                    <AnimatePresence>
-                      {(isActive || isHovered) && (
-                        <motion.p
-                          className="text-text-body text-sm leading-relaxed max-w-md"
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {feature.description}
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Metrics - bottom right */}
-                  <div className="absolute bottom-12 right-12 md:bottom-16 md:right-16 flex gap-8">
-                    {feature.metrics.map((metric, i) => (
-                      <div key={i} className="text-right">
-                        <div 
-                          className="text-2xl md:text-3xl font-light"
-                          style={{ color: isActive || isHovered ? feature.color : "rgba(255,255,255,0.4)" }}
-                        >
-                          {metric.value}
-                        </div>
-                        <div className="text-[10px] text-text-ghost uppercase tracking-wider">
-                          {metric.label}
-                        </div>
-                      </div>
-                    ))}
+                    {/* Description - always visible but muted when not active */}
+                    <p
+                      className={`text-sm leading-relaxed transition-colors duration-300 ${
+                        isActive || isHovered ? 'text-text-body' : 'text-text-ghost/60'
+                      }`}
+                    >
+                      {feature.description}
+                    </p>
                   </div>
 
                   {/* Corner accent */}
                   <motion.div
-                    className="absolute top-0 right-0 w-20 h-20"
+                    className="absolute top-0 right-0 w-16 h-16"
                     style={{
                       background: `linear-gradient(135deg, transparent 50%, ${feature.color}10 50%)`,
                     }}

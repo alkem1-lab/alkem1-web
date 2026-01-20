@@ -57,20 +57,20 @@ const FlywheelIcons = {
       />
     </svg>
   ),
-  flywheel: ({ size = 40 }: { size?: number }) => (
+  flywheel: ({ size = 40, color }: { size?: number; color?: string }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <motion.g
         animate={{ rotate: 360 }}
         transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
         style={{ transformOrigin: "12px 12px" }}
       >
-        <circle cx="12" cy="12" r="10" stroke="#6ee7b7" strokeWidth="1" strokeDasharray="4 2" />
-        <path d="M12 4a8 8 0 0 1 8 8" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" />
-        <path d="M20 12a8 8 0 0 1-8 8" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" />
-        <path d="M12 20a8 8 0 0 1-8-8" stroke="#f97316" strokeWidth="2" strokeLinecap="round" />
-        <path d="M4 12a8 8 0 0 1 8-8" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="12" cy="12" r="10" stroke={color || "#6ee7b7"} strokeWidth="1" strokeDasharray="4 2" opacity={0.5} />
+        <path d="M12 4a8 8 0 0 1 8 8" stroke={color || "#a78bfa"} strokeWidth="2" strokeLinecap="round" />
+        <path d="M20 12a8 8 0 0 1-8 8" stroke={color || "#818cf8"} strokeWidth="2" strokeLinecap="round" />
+        <path d="M12 20a8 8 0 0 1-8-8" stroke={color || "#f97316"} strokeWidth="2" strokeLinecap="round" />
+        <path d="M4 12a8 8 0 0 1 8-8" stroke={color || "#ef4444"} strokeWidth="2" strokeLinecap="round" />
       </motion.g>
-      <circle cx="12" cy="12" r="3" fill="#6ee7b7" fillOpacity="0.3" stroke="#6ee7b7" strokeWidth="1" />
+      <circle cx="12" cy="12" r="3" fill={color || "#6ee7b7"} fillOpacity="0.3" stroke={color || "#6ee7b7"} strokeWidth="1" />
     </svg>
   ),
 };
@@ -279,56 +279,46 @@ export function DataFlywheel() {
                 </motion.div>
               ))}
 
-              {/* Central Sun (Flywheel Hub) */}
+              {/* Central Sun (Flywheel Hub) - Neutral Gray */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                {/* Sun corona/glow layers */}
+                {/* Subtle corona/glow - neutral */}
                 <motion.div
-                  className="absolute -inset-8 rounded-full opacity-20"
+                  className="absolute -inset-6 rounded-full opacity-15"
                   style={{
-                    background: `radial-gradient(circle, ${flywheelStages[activeStage].color} 0%, transparent 70%)`,
+                    background: "radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)",
                   }}
                   animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.2, 0.3, 0.2],
+                    scale: [1, 1.15, 1],
+                    opacity: [0.1, 0.2, 0.1],
                   }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
-                <motion.div
-                  className="absolute -inset-4 rounded-full opacity-30"
-                  style={{
-                    background: `radial-gradient(circle, ${flywheelStages[activeStage].color} 0%, transparent 70%)`,
-                  }}
-                  animate={{
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={{ duration: 4, repeat: Infinity }}
                 />
                 
-                {/* Sun core */}
+                {/* Core - neutral gray/silver */}
                 <motion.div
-                  className="w-28 h-28 rounded-full flex items-center justify-center relative overflow-hidden"
+                  className="w-24 h-24 rounded-full flex items-center justify-center relative overflow-hidden"
                   style={{
-                    background: `radial-gradient(circle at 30% 30%, ${flywheelStages[activeStage].color}40 0%, #1a1a2e 100%)`,
-                    border: `2px solid ${flywheelStages[activeStage].color}60`,
+                    background: "radial-gradient(circle at 30% 30%, rgba(150,150,160,0.3) 0%, #1a1a2e 100%)",
+                    border: "2px solid rgba(150,150,160,0.4)",
                   }}
                   animate={{
                     boxShadow: [
-                      `0 0 40px ${flywheelStages[activeStage].color}40, inset 0 0 30px ${flywheelStages[activeStage].color}20`,
-                      `0 0 60px ${flywheelStages[activeStage].color}60, inset 0 0 40px ${flywheelStages[activeStage].color}30`,
-                      `0 0 40px ${flywheelStages[activeStage].color}40, inset 0 0 30px ${flywheelStages[activeStage].color}20`,
+                      "0 0 30px rgba(150,150,160,0.2), inset 0 0 20px rgba(150,150,160,0.1)",
+                      "0 0 40px rgba(150,150,160,0.3), inset 0 0 25px rgba(150,150,160,0.15)",
+                      "0 0 30px rgba(150,150,160,0.2), inset 0 0 20px rgba(150,150,160,0.1)",
                     ],
                   }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={{ duration: 3, repeat: Infinity }}
                 >
                   {/* Inner rotating pattern */}
                   <motion.div
-                    className="absolute inset-2 rounded-full border border-white/10"
+                    className="absolute inset-2 rounded-full border border-white/5"
                     animate={{ rotate: -360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
                   />
                   <div className="text-center flex flex-col items-center z-10">
-                    <FlywheelIcons.flywheel size={40} />
-                    <div className="text-[9px] font-mono text-white/80 mt-0.5 tracking-wider">CORE</div>
+                    <FlywheelIcons.flywheel size={36} color="#9ca3af" />
+                    <div className="text-[8px] font-mono text-white/50 mt-0.5 tracking-wider">CORE</div>
                   </div>
                 </motion.div>
               </div>

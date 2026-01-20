@@ -776,37 +776,136 @@ export default function TechnologyPage() {
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="py-24 px-6 bg-surface-1/20">
-        <div className="max-w-3xl mx-auto text-center">
+      {/* SPICE Deep Dive */}
+      <section className="py-32 px-6 bg-surface-1/20">
+        <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.2 }}
           >
-            <p className="text-6xl mb-8">🏆</p>
+            <p className="text-xs font-mono text-text-ghost tracking-[0.3em] uppercase mb-4">
+              Core Algorithm
+            </p>
             <h2 
-              className="text-3xl md:text-4xl text-text-bright mb-6"
+              className="text-3xl md:text-5xl text-text-bright mb-6"
               style={{ fontFamily: "var(--font-instrument-serif)" }}
             >
-              Auditor Score: 9.5/10
+              SPICE: Self-Play Intelligence
             </h2>
-            <p className="text-text-body mb-8">
-              21 Auditor Decisions. All accepted. 
-              Mathematical proofs where possible, protocols where not.
+            <p className="text-text-body text-lg mb-12 max-w-2xl">
+              Based on Meta&apos;s SPICE paper (Nov 2025). The system learns 24/7 
+              without human supervision by playing against itself.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a 
-                href="/investors"
-                className="px-8 py-3 bg-phosphor text-void font-mono text-sm rounded-lg hover:bg-phosphor/90 transition-colors"
-              >
-                Investor Deck →
-              </a>
+
+            {/* SPICE Flow */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+              {[
+                {
+                  step: "1",
+                  name: "Challenger",
+                  role: "The Teacher",
+                  desc: "Scans codebase, generates questions, adapts difficulty based on success rate.",
+                  detail: "Target: ~70% success rate (optimal learning zone)",
+                  color: "#6ee7b7",
+                },
+                {
+                  step: "2",
+                  name: "Reasoner",
+                  role: "The Student",
+                  desc: "8 parallel solvers (Hydra). Shortest valid code wins (Sniper principle).",
+                  detail: "Multi-step reasoning with AST-based quality scoring",
+                  color: "#818cf8",
+                },
+                {
+                  step: "3",
+                  name: "Judge Dredd",
+                  role: "The Verifier",
+                  desc: "Executes code in sandbox. No 'trust me' — actual execution verification.",
+                  detail: "Security filter blocks os, sys, subprocess, pickle...",
+                  color: "#ef4444",
+                },
+              ].map((item) => (
+                <div 
+                  key={item.step}
+                  className="p-6 rounded-xl bg-surface-1/50 border border-border-subtle"
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div 
+                      className="w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold"
+                      style={{ backgroundColor: `${item.color}20`, color: item.color }}
+                    >
+                      {item.step}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-text-bright">{item.name}</div>
+                      <div className="text-xs text-text-ghost">{item.role}</div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-text-body mb-3">{item.desc}</p>
+                  <p className="text-xs font-mono text-text-ghost">{item.detail}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Key Innovations */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+              {[
+                { name: "Hydra", value: "8", unit: "parallel solvers" },
+                { name: "Circuit Breaker", value: "3", unit: "state FSM" },
+                { name: "Failure Classes", value: "4", unit: "taxonomy" },
+                { name: "Budget Modes", value: "5", unit: "degradation levels" },
+              ].map((stat, i) => (
+                <div key={i} className="p-4 rounded-xl bg-surface-1/30 border border-border-subtle text-center">
+                  <div className="text-2xl font-light text-phosphor">{stat.value}</div>
+                  <div className="text-xs text-text-ghost">{stat.unit}</div>
+                  <div className="text-sm text-text-body mt-1">{stat.name}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Code Example */}
+            <div className="p-6 rounded-xl bg-void border border-border-subtle">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-3 h-3 rounded-full bg-red-500/60" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
+                <div className="w-3 h-3 rounded-full bg-green-500/60" />
+                <span className="text-xs font-mono text-text-ghost ml-2">iteration_loop.py</span>
+              </div>
+              <pre className="text-sm font-mono text-text-body overflow-x-auto">
+{`async def run_iteration(self):
+    # 1. Challenger generates question
+    challenge = await self.challenger.generate()
+    
+    # 2. Reasoner solves (8 heads compete)
+    solutions = await self.reasoner.solve(challenge, heads=8)
+    best = min(solutions, key=lambda s: s.sniper_score)
+    
+    # 3. Judge Dredd executes and verifies
+    result = await self.judge_dredd.verify(best.code)
+    
+    # 4. Classify & persist
+    if result.success:
+        await self.memory.store(challenge, best)
+        self.difficulty += 0.1 * (1 - self.success_rate)
+    else:
+        self.difficulty -= 0.05`}
+              </pre>
+            </div>
+
+            {/* CTA */}
+            <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-4">
               <a 
                 href="/playground"
+                className="px-8 py-3 bg-phosphor text-void font-mono text-sm rounded-lg hover:bg-phosphor/90 transition-colors"
+              >
+                Try Playground →
+              </a>
+              <a 
+                href="/architecture"
                 className="px-8 py-3 bg-surface-2 text-text-body font-mono text-sm rounded-lg hover:bg-surface-1 transition-colors border border-border-subtle"
               >
-                Try Playground
+                System Architecture
               </a>
             </div>
           </motion.div>
@@ -816,8 +915,8 @@ export default function TechnologyPage() {
       {/* Footer note */}
       <div className="py-12 px-6 border-t border-border-subtle">
         <div className="max-w-5xl mx-auto flex items-center justify-between text-text-ghost text-xs font-mono">
-          <span>Session 58 | Constitutional Document</span>
-          <span>SHA-256 · Ed25519 · WORM · Q.E.D.</span>
+          <span>Based on Meta SPICE Paper (Nov 2025)</span>
+          <span>Challenger · Reasoner · Judge Dredd</span>
         </div>
       </div>
     </main>

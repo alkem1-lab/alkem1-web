@@ -109,7 +109,7 @@ const toolCategories = [
 export function SecurityLayer() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>("Vulnerability Scanners");
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
 
   const totalTools = toolCategories.reduce((sum, cat) => sum + cat.tools.length, 0);

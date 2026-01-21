@@ -12,6 +12,12 @@ import {
   EnterpriseHardening,
   Pillars,
   CTA,
+  // Session 59 innovations
+  ZeroTrust,
+  SSOTGuardian,
+  WatchdogDEFCON,
+  REMPhase,
+  CanaryTokens,
 } from "../../components";
 
 function InvestorHero() {
@@ -314,16 +320,31 @@ export default function InvestorsPage() {
         {/* 4. Enterprise Hardening - Security Deep Dive */}
         <EnterpriseHardening />
 
-        {/* 5. Auditor Score - Quantified Maturity */}
+        {/* 5. Zero Trust - 4-layer security (Session 59) */}
+        <ZeroTrust />
+
+        {/* 6. SSOT Guardian - Crown Jewel Innovation */}
+        <SSOTGuardian />
+
+        {/* 7. Watchdog DEFCON - System Health */}
+        <WatchdogDEFCON />
+
+        {/* 8. Auditor Score - Quantified Maturity */}
         <AuditorScore />
 
-        {/* 6. Three Pillars - Brief technical overview */}
+        {/* 9. REM Phase - AI Sleep Optimization */}
+        <REMPhase />
+
+        {/* 10. Canary Tokens - Honeypot Defense */}
+        <CanaryTokens />
+
+        {/* 11. Three Pillars - Brief technical overview */}
         <Pillars />
 
-        {/* 7. Investment Thesis */}
+        {/* 12. Investment Thesis */}
         <InvestmentThesis />
 
-        {/* 8. CTA */}
+        {/* 13. CTA */}
         <CTA />
       </main>
     </LenisProvider>

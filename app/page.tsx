@@ -15,6 +15,12 @@ import {
   MathProof,
   Joker,
   CTA,
+  // Session 59 innovations
+  ZeroTrust,
+  REMPhase,
+  CanaryTokens,
+  SSOTGuardian,
+  WatchdogDEFCON,
 } from "../components";
 
 export default function Home() {
@@ -56,7 +62,24 @@ export default function Home() {
         {/* 11. Joker - Adversarial testing */}
         <Joker />
 
-        {/* 12. CTA - Request Audit + Proof Pack */}
+        {/* === SESSION 59 INNOVATIONS === */}
+        
+        {/* 12. Zero Trust - 4-layer security stack */}
+        <ZeroTrust />
+
+        {/* 13. SSOT Guardian - Crown Jewel: Deploy without blind spots */}
+        <SSOTGuardian />
+
+        {/* 14. Watchdog DEFCON - System health monitoring */}
+        <WatchdogDEFCON />
+
+        {/* 15. REM Phase - AI that sleeps and optimizes */}
+        <REMPhase />
+
+        {/* 16. Canary Tokens - Honeypot sentinels */}
+        <CanaryTokens />
+
+        {/* 17. CTA - Request Audit + Proof Pack */}
         <CTA />
       </main>
     </LenisProvider>

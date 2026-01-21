@@ -27,6 +27,13 @@ export { AuditorScore } from "./sections/AuditorScore";
 export { InvestmentThesis } from "./sections/InvestmentThesis";
 export { EnterpriseHardening } from "./sections/EnterpriseHardening";
 
+// Session 59 Innovation sections
+export { ZeroTrust } from "./sections/ZeroTrust";
+export { REMPhase } from "./sections/REMPhase";
+export { CanaryTokens } from "./sections/CanaryTokens";
+export { SSOTGuardian } from "./sections/SSOTGuardian";
+export { WatchdogDEFCON } from "./sections/WatchdogDEFCON";
+
 // Proof page components
 export { ProofHeader, EvidenceChain, TamperDemo, QEDCertificate } from "./proof";
 

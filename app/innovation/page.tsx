@@ -172,6 +172,40 @@ const tiers = [
       },
     ],
   },
+  {
+    id: "tier6",
+    level: "TIER 6",
+    name: "Biological Optimization",
+    subtitle: "Session 59 Innovations",
+    color: "#818cf8", // neural
+    icon: "🧬",
+    innovations: [
+      {
+        id: "rem-phase",
+        name: "REM Phase - Nocturnal Optimization",
+        theorem: "AI koji 'spava' i optimizuje memoriju noću.",
+        proof: "Biological Pattern",
+        formula: "decay_score = Σ(access_i × e^(-λ × (t_now - t_i)))",
+        files: ["Memory pruning", "Conflict resolution", "Usage decay", "Dream simulation"],
+      },
+      {
+        id: "canary-tokens",
+        name: "Canary Tokens - Honeypot Sentinels",
+        theorem: "Strategički mamci u bazi znanja hvataju napadače.",
+        proof: "Court Valid Evidence",
+        formula: "Trigger → Capture → Escalate → Forensic Report",
+        files: ["memory/canary/", "Honeypot Data", "Tripwire Facts", "Semantic Landmines"],
+      },
+      {
+        id: "ssot-guardian",
+        name: "SSOT Two-Phase Guardian",
+        theorem: "Deploy bez 'slepe mrlje' - kontinuirana zaštita.",
+        proof: "Q.E.D. ∎",
+        formula: "STATE = { RUN: H(S)=M, READ_ONLY: H(S)≠M ∧ Verify(T), LOCKDOWN: else }",
+        files: ["xck/security/ssot_guardian.py"],
+      },
+    ],
+  },
 ];
 
 const scorecard = [
@@ -188,6 +222,10 @@ const scorecard = [
   { name: "Knowledge Gap Loop", mathProof: "partial", courtValid: false, novel: true, complexity: "Quality Gate" },
   { name: "Zero Trust Stack", mathProof: "partial", courtValid: true, novel: "partial", complexity: "Security" },
   { name: "Joker Agent", mathProof: false, courtValid: false, novel: true, complexity: "Adversarial AI" },
+  // Session 59 additions
+  { name: "REM Phase", mathProof: "partial", courtValid: false, novel: true, complexity: "Memory Optimization" },
+  { name: "Canary Tokens", mathProof: "partial", courtValid: true, novel: true, complexity: "Intrusion Detection" },
+  { name: "SSOT Guardian", mathProof: true, courtValid: true, novel: true, complexity: "Deploy Security" },
 ];
 
 // ============================================================================
@@ -437,13 +475,13 @@ export default function InnovationPage() {
             {/* Stats */}
             <div className="flex items-center justify-center gap-8 mt-12">
               <div className="text-center">
-                <div className="text-3xl font-mono text-text-bright">13</div>
+                <div className="text-3xl font-mono text-text-bright">16</div>
                 <div className="text-xs text-text-ghost uppercase tracking-wider">Innovations</div>
               </div>
               <div className="w-px h-10 bg-border-subtle" />
               <div className="text-center">
-                <div className="text-3xl font-mono text-text-bright">5</div>
-                <div className="text-xs text-text-ghost uppercase tracking-wider">Layers</div>
+                <div className="text-3xl font-mono text-text-bright">6</div>
+                <div className="text-xs text-text-ghost uppercase tracking-wider">Tiers</div>
               </div>
               <div className="w-px h-10 bg-border-subtle" />
               <div className="text-center">
@@ -864,7 +902,7 @@ export default function InnovationPage() {
         <section className="py-12 px-6 border-t border-border-subtle">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-sm text-text-ghost font-mono">
-              Generated: 2026-01-19 | Session 58 | ALKEM1-LAB2
+              Generated: 2026-01-21 | Session 59 | ALKEM1-LAB2
             </p>
             <p className="text-xs text-text-ghost mt-2">
               Author: VALKYRIE | Status: Constitutional Reference Document

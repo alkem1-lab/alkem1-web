@@ -104,12 +104,12 @@ export function WatchdogDEFCON() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const [currentLevel, setCurrentLevel] = useState(5);
-  const [checks, setChecks] = useState([
-    { name: "Redis Rate Limiter", status: "ok" as const },
-    { name: "Time Integrity (NTP)", status: "ok" as const },
-    { name: "Health/Ready Consistency", status: "ok" as const },
-    { name: "WebSocket Connection", status: "ok" as const },
-    { name: "Evidence Chain", status: "ok" as const },
+  const [checks, setChecks] = useState<Array<{ name: string; status: "ok" | "warn" | "fail" }>>([
+    { name: "Redis Rate Limiter", status: "ok" },
+    { name: "Time Integrity (NTP)", status: "ok" },
+    { name: "Health/Ready Consistency", status: "ok" },
+    { name: "WebSocket Connection", status: "ok" },
+    { name: "Evidence Chain", status: "ok" },
   ]);
 
   // Simulate health degradation
@@ -136,11 +136,11 @@ export function WatchdogDEFCON() {
     setTimeout(() => {
       setCurrentLevel(5);
       setChecks([
-        { name: "Redis Rate Limiter", status: "ok" },
-        { name: "Time Integrity (NTP)", status: "ok" },
-        { name: "Health/Ready Consistency", status: "ok" },
-        { name: "WebSocket Connection", status: "ok" },
-        { name: "Evidence Chain", status: "ok" },
+        { name: "Redis Rate Limiter", status: "ok" as const },
+        { name: "Time Integrity (NTP)", status: "ok" as const },
+        { name: "Health/Ready Consistency", status: "ok" as const },
+        { name: "WebSocket Connection", status: "ok" as const },
+        { name: "Evidence Chain", status: "ok" as const },
       ]);
     }, 7000);
   };

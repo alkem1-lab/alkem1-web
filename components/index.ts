@@ -42,3 +42,18 @@ export { ArchitectureHeader, LayerDiagram, DataFlow, SecurityLayer } from "./arc
 
 // About page components
 export { AboutHeader, AboutBody, AboutPractice } from "./about";
+
+// Story page components
+export {
+  StoryJourney,
+  StoryPrologue,
+  StoryChapter1,
+  StoryChapter2,
+  StoryChapter3,
+  StoryChapter4,
+  StoryChapter5,
+  StoryChapter6,
+  StoryChapter7,
+  StoryChapter8,
+  StoryEpilogue,
+} from "./story";

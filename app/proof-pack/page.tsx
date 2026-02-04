@@ -20,7 +20,9 @@ export default function ProofPackPage() {
   return (
     <div className="min-h-screen bg-white text-black p-8 print:p-4">
       {/* Print styles */}
-      <style jsx global>{`
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @media print {
           body { background: white !important; }
           .no-print { display: none !important; }
@@ -29,7 +31,9 @@ export default function ProofPackPage() {
           size: A4;
           margin: 1.5cm;
         }
-      `}</style>
+      `,
+        }}
+      />
 
       {/* Header */}
       <header className="border-b-2 border-black pb-6 mb-8">

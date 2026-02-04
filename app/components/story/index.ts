@@ -8,4 +8,5 @@ export { StoryChapter5 } from "./StoryChapter5";
 export { StoryChapter6 } from "./StoryChapter6";
 export { StoryChapter7 } from "./StoryChapter7";
 export { StoryChapter8 } from "./StoryChapter8";
+export { StoryChapter9 } from "./StoryChapter9";
 export { StoryEpilogue } from "./StoryEpilogue";

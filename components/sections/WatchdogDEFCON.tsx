@@ -320,7 +320,7 @@ export function WatchdogDEFCON() {
           >
             <div className="inline-block p-6 rounded-xl bg-surface-1/80 border border-border-subtle">
               <p className="text-text-body">
-                <span className="text-ember font-medium">&quot;Backend ne sme tiho da degradira.&quot;</span>
+                <span className="text-ember font-medium">&quot;Backend must not silently degrade.&quot;</span>
                 <br />
                 <span className="text-text-ghost text-sm">
                   — Auditor Rule #7: Silent failures are the worst failures.

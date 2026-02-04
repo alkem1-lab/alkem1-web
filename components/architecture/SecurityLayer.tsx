@@ -334,9 +334,9 @@ export function SecurityLayer() {
                     <span>{cat.icon}</span>
                     <span style={{ color: cat.color }} className="font-mono">{cat.tools.length}</span>
                     <span>{cat.name.split(' ')[0]}</span>
-                  </div>
-                ))}
-              </div>
+                </div>
+              ))}
+            </div>
             </div>
           </motion.div>
 

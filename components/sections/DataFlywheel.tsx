@@ -80,7 +80,7 @@ const flywheelStages = [
     id: "spice",
     name: "SPICE",
     role: "Brain",
-    description: "Generiše zadatke i rešava ih sa 8 paralelnih glava (Hydra). Sniper bira najkraće + najtačnije rešenje.",
+    description: "Generates challenges and solves them with 8 parallel heads (Hydra). Sniper picks the shortest and most accurate solution.",
     color: "#a78bfa", // neural-2
     Icon: FlywheelIcons.spice,
     metrics: ["8 parallel heads", "Sniper selection", "Judge Dredd verification"],
@@ -89,7 +89,7 @@ const flywheelStages = [
     id: "memory",
     name: "Memory",
     role: "Store",
-    description: "Vector baza (PostgreSQL + pgvector) čuva najbolja rešenja. Semantic search vraća relevantno znanje.",
+    description: "Vector store (PostgreSQL + pgvector) keeps the best solutions. Semantic search returns relevant knowledge.",
     color: "#6ee7b7", // phosphor
     Icon: FlywheelIcons.memory,
     metrics: ["Vector embeddings", "Semantic search", "Knowledge retention"],
@@ -98,7 +98,7 @@ const flywheelStages = [
     id: "arena",
     name: "Arena",
     role: "Judge",
-    description: "Testira model na novim zadacima. Quality gate - samo proverena rešenja idu dalje.",
+    description: "Tests the model on new tasks. Quality gate—only verified solutions move forward.",
     color: "#818cf8", // neural-1
     Icon: FlywheelIcons.arena,
     metrics: ["Automated testing", "Quality gate", "Regression suite"],
@@ -107,7 +107,7 @@ const flywheelStages = [
     id: "factory",
     name: "Factory",
     role: "Refine",
-    description: "Priprema podatke za trening. Habituation sprečava duplikate. Annoyance Score penalizuje over-engineering.",
+    description: "Prepares data for training. Habituation prevents duplicates. Annoyance Score penalizes over-engineering.",
     color: "#f97316", // ember
     Icon: FlywheelIcons.factory,
     metrics: ["Deduplication", "Data refinement", "Smart export"],
@@ -116,7 +116,7 @@ const flywheelStages = [
     id: "forge",
     name: "Forge",
     role: "Train",
-    description: "LoRA fine-tuning na prečišćenim podacima. Novi model se vraća u SPICE - krug je zatvoren.",
+    description: "LoRA fine-tuning on curated data. New model feeds back into SPICE—the loop is closed.",
     color: "#ef4444", // crimson
     Icon: FlywheelIcons.forge,
     metrics: ["LoRA training", "Model evolution", "Feedback loop"],
@@ -156,7 +156,7 @@ export function DataFlywheel() {
   };
 
   return (
-    <section ref={ref} className="relative py-32 px-6 overflow-hidden">
+    <section id="data-flywheel" ref={ref} className="relative py-32 px-6 overflow-hidden">
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none">
         <div
@@ -205,28 +205,35 @@ export function DataFlywheel() {
               onMouseEnter={() => setIsAnimating(false)}
               onMouseLeave={() => setIsAnimating(true)}
             >
-              {/* Background stars */}
+              {/* Background stars - deterministic positions to avoid hydration mismatch */}
               <div className="absolute inset-0 overflow-hidden rounded-full">
-                {[...Array(30)].map((_, i) => (
-                  <motion.div
-                    key={`star-${i}`}
-                    className="absolute w-1 h-1 bg-white rounded-full"
-                    style={{
-                      left: `${Math.random() * 100}%`,
-                      top: `${Math.random() * 100}%`,
-                      opacity: 0.3 + Math.random() * 0.5,
-                    }}
-                    animate={{
-                      opacity: [0.2, 0.8, 0.2],
-                      scale: [1, 1.5, 1],
-                    }}
-                    transition={{
-                      duration: 2 + Math.random() * 3,
-                      repeat: Infinity,
-                      delay: Math.random() * 2,
-                    }}
-                  />
-                ))}
+                {[...Array(30)].map((_, i) => {
+                  const left = (i * 7.3) % 100;
+                  const top = (i * 11.7) % 100;
+                  const opacity = 0.3 + (i % 5) * 0.1;
+                  const duration = 2 + (i % 3);
+                  const delay = (i % 10) / 5;
+                  return (
+                    <motion.div
+                      key={`star-${i}`}
+                      className="absolute w-1 h-1 bg-white rounded-full"
+                      style={{
+                        left: `${left}%`,
+                        top: `${top}%`,
+                        opacity,
+                      }}
+                      animate={{
+                        opacity: [0.2, 0.8, 0.2],
+                        scale: [1, 1.5, 1],
+                      }}
+                      transition={{
+                        duration,
+                        repeat: Infinity,
+                        delay,
+                      }}
+                    />
+                  );
+                })}
               </div>
 
               {/* Orbital rings */}

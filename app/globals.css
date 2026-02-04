@@ -1,0 +1,258 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GLASS BOX - Design System v1.0
+   Codename: NEURAL NOIR
+   Aesthetic: Cyberpunk Authority
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     BACKGROUNDS - Deep Space Depth
+     ───────────────────────────────────────────────────────────────────────── */
+  --void: #050508;
+  --surface-1: #0c0c12;
+  --surface-2: #141420;
+  --surface-3: #1c1c2c;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     PHOSPHOR - The Signature Color (Toxic Mint)
+     ───────────────────────────────────────────────────────────────────────── */
+  --phosphor: #6ee7b7;
+  --phosphor-bright: #a7f3d0;
+  --phosphor-dim: #34d399;
+  --phosphor-glow: rgba(110, 231, 183, 0.15);
+  --phosphor-border: rgba(110, 231, 183, 0.3);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     WARNING SPECTRUM
+     ───────────────────────────────────────────────────────────────────────── */
+  --ember: #f97316;
+  --ember-glow: rgba(249, 115, 22, 0.2);
+  --crimson: #ef4444;
+  --crimson-bright: #f87171;
+  --crimson-glow: rgba(239, 68, 68, 0.2);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     TEXT HIERARCHY
+     ───────────────────────────────────────────────────────────────────────── */
+  --text-bright: #f1f5f9;
+  --text-body: #94a3b8;
+  --text-ghost: #475569;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     NEURAL - AI/System Indicators
+     ───────────────────────────────────────────────────────────────────────── */
+  --neural-1: #818cf8;
+  --neural-2: #a78bfa;
+  --neural-glow: rgba(129, 140, 248, 0.15);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     BORDERS
+     ───────────────────────────────────────────────────────────────────────── */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-accent: var(--phosphor-border);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     TIMING
+     ───────────────────────────────────────────────────────────────────────── */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TAILWIND v4 THEME EXTENSION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@theme inline {
+  /* Colors */
+  --color-void: var(--void);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  --color-phosphor: var(--phosphor);
+  --color-phosphor-bright: var(--phosphor-bright);
+  --color-phosphor-dim: var(--phosphor-dim);
+
+  --color-ember: var(--ember);
+  --color-crimson: var(--crimson);
+  --color-crimson-bright: var(--crimson-bright);
+
+  --color-text-bright: var(--text-bright);
+  --color-text-body: var(--text-body);
+  --color-text-ghost: var(--text-ghost);
+
+  --color-neural-1: var(--neural-1);
+  --color-neural-2: var(--neural-2);
+
+  /* Fonts */
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), 'JetBrains Mono', monospace;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--void);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+/* Selection */
+::selection {
+  background: var(--phosphor);
+  color: var(--void);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--phosphor-dim);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Glow effects */
+.glow-phosphor {
+  box-shadow:
+    0 0 20px var(--phosphor-glow),
+    0 0 40px var(--phosphor-glow);
+}
+
+.glow-phosphor-intense {
+  box-shadow:
+    0 0 20px var(--phosphor-glow),
+    0 0 40px var(--phosphor-glow),
+    0 0 60px var(--phosphor-glow);
+}
+
+.glow-crimson {
+  box-shadow:
+    0 0 20px var(--crimson-glow),
+    0 0 40px var(--crimson-glow);
+}
+
+/* Text glow */
+.text-glow-phosphor {
+  text-shadow: 0 0 20px var(--phosphor-glow);
+}
+
+.text-glow-crimson {
+  text-shadow: 0 0 20px var(--crimson-glow);
+}
+
+/* Grid pattern */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(110, 231, 183, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(110, 231, 183, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--phosphor) 0%, var(--phosphor-bright) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: all 0.3s var(--ease-out-expo);
+}
+
+.card-hover:hover {
+  border-color: var(--phosphor-border);
+  box-shadow: 0 0 40px var(--phosphor-glow);
+  transform: translateY(-2px);
+}

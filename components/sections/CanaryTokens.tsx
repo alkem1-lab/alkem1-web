@@ -51,26 +51,32 @@ function TrapVisualization({ isTriggered }: { isTriggered: boolean }) {
         ))}
       </div>
 
-      {/* Data points (regular) */}
-      {[...Array(15)].map((_, i) => (
-        <motion.div
-          key={`data-${i}`}
-          className="absolute w-3 h-3 rounded-full bg-phosphor/50"
-          style={{
-            left: `${Math.random() * 80 + 10}%`,
-            top: `${Math.random() * 80 + 10}%`,
-          }}
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3],
-          }}
-          transition={{
-            duration: 2 + Math.random() * 2,
-            repeat: Infinity,
-            delay: Math.random(),
-          }}
-        />
-      ))}
+      {/* Data points (regular) - deterministic to avoid hydration mismatch */}
+      {[...Array(15)].map((_, i) => {
+        const left = (i * 5.33) % 80 + 10;
+        const top = (i * 7.11) % 80 + 10;
+        const duration = 2 + (i % 3) * 0.5;
+        const delay = (i % 7) / 7;
+        return (
+          <motion.div
+            key={`data-${i}`}
+            className="absolute w-3 h-3 rounded-full bg-phosphor/50"
+            style={{
+              left: `${left}%`,
+              top: `${top}%`,
+            }}
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.6, 0.3],
+            }}
+            transition={{
+              duration,
+              repeat: Infinity,
+              delay,
+            }}
+          />
+        );
+      })}
 
       {/* Canary tokens (traps) */}
       {[

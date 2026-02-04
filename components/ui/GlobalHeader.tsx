@@ -6,16 +6,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
 const navLinks = [
-  { href: "/", label: "Home" },
+  { href: "/home", label: "Home" },
   { href: "/technology", label: "Technology" },
   { href: "/playground", label: "Playground" },
 ];
 
 const solutionsLinks: Array<{ href: string; label: string; sub?: boolean }> = [
   { href: "/solutions/legal", label: "Legal Hydra" },
-  { href: "/solutions/legal/vault", label: "Legal Vault", sub: true },
   { href: "/solutions/medical", label: "Medical" },
-  { href: "/solutions/medical/vault", label: "Clinical Vault", sub: true },
   { href: "/solutions/private", label: "Private AI" },
 ];
 
@@ -140,10 +138,12 @@ export function GlobalHeader() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-void/80 backdrop-blur-md border-b border-border-subtle">
       <div className="mx-auto max-w-6xl px-6 h-14 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-full bg-phosphor/20 border border-phosphor/50 flex items-center justify-center group-hover:bg-phosphor/30 transition-colors">
-            <span className="text-phosphor font-mono text-xs font-bold">A1</span>
-          </div>
+        <Link href="/home" className="flex items-center gap-2 group">
+          <img
+            src="/logo.png"
+            alt="ALKEM1"
+            className="w-8 h-8 object-contain"
+          />
           <span className="text-sm font-mono text-text-bright tracking-wide hidden sm:block">
             ALKEM1
           </span>

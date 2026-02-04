@@ -11,6 +11,7 @@ import { StoryChapter5 } from "./StoryChapter5";
 import { StoryChapter6 } from "./StoryChapter6";
 import { StoryChapter7 } from "./StoryChapter7";
 import { StoryChapter8 } from "./StoryChapter8";
+import { StoryChapter9 } from "./StoryChapter9";
 import { StoryEpilogue } from "./StoryEpilogue";
 
 export function StoryJourney() {
@@ -42,6 +43,9 @@ export function StoryJourney() {
 
       {/* Chapter 8: The Complete Cycle (Memory → Factory → Arena → Forge + LoRA) */}
       <StoryChapter8 />
+
+      {/* Chapter 9: Court-Grade Determinism (Session 78 Innovations) */}
+      <StoryChapter9 />
 
       {/* Epilogue */}
       <StoryEpilogue />

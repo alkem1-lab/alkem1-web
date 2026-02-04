@@ -1,11 +1,39 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
+
+// Helper function to round to avoid hydration mismatches
+const round = (num: number, decimals: number = 2) => {
+  return Math.round(num * Math.pow(10, decimals)) / Math.pow(10, decimals);
+};
 
 export function StoryChapter4() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+
+  // Pre-calculate positions to avoid hydration mismatches
+  const networkData = useMemo(() => {
+    const connections = [...Array(6)].map((_, i) => {
+      const angle = (i / 6) * Math.PI * 2;
+      const radius = 80;
+      const x1 = 100;
+      const y1 = 100;
+      const x2 = round(100 + Math.cos(angle) * radius, 2);
+      const y2 = round(100 + Math.sin(angle) * radius, 2);
+      return { x1, y1, x2, y2 };
+    });
+
+    const nodes = [...Array(12)].map((_, i) => {
+      const angle = (i / 12) * Math.PI * 2;
+      const radius = 80;
+      const x = round(50 + Math.cos(angle) * (radius / 2.5), 2);
+      const y = round(50 + Math.sin(angle) * (radius / 2.5), 2);
+      return { x, y };
+    });
+
+    return { connections, nodes };
+  }, []);
 
   return (
     <section
@@ -115,50 +143,34 @@ export function StoryChapter4() {
               <div className="relative h-64">
                 <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200">
                   {/* Connection lines */}
-                  {[...Array(6)].map((_, i) => {
-                    const angle = (i / 6) * Math.PI * 2;
-                    const radius = 80;
-                    const x1 = 100;
-                    const y1 = 100;
-                    const x2 = 100 + Math.cos(angle) * radius;
-                    const y2 = 100 + Math.sin(angle) * radius;
-                    
-                    return (
-                      <motion.path
-                        key={i}
-                        d={`M ${x1} ${y1} L ${x2} ${y2}`}
-                        stroke="currentColor"
-                        strokeWidth="1"
-                        fill="none"
-                        className="text-phosphor/20"
-                        initial={{ pathLength: 0 }}
-                        animate={isInView ? { pathLength: 1 } : {}}
-                        transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
-                      />
-                    );
-                  })}
+                  {networkData.connections.map((conn, i) => (
+                    <motion.path
+                      key={i}
+                      d={`M ${conn.x1} ${conn.y1} L ${conn.x2} ${conn.y2}`}
+                      stroke="currentColor"
+                      strokeWidth="1"
+                      fill="none"
+                      className="text-phosphor/20"
+                      initial={{ pathLength: 0 }}
+                      animate={isInView ? { pathLength: 1 } : {}}
+                      transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
+                    />
+                  ))}
                 </svg>
                 
-                {[...Array(12)].map((_, i) => {
-                  const angle = (i / 12) * Math.PI * 2;
-                  const radius = 80;
-                  const x = 50 + Math.cos(angle) * (radius / 2.5);
-                  const y = 50 + Math.sin(angle) * (radius / 2.5);
-                  
-                  return (
-                    <motion.div
-                      key={i}
-                      className="absolute w-3 h-3 bg-phosphor rounded-full"
-                      style={{
-                        left: `${x}%`,
-                        top: `${y}%`,
-                      }}
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                      transition={{ delay: 0.3 + i * 0.05 }}
-                    />
-                  );
-                })}
+                {networkData.nodes.map((node, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-3 h-3 bg-phosphor rounded-full"
+                    style={{
+                      left: `${node.x}%`,
+                      top: `${node.y}%`,
+                    }}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                    transition={{ delay: 0.3 + i * 0.05 }}
+                  />
+                ))}
                 
                 {/* Center node */}
                 <motion.div

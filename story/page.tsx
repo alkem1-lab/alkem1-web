@@ -1,8 +1,8 @@
 "use client";
 
-import { LenisProvider } from "../../lib/lenis";
-import { GridBackground } from "../../components";
-import { StoryJourney } from "../../components/story/StoryJourney";
+import { LenisProvider } from "../lib/lenis";
+import { GridBackground } from "../components";
+import { StoryJourney } from "../components/story/StoryJourney";
 
 export default function StoryPage() {
   return (

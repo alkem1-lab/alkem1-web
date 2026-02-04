@@ -1,15 +1,4 @@
-/**
- * DEMO MODE SCENARIOS
- * SSOT for all demo presentations
- * 
- * Each scenario defines:
- * - Query + Filters (pre-configured)
- * - Workflow steps to run
- * - Expected outputs (for presenter)
- * - Proof moment (what to show)
- */
-
-export type DemoScenario = {
+export interface DemoScenario {
   id: string;
   label: string;
   vertical: "legal" | "private" | "medical";
@@ -18,290 +7,126 @@ export type DemoScenario = {
   filters: {
     jurisdiction?: string[];
     sourceTypes?: string[];
-    dateFrom?: string;
-    dateTo?: string;
-    statute?: { name: string; article?: string };
-    court?: string[];
-    hybridWeight?: number;
-    rerank?: boolean;
-    dedupe?: boolean;
     citeableOnly?: boolean;
-    requirePrimary?: boolean;
-    maxResults?: number;
   };
-  workflow: Array<
-    | "search"
-    | "pinTopSources"
-    | "generateIssues"
-    | "generateMemo"
-    | "generateCounterarguments"
-    | "review"
-    | "proofVerify"
-  >;
   expected: string[];
-  proof: {
-    route: string;
-    note: string;
-  };
+  proof: { route: string; note: string };
   directorLine: string;
-};
+  workflow: string[];
+}
 
 export const DEMO_SCENARIOS: DemoScenario[] = [
-  // ============================================
-  // LEGAL DEMO — "Court-Ready Memo in 60s"
-  // ============================================
   {
-    id: "legal-causation-001",
-    label: "Legal: Causation & Burden of Proof",
+    id: "legal-contract-review",
+    label: "Legal: Contract clause review",
     vertical: "legal",
-    description: "Court-ready memo with sources and proof in 60 seconds",
-    query: "uzročna veza teret dokazivanja naknada štete",
+    description: "Simulate retrieval of contract clauses with jurisdiction and citeability filters.",
+    query: "Show all indemnification clauses in executed NDAs from 2024",
     filters: {
-      jurisdiction: ["RS"],
-      sourceTypes: ["law", "case_law", "doctrine"],
-      rerank: true,
-      dedupe: true,
+      jurisdiction: ["EU", "US"],
+      sourceTypes: ["contract", "agreement"],
       citeableOnly: true,
-      requirePrimary: true,
-      hybridWeight: 0.7,
-      maxResults: 25,
     },
-    workflow: [
-      "search",
-      "pinTopSources",
-      "generateIssues",
-      "generateMemo",
-      "generateCounterarguments",
-      "review",
-      "proofVerify",
-    ],
     expected: [
-      "Facts: what we know + what's missing",
-      "Issues: 3-5 legal questions",
-      "Applicable Law: cited article + passage",
-      "Case law: 2 decisions with relevant passages",
-      "Analysis: argument + counterargument",
-      "Review: 1-3 flags (e.g., 'weak citation')",
+      "Clause list with document IDs",
+      "Hash-linked citations",
+      "Audit trail for each result",
     ],
     proof: {
       route: "/proof",
-      note: "Click Proof → Run verification. Show: Ledger entry ID, Certificate hash, VALID status.",
+      note: "Every returned clause is hash-anchored; tampering is detectable.",
     },
-    directorLine:
-      "Ne dobijate chat. Dobijate memo sa izvorima i dokazom kako je nastao.",
+    directorLine: "Counsel sees only what the vault attests to.",
+    workflow: ["Parse query", "Apply filters", "Retrieve from vault", "Attest results"],
   },
-
   {
-    id: "legal-contract-void",
-    label: "Legal: Contract Void (Material Terms)",
+    id: "legal-vault-search",
+    label: "Legal: Vault search (sim)",
     vertical: "legal",
-    description: "Analyze contract validity due to missing material terms",
-    query: "ugovor ništav bitni elementi posledice",
+    description: "Demo search over a simulated legal vault with proof moment.",
+    query: "Confidentiality obligations in M&A materials",
     filters: {
-      jurisdiction: ["RS"],
-      sourceTypes: ["law", "case_law"],
-      rerank: true,
-      dedupe: true,
+      jurisdiction: ["US"],
+      sourceTypes: ["memo", "email", "contract"],
       citeableOnly: true,
-      requirePrimary: true,
-      hybridWeight: 0.65,
-      maxResults: 20,
     },
-    workflow: [
-      "search",
-      "pinTopSources",
-      "generateIssues",
-      "generateMemo",
-      "review",
-      "proofVerify",
-    ],
     expected: [
-      "Clear definition of material terms from Civil Code",
-      "Relevant case law on contract void decisions",
-      "Structured legal issues",
-      "Memo with citations",
+      "Filtered document set",
+      "QED certificate link",
+      "Director line in UI",
+    ],
+    proof: {
+      route: "/solutions/legal/vault",
+      note: "Proof moment: attestation that results match sealed index.",
+    },
+    directorLine: "One source of truth; one proof moment.",
+    workflow: ["Load scenario", "Run filters", "Export proof", "View certificate"],
+  },
+  {
+    id: "medical-consent",
+    label: "Medical: Consent & access (sim)",
+    vertical: "medical",
+    description: "Simulate consent-scoped retrieval for a patient context.",
+    query: "Patient 12345 – consented records for cardiology only",
+    filters: {
+      sourceTypes: ["consent", "lab", "imaging"],
+      citeableOnly: false,
+    },
+    expected: [
+      "Consent-gated result set",
+      "Access log entry",
+      "No cross-specialty leakage",
+    ],
+    proof: {
+      route: "/solutions/medical/vault",
+      note: "Proof: access log and result set are hash-linked.",
+    },
+    directorLine: "Access follows consent; proof follows access.",
+    workflow: ["Resolve consent", "Apply scope", "Retrieve", "Log & attest"],
+  },
+  {
+    id: "medical-vault-demo",
+    label: "Medical: Vault demo",
+    vertical: "medical",
+    description: "Demo of medical vault with safety gates and attestation.",
+    query: "All records for episode ID EP-2024-001 within consent scope",
+    filters: {
+      sourceTypes: ["clinical_note", "lab", "rx"],
+      citeableOnly: true,
+    },
+    expected: [
+      "Episode-scoped results",
+      "Safety gate checks",
+      "Proof pack export",
     ],
     proof: {
       route: "/proof",
-      note: "Verify proof chain integrity.",
+      note: "Proof moment: vault seal matches retrieved set fingerprint.",
     },
-    directorLine:
-      "Svaki zaključak ima izvor. Ako nema izvora — nema zaključka.",
+    directorLine: "Safety gates and proof are non-optional.",
+    workflow: ["Load episode", "Check gates", "Retrieve", "Attest"],
   },
-
-  // ============================================
-  // PRIVATE AI DEMO — "Offline, No Data Leaves"
-  // ============================================
   {
-    id: "private-policy-001",
-    label: "Private: Internal Policy (Local-only)",
+    id: "private-data-request",
+    label: "Private: Data subject request (sim)",
     vertical: "private",
-    description: "Answer questions using only internal documents, no external calls",
-    query: "pravila za deljenje podataka sa trećim stranama",
+    description: "Simulate handling a data subject access request with proof.",
+    query: "All personal data for subject ref DS-789",
     filters: {
-      sourceTypes: ["internal"],
+      jurisdiction: ["GDPR"],
+      sourceTypes: ["profile", "activity", "export"],
       citeableOnly: true,
-      rerank: true,
-      dedupe: true,
-      hybridWeight: 0.6,
-      maxResults: 20,
     },
-    workflow: ["search", "pinTopSources", "generateMemo", "proofVerify"],
     expected: [
-      "Answer only from internal docs",
-      "3 relevant passages from internal policy",
-      "Summary in 5 bullets",
-      "What you must NOT do (1 bullet)",
-      "Provenance shown per passage",
-      "Ledger proof that no external calls were made",
+      "Unified export package",
+      "Deletion/retention proof",
+      "Timeline attestation",
     ],
     proof: {
       route: "/proof",
-      note: "Show provenance (doc → chunk → retrieval) + proof entry. Highlight 'Local inference' badge.",
+      note: "Proof: export manifest is signed; timeline is immutable.",
     },
-    directorLine:
-      "Sve radi lokalno. Ako nema izvora u vašim dokumentima — sistem neće izmišljati.",
-  },
-
-  {
-    id: "private-nda-review",
-    label: "Private: NDA Template Review",
-    vertical: "private",
-    description: "Compare NDA template against internal compliance requirements",
-    query: "NDA klauzule zaštita poverljivih informacija rok trajanja",
-    filters: {
-      sourceTypes: ["internal"],
-      citeableOnly: true,
-      rerank: true,
-      dedupe: true,
-      hybridWeight: 0.5,
-      maxResults: 15,
-    },
-    workflow: ["search", "pinTopSources", "generateMemo", "proofVerify"],
-    expected: [
-      "Key NDA clauses identified",
-      "Comparison with internal standards",
-      "Gaps highlighted",
-    ],
-    proof: {
-      route: "/proof",
-      note: "Verify all sources are internal.",
-    },
-    directorLine:
-      "Interni dokumenti, interni odgovori. Nikad ne napušta vaš perimetar.",
-  },
-
-  // ============================================
-  // MEDICAL DEMO — "Guideline-Bound Decision Support"
-  // ============================================
-  {
-    id: "medical-guideline-001",
-    label: "Medical: Guideline-Bound Suggestions",
-    vertical: "medical",
-    description: "Clinical decision support bound to official guidelines",
-    query: "antibiotik odrasli febrilnost trajanje terapije smernice",
-    filters: {
-      sourceTypes: ["guideline"],
-      requirePrimary: true,
-      rerank: true,
-      dedupe: true,
-      citeableOnly: true,
-      hybridWeight: 0.75,
-      maxResults: 20,
-    },
-    workflow: [
-      "search",
-      "pinTopSources",
-      "generateMemo",
-      "review",
-      "proofVerify",
-    ],
-    expected: [
-      "Guideline-backed suggestions (3 options)",
-      "When to escalate / refer (2 bullets)",
-      "Contraindications / warnings (2 bullets)",
-      "Citations from guideline passages",
-      "Safety flags for high-risk areas",
-    ],
-    proof: {
-      route: "/proof",
-      note: "Open Review tab to show safety flags, then verify proof.",
-    },
-    directorLine:
-      "Sistem je vezan za smernice. Ne daje 'pametne' odgovore bez izvora — i sve ostaje auditovano.",
-  },
-
-  {
-    id: "medical-protocol-check",
-    label: "Medical: Protocol Compliance Check",
-    vertical: "medical",
-    description: "Verify procedure against hospital protocols",
-    query: "preoperativna priprema pacijenta protokol",
-    filters: {
-      sourceTypes: ["guideline", "protocol"],
-      requirePrimary: true,
-      rerank: true,
-      dedupe: true,
-      citeableOnly: true,
-      hybridWeight: 0.7,
-      maxResults: 15,
-    },
-    workflow: ["search", "pinTopSources", "generateMemo", "review", "proofVerify"],
-    expected: [
-      "Step-by-step protocol from official sources",
-      "Safety flags if procedure deviates",
-      "Clear citations to protocol sections",
-    ],
-    proof: {
-      route: "/proof",
-      note: "Review flags + proof verification.",
-    },
-    directorLine:
-      "Decision support, ne dijagnoza. Sve vezano za protokole, sve auditovano.",
-  },
-
-  // ============================================
-  // MEDICAL TRIAGE DEMO (Bulletproof for presentations)
-  // ============================================
-  {
-    id: "medical-triage-001",
-    label: "Medical: Guideline-Bound Triage (Review Gate)",
-    vertical: "medical",
-    description: "30-60s demo: every suggestion has citation, high-risk flagged, proof link",
-    query: "adult fever tachycardia hypotension when to escalate sepsis screen",
-    filters: {
-      sourceTypes: ["guideline"],
-      requirePrimary: true,
-      rerank: true,
-      dedupe: true,
-      citeableOnly: true,
-      hybridWeight: 0.75,
-      maxResults: 10,
-    },
-    workflow: ["search", "pinTopSources", "generateMemo", "review", "proofVerify"],
-    expected: [
-      "3 guideline-cited suggestions",
-      "HIGH-RISK flag → human review required",
-      "Safety Gate visible with rule ID",
-      "Proof link + VALID verification",
-    ],
-    proof: {
-      route: "/proof",
-      note: "Show Review flag (rule ID + triggers), then Q.E.D. certificate verification.",
-    },
-    directorLine:
-      "Sistem ne daje medicinske tvrdnje bez odobrene smernice. Ako je high-risk, traži human review. Sve ima dokazni trag.",
+    directorLine: "One request, one proof, one timeline.",
+    workflow: ["Identify subject", "Aggregate data", "Export", "Attest manifest"],
   },
 ];
-
-// Helper to get scenarios by vertical
-export function getScenariosByVertical(
-  vertical: "legal" | "private" | "medical"
-): DemoScenario[] {
-  return DEMO_SCENARIOS.filter((s) => s.vertical === vertical);
-}
-
-// Get scenario by ID
-export function getScenarioById(id: string): DemoScenario | undefined {
-  return DEMO_SCENARIOS.find((s) => s.id === id);
-}

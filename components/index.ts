@@ -32,6 +32,8 @@ export { ZeroTrust } from "./sections/ZeroTrust";
 export { REMPhase } from "./sections/REMPhase";
 export { CanaryTokens } from "./sections/CanaryTokens";
 export { SSOTGuardian } from "./sections/SSOTGuardian";
+export { DeterminismLayer } from "./sections/DeterminismLayer";
+export { AuditRoutines } from "./sections/AuditRoutines";
 export { WatchdogDEFCON } from "./sections/WatchdogDEFCON";
 
 // Proof page components

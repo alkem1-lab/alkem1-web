@@ -308,6 +308,22 @@ export function SSOTGuardian() {
                 </p>
               </div>
 
+              {/* SSOT Canon Section */}
+              <div className="mt-6 p-6 rounded-xl bg-neural-1/10 border border-neural-1/30">
+                <h4 className="font-bold text-neural-1 mb-3 flex items-center gap-2">
+                  <span>📜</span> SSOT Canon (Compiled Truth)
+                </h4>
+                <p className="text-sm text-text-body leading-relaxed mb-3">
+                  SSOT is <span className="text-text-bright font-medium">compiled</span>, not just documented.
+                  <code className="text-xs font-mono text-phosphor ml-1">services.truth.yml → canon.json</code>
+                </p>
+                <div className="space-y-2 text-xs font-mono text-text-ghost">
+                  <div>• CI blocks merge if drift detected</div>
+                  <div>• Ledger event: <code className="text-phosphor">ssot.canon.changed</code></div>
+                  <div>• Machine-readable truth (not documentation)</div>
+                </div>
+              </div>
+
               {/* Q.E.D. proof */}
               <div className="mt-4 p-4 rounded-xl bg-neural-2/10 border border-neural-2/30 font-mono text-xs">
                 <div className="text-neural-2 mb-2">Q.E.D. - Mathematical Proof:</div>

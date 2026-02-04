@@ -11,7 +11,7 @@ export function BackToHome() {
       className="fixed top-6 left-6 z-50"
     >
       <Link
-        href="/"
+        href="/home"
         className="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-1/80 backdrop-blur-sm border border-border-subtle hover:border-phosphor/30 transition-colors group"
       >
         <svg

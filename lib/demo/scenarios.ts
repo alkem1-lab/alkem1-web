@@ -8,6 +8,10 @@ export interface DemoScenario {
     jurisdiction?: string[];
     sourceTypes?: string[];
     citeableOnly?: boolean;
+    hybridWeight?: number;
+    requirePrimary?: boolean;
+    rerank?: boolean;
+    dedupe?: boolean;
   };
   expected: string[];
   proof: { route: string; note: string };

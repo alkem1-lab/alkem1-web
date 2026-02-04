@@ -1,6 +1,5 @@
 // Effects
-export { PulseCore } from "./effects/PulseCore";
-export { GridBackground } from "./effects/GridBackground";
+export { PulseCore, GridBackground } from "./effects";
 
 // UI
 export { Button } from "./ui/Button";

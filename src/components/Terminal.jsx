@@ -193,8 +193,8 @@ export default function Terminal() {
       if (partial) {
         const commands = [
           'help', 'overview', 'architecture', 'runtime', 'domain',
-          'mlops', 'stack', 'evidence', 'determinism', 'whoami',
-          'witness', 'status', 'clear',
+          'mlops', 'stack', 'evidence', 'determinism', 'philosophy',
+          'whoami', 'contact', 'witness', 'status', 'clear',
         ];
         const match = commands.find(c => c.startsWith(partial));
         if (match) setInput(match);
@@ -263,6 +263,7 @@ export default function Terminal() {
         <span className="hint" onClick={() => { setInput('mlops'); }}>mlops</span>
         <span className="hint" onClick={() => { setInput('evidence'); }}>evidence</span>
         <span className="hint" onClick={() => { setInput('determinism'); }}>determinism</span>
+        <span className="hint" onClick={() => { setInput('philosophy'); }}>philosophy</span>
         <span className="hint" onClick={() => { setInput('witness'); }}>witness</span>
       </div>
     </div>

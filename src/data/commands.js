@@ -11,7 +11,9 @@ export const COMMANDS = {
     stack          — technologies by responsibility
     evidence       — verification, audit, trust layer
     determinism    — why deterministic architecture
+    philosophy     — the bridge between chaos and order
     whoami         — operator identity
+    contact        — communication ports
     witness        — system observations
     status         — current system state
     clear          — clear terminal
@@ -296,6 +298,71 @@ export const COMMANDS = {
 
   What is forced becomes fragile.
   What is governed becomes reliable.
+`,
+
+  philosophy: () => `
+  PHILOSOPHY — THE BRIDGE
+  ════════════════════════════════════════════════════
+
+  Stochasticity and determinism are not opposites.
+  They are yin and yang.
+
+  One generates. The other governs.
+  One creates possibility. The other creates trust.
+  One is the river. The other is the riverbed.
+
+  Without chaos, nothing emerges.
+  Without order, nothing survives.
+
+  ── The ancient pattern ──────────────────────────
+
+  The Tao produces.
+  Te (virtue) governs.
+  Together they form reality.
+
+  Replace "Tao" with stochastic generation.
+  Replace "Te" with deterministic verification.
+  The pattern holds.
+
+  ── Non-duality in systems ───────────────────────
+
+  The observer and the observed are one system.
+  The model and the evaluation are one loop.
+  The output and the evidence are one artifact.
+
+  Separation is useful for analysis.
+  Unity is necessary for truth.
+
+  ── ALKEM1 as bridge ─────────────────────────────
+
+  ALKEM1 is the language between these two forces.
+
+  It does not reject stochasticity — it contains it.
+  It does not worship determinism — it uses it.
+
+  The goal is not to eliminate uncertainty.
+  The goal is to be honest about it.
+
+  Stochastic systems generate intelligence.
+  Deterministic systems make it trustworthy.
+  ALKEM1 bridges the two.
+
+  This is not philosophy for decoration.
+  This is architecture for systems that must work.
+`,
+
+  contact: () => `
+  COMMUNICATION PORTS
+  ════════════════════════════════════════════════════
+
+  email:     creatorzdeitz@gmail.com
+  location:  Geneva, Switzerland
+
+  Preferred protocol: email
+  Response time: depends on signal quality
+  Noise tolerance: low
+
+  State what you need. Respect the bandwidth.
 `,
 
   whoami: () => `

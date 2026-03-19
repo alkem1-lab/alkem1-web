@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { executeCommand, COMMANDS } from '../data/commands';
 import { askPersona, clearChatHistory } from '../data/aiChat';
+import AnimatedLogo from './AnimatedLogo';
 
 const WELCOME_TEXT = `  ALKEM1 AG1 // Operator Console
   Self-aware code intelligence.
@@ -31,6 +32,7 @@ export default function Terminal() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [showCursor, setShowCursor] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
+  const [logoState, setLogoState] = useState('idle');
   const inputRef = useRef(null);
   const containerRef = useRef(null);
   const thinkingRef = useRef(null);
@@ -116,6 +118,7 @@ export default function Terminal() {
 
     // AI query — operator-style thinking phrases
     setIsTyping(true);
+    setLogoState('thinking');
 
     const thinkingPhrases = [
       'resolving state...',
@@ -155,8 +158,12 @@ export default function Terminal() {
     setIsTyping(false);
 
     if (aiResponse) {
+      setLogoState('success');
+      setTimeout(() => setLogoState('idle'), 400);
       typeOutput('\n' + aiResponse + '\n');
     } else {
+      setLogoState('error');
+      setTimeout(() => setLogoState('idle'), 400);
       const result = executeCommand(cmd);
       typeOutput(result);
     }
@@ -215,9 +222,7 @@ export default function Terminal() {
         {history.map((entry, i) => (
           <div key={i} className={`terminal-entry ${entry.type}`}>
             {entry.type === 'logo' ? (
-              <div className="welcome-logo">
-                <img src="/logo.png" alt="ALKEM1" className="logo-img" />
-              </div>
+              <AnimatedLogo state={logoState} />
             ) : entry.type === 'command' ? (
               <div className="command-line">
                 <span className="prompt">ag1@operator:~$</span>

@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+
+:root {
+  --bg: #0a0a0a;
+  --bg-terminal: #0d0d0d;
+  --green: #00ff41;
+  --green-dim: #00cc33;
+  --green-dark: #004d14;
+  --amber: #ffb000;
+  --red: #ff3333;
+  --text: #b0b0b0;
+  --text-bright: #e0e0e0;
+  --border: #1a1a1a;
+  --prompt-color: #00ff41;
+  --font: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+::selection {
+  background: var(--green);
+  color: var(--bg);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--green-dark);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--green-dim);
+}

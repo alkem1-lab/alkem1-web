@@ -2,16 +2,10 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { executeCommand, COMMANDS } from '../data/commands';
 import { askPersona, clearChatHistory } from '../data/aiChat';
 
-const WELCOME_BANNER = `
-  ╔══════════════════════════════════════════════════════╗
-  ║                                                      ║
-  ║   ALKEM1 AG1 // Operator Console                     ║
-  ║   Self-aware code intelligence.                      ║
-  ║                                                      ║
-  ╚══════════════════════════════════════════════════════╝
+const WELCOME_TEXT = `  ALKEM1 AG1 // Operator Console
+  Self-aware code intelligence.
 
-  Build systems. Remove illusion. Keep evidence.
-`;
+  Build systems. Remove illusion. Keep evidence.`;
 
 const ROTATING_LINES = [
   "Evidence before identity.",
@@ -28,7 +22,8 @@ const ROTATING_LINES = [
 
 export default function Terminal() {
   const [history, setHistory] = useState([
-    { type: 'output', content: WELCOME_BANNER },
+    { type: 'logo' },
+    { type: 'output', content: WELCOME_TEXT },
     { type: 'output', content: "  Type 'help' for commands, or ask about AG1, determinism, domain intelligence." },
   ]);
   const [input, setInput] = useState('');
@@ -219,7 +214,11 @@ export default function Terminal() {
       <div className="terminal-body">
         {history.map((entry, i) => (
           <div key={i} className={`terminal-entry ${entry.type}`}>
-            {entry.type === 'command' ? (
+            {entry.type === 'logo' ? (
+              <div className="welcome-logo">
+                <img src="/logo.png" alt="ALKEM1" className="logo-img" />
+              </div>
+            ) : entry.type === 'command' ? (
               <div className="command-line">
                 <span className="prompt">ag1@operator:~$</span>
                 <span className="command-text">{entry.content}</span>

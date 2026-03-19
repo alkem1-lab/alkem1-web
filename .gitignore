@@ -29,5 +29,6 @@ dist-ssr
 .env.*.local
 
 # Screenshots / temp
-*.png
 scripts/
+*.png
+!public/logo.png

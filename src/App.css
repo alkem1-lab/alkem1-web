@@ -201,18 +201,14 @@
   margin-bottom: 4px;
 }
 
-.terminal-entry.welcome .output-text {
-  font-size: 7px;
-  line-height: 1.15;
-  color: var(--green-dim);
-  letter-spacing: 0.5px;
+.welcome-logo {
+  padding: 16px 0 8px 20px;
 }
 
-.terminal-entry.welcome .help-hint {
-  font-size: 13px;
-  display: block;
-  margin-top: 10px;
-  color: var(--text);
+.logo-img {
+  width: 48px;
+  height: auto;
+  opacity: 0.9;
 }
 
 .command-line {

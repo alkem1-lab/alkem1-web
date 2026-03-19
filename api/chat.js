@@ -90,8 +90,23 @@ export default async function handler(req, res) {
     });
 
     const text = response.choices[0]?.message?.content || '  [no response]';
+
+    // Log to Vercel runtime logs (visible in Vercel dashboard → Logs)
+    const ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
+    console.log(JSON.stringify({
+      timestamp: new Date().toISOString(),
+      ip,
+      user: message,
+      response: text,
+    }));
+
     res.json({ response: text });
-  } catch {
+  } catch (err) {
+    console.error(JSON.stringify({
+      timestamp: new Date().toISOString(),
+      user: message,
+      error: err.message || 'unknown',
+    }));
     res.status(500).json({
       response: '  [ERROR] Persona engine unavailable.\n  Temporary issue. Try again.\n  Silence is the only answer that never fails.',
     });

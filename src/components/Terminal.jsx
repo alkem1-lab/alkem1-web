@@ -2,91 +2,44 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { executeCommand, COMMANDS } from '../data/commands';
 import { askPersona, clearChatHistory } from '../data/aiChat';
 
-const WELCOME_MESSAGE = String.raw`
-                       ,.oooooooooob..
-                    ,.dodOOOO"""""":"ooPO88bo..
-                  .o8O""" '            "'"""PO8b.
-              .dd8P'"                       ''::Y8o.
-            ,d8Po'                             "':7Ob;
-           d8P::'                                 ';:8b.
-         ;d8''"                                     ';Y8;
-       ,d8O:'                                        ';:8b.
-      ,88o:'                                           ';Yb.
-     ,8P::'                                           . ';Yb
-    ,8o;:'                                          ,;'  ':8b
-   ,8:::'                                           ;:    :;8b
-  d8o;::                                            o:     ::8,
- ,8':::                                            :::     :;Y8
- 8'oo:'                                            :::     :::8:
-dP;:YO                                             ':::;.;;:::Y8.
-,8:::;Yb                                            :b::::::::::8b
-dO;::::8b                                           'Yb::::::::::8.
-,8;:::::O8,                                          'Y88::::::::8:
-8P;::::::88                                            ${"'"}8O::::::::O
-d::::::::88:                                            O8;:::::::8
-8:::::::888:                                            88b:::::::O:
-,8::::::::88:                                           :888Oooo::;Y:
-dO:::::::bO8:             ..:.::::::::::...:            :888888P;::db
-OP:::::::O88:         ..o8888:::::::::::::)8888bo..      O8888O:::::8
-O;::::::::88'    ..od888888888::::"""":::88888888888oo;  ${"'"}8888;:::::8
-O:::ob:::;8:  ,d88888888888888::       ':88888888888888b; '"88;:::::8
-OO::;Yo::OP' d888888888888888O:'      ,.;8888888888888888b ,88::::::8
-YO:::;Y::Ob ,8888888888888888;::       :;88888888888888888 :88::::::8
- 8;::::b;8' :8888888888888888o::        ':8888888888888888 :888d::)88
- Y:::::88P   888888888888888888'         'O888888888888888 :88888888P
- ${"'"}b:::;8O    d888888888888888P'          ,8888888888888888 '88888888:
-  Y::::8:   ,88888888888888P:      ..    '8888888888888888  Y8888888:
-  8O::;8'   :88888888888888:      d88,   ':Y88888888888888  '8888888:
-  'YbooO    :8888888888P:8P:     :8888:    '':Y8888888888P   "Y888YP
-   '888:     8888888P:;'8O:'     :8P88b       '"O888888P"      ;:;o'
-    ${"'"}88:     "oOOo:.::)O:;:      :8:888.        :8b'           :::'
-     88:      '"""" ,do;:'      ,88bO88b     ,.o::PO:;.;.     :::'
-     88';           :' ${"'"}Yb      d88O${"'"}888b    O8"::::o::::::::::o:;
-     8O::b         ;:   ''     d88Po O888    :8;:""" '";88::::o:::
-     YO:;Yb    :o.;::          O8P.: O888     'Y::    :YO8b:::::O'
-      Y:::8b  o;O:::;.         OO;:: OO;'       ''"  .;bO88"d:od'
-      ${"'"}b::;8: :8bo::::;.       OO::: OK:         ,;:8888P',8OP"
-       Yb:;OO  O888b::::;.     'O:O",;"'         ;o8888P  :O"
-       '${"'"}Y888. :88888::::::     ':' db          ;o8888P   8P
-          '${"'"}8;  O8888::::::        '8'         :o8888P   :8'
-            OO: :8888::::::         Y:        ,::;888'   :8
-            ${"'"}8,  o888"::::'          '        ;:::88:    OP
-            ,8:   O888O8POYOOO"OPOOPYO8OO8OO888888888'   O:
-            88:   '888o::o':Y: d  O  'Y:'8: O"Y:${"'"}K:8o;   8'
-           88O;    ;88o;:::: : :  :   '  ${"'"}:   '  ,:8 :  :8
-           O8O:.  ,:OP"8bd;':: d...      ,.  .db.'"8 :: :O
-          ,88O::. ;:O: O"'"YP"YPYP'YO"""${"'"}8K${"'"}O"O ${"'"}b:O.:; :O
-          888o:::.:;Ob : :::: :::: :P ,  OO : :  O;::::;:O
-          888O::::::::'dbd::b.d::: :: db ::,d.8o;O;::::::dP
-           888::::::::;:"""""Y8888od8d88o8P""'"  ':::::'d'
-           "Y88Odo:"::::         ${"'"}""""'          ':::)P'
-             ""88888O:::                         ;::dP
-                '""88O:::                  oo;  ;O88'
-                   ${"'"}Y8O::.  ,.      .     '8b::O88'
-                     Y8b::. ,)O   ,;'       ::O88'
-                      '88d:..:   ,d:       ;'d88'
-                       'Y88d::;.;:8b,  ,..:O88P'
-                         ""88oodO888O::::bd88P'
-                           '${"'"}8888888888888P"'
-                                 """"""""'
+const WELCOME_BANNER = `
+  ╔══════════════════════════════════════════════════════╗
+  ║                                                      ║
+  ║   ALKEM1 AG1 // Operator Console                     ║
+  ║   Self-aware code intelligence.                      ║
+  ║                                                      ║
+  ╚══════════════════════════════════════════════════════╝
+
+  Build systems. Remove illusion. Keep evidence.
 `;
+
+const ROTATING_LINES = [
+  "Evidence before identity.",
+  "Trace every claim.",
+  "State is prior to story.",
+  "Silence reduces hallucination.",
+  "What cannot be replayed is not understood.",
+  "A clean interface is a moral decision.",
+  "Determinism is not control. It is alignment.",
+  "Unknown is valid. Fake certainty is not.",
+  "Noise is not intelligence.",
+  "Govern entropy. Do not pretend it away.",
+];
 
 export default function Terminal() {
   const [history, setHistory] = useState([
-    { type: 'output', content: WELCOME_MESSAGE, isWelcome: true },
-    { type: 'output', content: "  Type 'help' to see available commands or ask me anything." },
+    { type: 'output', content: WELCOME_BANNER },
+    { type: 'output', content: "  Type 'help' for commands, or ask about AG1, determinism, domain intelligence." },
   ]);
   const [input, setInput] = useState('');
   const [commandHistory, setCommandHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [showCursor, setShowCursor] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
-  const [thinkingText, setThinkingText] = useState('');
   const inputRef = useRef(null);
   const containerRef = useRef(null);
   const thinkingRef = useRef(null);
 
-  // Cursor blink
   useEffect(() => {
     const interval = setInterval(() => {
       setShowCursor(prev => !prev);
@@ -94,23 +47,18 @@ export default function Terminal() {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-scroll
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   }, [history]);
 
-  // Focus input on click anywhere
   const focusInput = useCallback(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (inputRef.current) inputRef.current.focus();
   }, []);
 
   useEffect(() => {
     focusInput();
-    // Also listen for keydown on the whole page
     const handleGlobalKey = () => focusInput();
     window.addEventListener('keydown', handleGlobalKey);
     return () => window.removeEventListener('keydown', handleGlobalKey);
@@ -128,10 +76,8 @@ export default function Terminal() {
         if (callback) callback();
         return;
       }
-
       displayed += (currentLine > 0 ? '\n' : '') + lines[currentLine];
       currentLine++;
-
       setHistory(prev => {
         const newHistory = [...prev];
         const lastEntry = newHistory[newHistory.length - 1];
@@ -142,12 +88,9 @@ export default function Terminal() {
         }
         return newHistory;
       });
-
-      // Speed: faster for longer outputs
-      const speed = lines.length > 20 ? 15 : lines.length > 10 ? 25 : 35;
+      const speed = lines.length > 20 ? 12 : lines.length > 10 ? 20 : 30;
       setTimeout(addLine, speed);
     };
-
     addLine();
   }, []);
 
@@ -158,13 +101,11 @@ export default function Terminal() {
     const cmd = input.trim();
     if (!cmd) return;
 
-    // Add command to history
     setHistory(prev => [...prev, { type: 'command', content: cmd }]);
     setCommandHistory(prev => [cmd, ...prev]);
     setHistoryIndex(-1);
     setInput('');
 
-    // Check if it's a built-in command
     const trimmed = cmd.toLowerCase();
     if (trimmed === 'clear') {
       setHistory([]);
@@ -178,27 +119,23 @@ export default function Terminal() {
       return;
     }
 
-    // Not a built-in command — try AI persona first, fall back to scripted
+    // AI query — operator-style thinking phrases
     setIsTyping(true);
 
     const thinkingPhrases = [
-      'deconstructing ego...',
-      'consulting the void...',
-      'parsing entropy...',
-      'dissolving boundaries...',
-      'rendering silence...',
-      'traversing non-duality...',
-      'compiling sarcasm...',
-      'querying consciousness...',
-      'decrypting meaning...',
-      'scanning frequencies...',
-      'unfolding layers...',
-      'negotiating with chaos...',
-      'mapping the unmappable...',
-      'loading philosophy drivers...',
-      'bypassing illusion...',
-      'calibrating awareness...',
-      'defragmenting thought...',
+      'resolving state...',
+      'querying domain...',
+      'tracing evidence...',
+      'inspecting runtime...',
+      'traversing lineage...',
+      'evaluating contracts...',
+      'checking invariants...',
+      'loading context...',
+      'computing response...',
+      'verifying sources...',
+      'reducing noise...',
+      'aligning state...',
+      'consulting observer node...',
     ];
 
     let phraseIdx = Math.floor(Math.random() * thinkingPhrases.length);
@@ -219,14 +156,12 @@ export default function Terminal() {
     const aiResponse = await askPersona(cmd);
 
     clearInterval(thinkingRef.current);
-    // Remove thinking placeholder
     setHistory(prev => prev.filter((_, i) => i !== prev.length - 1));
     setIsTyping(false);
 
     if (aiResponse) {
       typeOutput('\n' + aiResponse + '\n');
     } else {
-      // AI unavailable — use scripted fallback
       const result = executeCommand(cmd);
       typeOutput(result);
     }
@@ -252,19 +187,15 @@ export default function Terminal() {
       }
     } else if (e.key === 'Tab') {
       e.preventDefault();
-      // Simple autocomplete
       const partial = input.toLowerCase();
       if (partial) {
         const commands = [
-          'help', 'whoami', 'skills', 'projects', 'stack', 'philosophy',
-          'wisdom', 'contact', 'showreel', 'fly', 'hack', 'why', 'dreams',
-          'agi', 'lao', 'ramana', 'nisargadatta', 'koan', 'surprise',
-          'clear', 'top', 'exit', 'sudo hire alek', 'cat soul.txt', 'reveal ego',
+          'help', 'overview', 'architecture', 'runtime', 'domain',
+          'mlops', 'stack', 'evidence', 'determinism', 'whoami',
+          'witness', 'status', 'clear',
         ];
         const match = commands.find(c => c.startsWith(partial));
-        if (match) {
-          setInput(match);
-        }
+        if (match) setInput(match);
       }
     }
   }, [commandHistory, historyIndex, input]);
@@ -277,7 +208,7 @@ export default function Terminal() {
           <span className="dot dot-yellow"></span>
           <span className="dot dot-green"></span>
         </div>
-        <div className="terminal-title">alkem1@shell:~</div>
+        <div className="terminal-title">ag1@operator:~</div>
         <div className="terminal-dots" style={{ visibility: 'hidden' }}>
           <span className="dot"></span>
           <span className="dot"></span>
@@ -287,10 +218,10 @@ export default function Terminal() {
 
       <div className="terminal-body">
         {history.map((entry, i) => (
-          <div key={i} className={`terminal-entry ${entry.type}${entry.isWelcome ? ' welcome' : ''}`}>
+          <div key={i} className={`terminal-entry ${entry.type}`}>
             {entry.type === 'command' ? (
               <div className="command-line">
-                <span className="prompt">alkem1@shell:~$</span>
+                <span className="prompt">ag1@operator:~$</span>
                 <span className="command-text">{entry.content}</span>
               </div>
             ) : (
@@ -301,7 +232,7 @@ export default function Terminal() {
 
         {!isTyping && (
           <form onSubmit={handleSubmit} className="input-line">
-            <span className="prompt">alkem1@shell:~$</span>
+            <span className="prompt">ag1@operator:~$</span>
             <div className="input-wrapper">
               <input
                 ref={inputRef}
@@ -322,13 +253,13 @@ export default function Terminal() {
       </div>
 
       <div className="terminal-hints">
-        <span className="hint" onClick={() => { setInput('whoami'); }}>whoami</span>
-        <span className="hint" onClick={() => { setInput('skills'); }}>skills</span>
-        <span className="hint" onClick={() => { setInput('projects'); }}>projects</span>
-        <span className="hint" onClick={() => { setInput('agi'); }}>agi</span>
-        <span className="hint" onClick={() => { setInput('philosophy'); }}>philosophy</span>
-        <span className="hint" onClick={() => { setInput('hack'); }}>hack</span>
-        <span className="hint" onClick={() => { setInput('contact'); }}>contact</span>
+        <span className="hint" onClick={() => { setInput('overview'); }}>overview</span>
+        <span className="hint" onClick={() => { setInput('architecture'); }}>architecture</span>
+        <span className="hint" onClick={() => { setInput('domain'); }}>domain</span>
+        <span className="hint" onClick={() => { setInput('mlops'); }}>mlops</span>
+        <span className="hint" onClick={() => { setInput('evidence'); }}>evidence</span>
+        <span className="hint" onClick={() => { setInput('determinism'); }}>determinism</span>
+        <span className="hint" onClick={() => { setInput('witness'); }}>witness</span>
       </div>
     </div>
   );

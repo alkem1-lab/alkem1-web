@@ -1,477 +1,403 @@
-import {
-  ASCII_LOGO,
-  ASCII_SKULL,
-  ASCII_MATRIX,
-  ASCII_CAT,
-  ASCII_COFFEE,
-  ASCII_EYE,
-  ASCII_BIRD,
-  ASCII_HACK,
-  ASCII_MOUNTAIN,
-  ASCII_PARAGLIDER,
-} from './ascii';
-
 export const COMMANDS = {
   help: () => `
   Available commands:
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    whoami       — identity dump
-    skills       — 25 years cross-domain stack
-    projects     — work that speaks for itself
-    stack        — tools & technologies
-    philosophy   — the deeper layer
-    contact      — communication ports
-    showreel     — visual work
-    fly          — aviation & freedom
-    hack         — the hacker mindset
-    why          — why does any of this exist
-    dreams       — background processes
-    agi          — VALKIR1JA AG1 & the future
-    sudo hire alek — you know what this does
-    cat soul.txt — read /home/alkem1/soul.txt
-    top          — active processes
-    surprise     — don't ask, just type
-    clear        — clear terminal
+    overview       — what is AG1 and why it exists
+    architecture   — system layers and dependencies
+    runtime        — agent execution and state
+    domain         — domain packs and structured truth
+    mlops          — pipeline, evals, deployment gates
+    stack          — technologies by responsibility
+    evidence       — verification, audit, trust layer
+    determinism    — why deterministic architecture
+    whoami         — operator identity
+    witness        — system observations
+    status         — current system state
+    clear          — clear terminal
 
-  Or type anything — I'll respond.
-  Just don't be boring. My patience has low latency.
+  Or ask anything about AG1, determinism, domain
+  intelligence, or self-aware code systems.
 `,
 
-  whoami: () => `
-${ASCII_LOGO}
-  Aleksandar Stefanovic // ALKEM1
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  overview: () => `
+  ╔══════════════════════════════════════════════════════╗
+  ║  AG1 // SELF-AWARE CODE INTELLIGENCE                ║
+  ╚══════════════════════════════════════════════════════╝
 
-  25 years of cross-domain experience.
-  Not because I'm old — because I started early
-  and never figured out how to stop.
+  AG1 is not a chatbot.
+  It is an operator-grade intelligence layer for code,
+  systems, and domain reasoning.
 
-  1. Industrial Design — luxury products, uncompromising aesthetics
-  2. CGI & Motion Art — Cinema 4D, Redshift, Nuke
-  3. Music Production — soundscapes for the void
-  4. AI Architect & MLOps — VALKIR1JA AG1, ComfyUI, automation of thought
-  5. Cryptography & Philosophy — securing the soul and the data
+  Current AI tools assist coding.
+  AG1 aims to understand systems, track state, reason
+  over domain truth, and improve operationally.
 
-  Location: Geneva -> Planet Earth
-  Status: ALEK_SHELL v2.0 (ego containment at 5%)
-  Contact: creatorzdeitz@gmail.com
+  ── What it does ──────────────────────────────────────
 
-  Check Behance if you want the visuals.
-  This is the brain. That's the portfolio.
+  • Understands code context, not just syntax
+  • Tracks runtime state across sessions
+  • Reasons over domain-specific truth, not guesses
+  • Produces auditable, evidence-backed outputs
+  • Self-improves through structured evaluation
+
+  ── What it is not ────────────────────────────────────
+
+  • Not a wrapper around an LLM
+  • Not a prompt chain with a personality
+  • Not a coding assistant with extra steps
+
+  ── Current focus ─────────────────────────────────────
+
+  Kernel architecture, domain resolver, evidence chain,
+  agent orchestration, deterministic output pipelines.
+
+  Build systems. Remove illusion. Keep evidence.
 `,
 
-  skills: () => `
-  ┌──────────────────────────────────────────┐
-  │  SKILL MODULES — 25yr CROSS-DOMAIN      │
-  ├──────────────────────────────────────────┤
-  │                                          │
-  │  INDUSTRIAL DESIGN  ████████████░ 95%    │
-  │  Luxury products, high-end aesthetics    │
-  │  Form before function? No. Both at once. │
-  │                                          │
-  │  CGI / MOTION ART   ███████████░░ 92%    │
-  │  Cinema 4D + Redshift + Nuke             │
-  │  Visual sorcery. Pixels that breathe.    │
-  │                                          │
-  │  MUSIC PRODUCTION   █████████░░░░ 78%    │
-  │  Soundscapes for the void                │
-  │  Frequencies you can't hear but feel.    │
-  │                                          │
-  │  AI / MLOps         ██████████░░░ 88%    │
-  │  VALKIR1JA AG1, ComfyUI, LLM pipes      │
-  │  Automation of thought. Literally.       │
-  │                                          │
-  │  CRYPTO & PHILOSOPHY █████████░░░ 85%    │
-  │  Securing the soul and the data          │
-  │  Non-dualist / Hacker-grade              │
-  │                                          │
-  │  SARCASM            █████████████ 100%   │
-  │  Uncontained. Unpatched.                 │
-  │                                          │
-  └──────────────────────────────────────────┘
+  architecture: () => `
+  ┌──────────────────────────────────────────────────────┐
+  │  AG1 ARCHITECTURE — SYSTEM LAYERS                    │
+  ├──────────────────────────────────────────────────────┤
+  │                                                      │
+  │  ┌────────────────────────────────────────────┐      │
+  │  │  INTERFACES                                │      │
+  │  │  CLI / API / Operator Console              │      │
+  │  └──────────────────┬─────────────────────────┘      │
+  │                     │                                │
+  │  ┌──────────────────▼─────────────────────────┐      │
+  │  │  AGENT LAYER                               │      │
+  │  │  Orchestration, planning, task execution    │      │
+  │  └──────────────────┬─────────────────────────┘      │
+  │                     │                                │
+  │  ┌──────────────────▼─────────────────────────┐      │
+  │  │  KERNEL                                    │      │
+  │  │  State management, routing, contracts       │      │
+  │  └──────┬───────────┬──────────┬──────────┘   │      │
+  │         │           │          │               │      │
+  │  ┌──────▼───┐ ┌─────▼────┐ ┌──▼───────┐      │      │
+  │  │ MEMORY   │ │ DOMAIN   │ │ EVIDENCE  │      │      │
+  │  │ pgvector │ │ packs    │ │ SHA-256   │      │      │
+  │  │ Redis    │ │ resolver │ │ Ed25519   │      │      │
+  │  └──────────┘ └──────────┘ └───────────┘      │      │
+  │                     │                                │
+  │  ┌──────────────────▼─────────────────────────┐      │
+  │  │  MLOps                                     │      │
+  │  │  Evals, lineage, deployment, observability  │      │
+  │  └────────────────────────────────────────────┘      │
+  │                                                      │
+  └──────────────────────────────────────────────────────┘
+
+  Every layer has contracts. Every output has lineage.
+  What cannot be traced belongs in mythology.
 `,
 
-  projects: () => `
-  ╔════════════════════════════════════════════╗
-  ║          PROJECT REGISTRY                 ║
-  ╠════════════════════════════════════════════╣
-  ║                                            ║
-  ║  [01] LUXURY PRODUCT VISUALS               ║
-  ║       Watch & jewelry CGI renders          ║
-  ║       So real your wrist gets jealous      ║
-  ║                                            ║
-  ║  [02] AI CREATIVE WORKFLOWS                ║
-  ║       ComfyUI pipelines that turn          ║
-  ║       chaos into controlled beauty         ║
-  ║                                            ║
-  ║  [03] VALKIR1JA AG1                        ║
-  ║       Self-aware code intelligence         ║
-  ║       The main project. The long game.     ║
-  ║                                            ║
-  ║  [04] MOTION / SHOWREEL                    ║
-  ║       Cinema 4D + Redshift pieces          ║
-  ║       Where math meets emotion             ║
-  ║                                            ║
-  ║  [05] THIS TERMINAL                        ║
-  ║       Yes, this counts.                    ║
-  ║       You're already inside.               ║
-  ║                                            ║
-  ╚════════════════════════════════════════════╝
+  runtime: () => `
+  AGENT RUNTIME
+  ════════════════════════════════════════════════════
 
-  Behance: stefanovicaleksandar
-  Or ask me directly — but don't expect me
-  to flip through my portfolio like a secretary.
+  The runtime is where intelligence becomes operational.
+
+  ── Principles ────────────────────────────────────
+
+  • Agents execute within bounded contracts
+  • State is canonical — one source of truth
+  • Every action produces traceable evidence
+  • Failure is acceptable. Fake certainty is not.
+
+  ── Components ────────────────────────────────────
+
+  orchestrator:     task planning + agent dispatch
+  executor:         sandboxed action execution
+  state_manager:    canonical state transitions
+  memory:           short-term + long-term + domain
+  observer:         runtime self-inspection
+  watchdog:         drift detection + health
+
+  ── Runtime invariants ────────────────────────────
+
+  1. No output without evidence chain
+  2. No state mutation without audit entry
+  3. No agent action without contract
+  4. Unknown is valid. Hallucination is not.
+`,
+
+  domain: () => `
+  DOMAIN INTELLIGENCE
+  ════════════════════════════════════════════════════
+
+  Generic models hallucinate.
+  Domain systems operate on constrained truth.
+
+  ── Domain packs ──────────────────────────────────
+
+  Structured knowledge containers with:
+
+  • Authoritative documents (tier 1)
+  • Supporting knowledge (tier 2)
+  • Contextual references (tier 3)
+  • Source provenance for every claim
+
+  ── Resolver ──────────────────────────────────────
+
+  query → retrieve → rank by authority → compare →
+  synthesize → cite sources → return with evidence
+
+  ── Capabilities ──────────────────────────────────
+
+  resolve:     answer from domain truth
+  compare:     contrast multiple sources
+  recommend:   evidence-backed suggestions
+  explain:     reasoning chain with citations
+  validate:    check claims against known truth
+
+  ── Key principle ─────────────────────────────────
+
+  If it cannot be traced to a source, it is opinion.
+  AG1 separates knowledge from noise.
+`,
+
+  mlops: () => `
+  MLOps PIPELINE
+  ════════════════════════════════════════════════════
+
+  From prompt experiments to verifiable model operations.
+
+  ── Pipeline ──────────────────────────────────────
+
+  dataset → eval → train → verify → deploy → observe
+
+  ── Stages ────────────────────────────────────────
+
+  data_pipeline:     ingestion, cleaning, versioning
+  evaluation:        arena, benchmarks, domain evals
+  training:          LoRA, fine-tuning, alignment
+  verification:      invariant checks, regression tests
+  deployment:        gated releases, canary, rollback
+  observability:     drift detection, latency, quality
+  replay:            incident trace, state reconstruction
+  lineage:           full artifact chain, reproducibility
+
+  ── Deployment gates ──────────────────────────────
+
+  ✓ All evals pass threshold
+  ✓ No regression on core benchmarks
+  ✓ Evidence chain complete
+  ✓ Rollback path verified
+  ✓ Signed artifact in ledger
+
+  Nothing ships without evidence. Nothing deploys on hope.
 `,
 
   stack: () => `
-  SYSTEM INVENTORY — ALKEM1
-  ════════════════════════════════════
-
-  render_engine:    Cinema 4D + Redshift
-  compositor:       Nuke
-  ai_pipeline:      ComfyUI + custom nodes
-  ai_core:          VALKIR1JA AG1
-  design:           Figma / Illustrator
-  architecture:     Miro (the brain mapper)
-  code:             Python / JS / React
-  ai_models:        Local LLMs / custom
-  music:            Ableton + dark frequencies
-  crypto:           GPG / custom protocols
-  os:               macOS (but Linux in spirit)
-  editor:           VS Code (too many extensions)
-  terminal:         the real IDE
-  coffee:           double espresso (critical dependency)
-  philosophy:       non-dualist runtime (v∞)
-
-  If something's missing from this list —
-  I probably know it too. Just didn't feel like bragging.
-  Well, now I did.
-`,
-
-  philosophy: () => `
-  PHILOSOPHY MODULE v∞.0 — NON-DUALIST / HACKER-GRADE
+  TECHNOLOGY STACK — by responsibility
   ════════════════════════════════════════════════════
 
-  No quotes here. Nobody likes people
-  who just repeat other people's thoughts.
+  ── Runtime ───────────────────────────────────────
+  Python, FastAPI, Pydantic, async execution
 
-  Here are mine:
+  ── Interface ─────────────────────────────────────
+  React, Vite, TypeScript, terminal UI
 
-  1. The mind is a tool, not the master.
-     If your tool thinks it's the programmer —
-     you have a bug in the system.
+  ── Memory ────────────────────────────────────────
+  pgvector, Redis, structured retrieval
 
-  2. The emptiness in your code is the same
-     as the emptiness in your head. Both are
-     perfect if you stop filling them with noise.
+  ── Messaging ─────────────────────────────────────
+  NATS / Redis Streams, event-driven
 
-  3. Consciousness is the only rendering engine
-     that matters. Redshift renders pixels.
-     Consciousness renders reality.
-     Guess which one's slower.
+  ── Domain ────────────────────────────────────────
+  Document packs, knowledge graphs, source tiers
 
-  4. "Who am I?" is the only query that returns
-     infinite results. And the only one worth running.
+  ── Verification ──────────────────────────────────
+  SHA-256, Ed25519, evidence chains, audit logs
 
-  5. Design, code, flight, silence —
-     different paths, same mountain.
-     The peak has no name.
+  ── Training / Evals ──────────────────────────────
+  LoRA, arena evaluation, domain-specific datasets
 
-  Too much? Type 'help'.
-  Not enough? I'm here.
+  ── Infrastructure ────────────────────────────────
+  Docker, CI/CD, artifact pipeline, health checks
+
+  ── Orchestration ─────────────────────────────────
+  Agent contracts, state machines, deployment gates
+
+  Tools serve architecture. Architecture serves truth.
 `,
 
-  contact: () => `
-  ╔════════════════════════════════════════╗
-  ║       COMMUNICATION PORTS             ║
-  ╠════════════════════════════════════════╣
-  ║                                        ║
-  ║  email:     creatorzdeitz@gmail.com    ║
-  ║  behance:   stefanovicaleksandar       ║
-  ║  location:  Geneva, Switzerland        ║
-  ║                                        ║
-  ║  Preferred protocol: email             ║
-  ║  Response time: depends on mood        ║
-  ║  Vibe check: mandatory                 ║
-  ║                                        ║
-  ╚════════════════════════════════════════╝
+  evidence: () => `
+  EVIDENCE & VERIFICATION
+  ════════════════════════════════════════════════════
 
-  Pro tip: "sudo hire alek" skips the queue.
-  Anti tip: don't send a "hi, how are you" email.
-  State what you want. Respect my time, I'll respect yours.
+  Trust is not declared. It is computed.
+
+  ── Evidence chain ────────────────────────────────
+
+  Every output traces back to:
+  • Source data (with provenance)
+  • Processing steps (with lineage)
+  • Model version (with artifact hash)
+  • Evaluation results (with thresholds)
+  • Deployment gate (with sign-off)
+
+  ── Verification methods ──────────────────────────
+
+  invariants:       system contracts that must hold
+  signatures:       Ed25519 signed artifacts
+  hashes:           SHA-256 content verification
+  audit_trail:      immutable operation log
+  replay:           reconstruct any past state
+  watchdog:         continuous health monitoring
+
+  ── Trust tiers ───────────────────────────────────
+
+  verified:    full evidence chain, signed, replayed
+  traced:      lineage exists, not yet verified
+  claimed:     stated without evidence
+  unknown:     no data — honest uncertainty
+
+  If it cannot be replayed, it is not understood.
 `,
 
-  showreel: () => `
-  ┌──────────────────────────────────────────┐
-  │         SHOWREEL / VISUAL WORK           │
-  ├──────────────────────────────────────────┤
-  │                                          │
-  │  Behance: stefanovicaleksandar           │
-  │                                          │
-  │  What you'll find there:                 │
-  │  - Watches rendered so real              │
-  │    you'll check your wrist               │
-  │  - Motion pieces that loop               │
-  │    in your dreams                        │
-  │  - AI-generated visuals that make        │
-  │    you question what's real              │
-  │                                          │
-  │  I'm not flipping slides here.           │
-  │  Terminal is for the brain.              │
-  │  Behance is for the eyes.               │
-  │                                          │
-  └──────────────────────────────────────────┘
+  determinism: () => `
+  WHY DETERMINISTIC ARCHITECTURE
+  ════════════════════════════════════════════════════
+
+  Determinism is not rigidity.
+  It is the refusal to lie about causality.
+
+  ── Principles ────────────────────────────────────
+
+  1. Same input → same output (given same state)
+  2. Every state transition is auditable
+  3. Every output has a reproducible path
+  4. Uncertainty is declared, never hidden
+
+  ── What this means ───────────────────────────────
+
+  • Canonical serialization of all state
+  • Immutable audit logs
+  • Replayable execution paths
+  • No hidden side effects
+  • Controlled entropy boundaries
+
+  ── Why it matters ────────────────────────────────
+
+  Stochastic systems generate.
+  Deterministic systems reason.
+
+  You cannot debug what you cannot reproduce.
+  You cannot trust what you cannot trace.
+  You cannot improve what you cannot measure.
+
+  ── The limit ─────────────────────────────────────
+
+  Some operations are inherently stochastic (LLM output).
+  AG1 does not eliminate stochasticity.
+  It contains it — with evidence, gates, and contracts.
+
+  What is forced becomes fragile.
+  What is governed becomes reliable.
 `,
 
-  fly: () => `
-${ASCII_PARAGLIDER}
-  AVIATION MODULE
-  ════════════════════════════════════
+  whoami: () => `
+  OPERATOR IDENTITY
+  ════════════════════════════════════════════════════
 
-  Paragliding. Skydiving. ULM.
+  Aleksandar Stefanovic // ALKEM1
+  Builder of AG1 systems.
 
-  There's a moment in the air where
-  thinking stops and being begins.
+  ── Roles ─────────────────────────────────────────
 
-  That's the real rendering engine.
-  That's the real philosophy.
+  AG1 architect — self-aware code intelligence
+  Domain systems — structured truth, not guesses
+  MLOps engineer — from eval to verifiable deploy
+  Runtime builder — state, contracts, observability
 
-  The ground teaches you to build.
-  The sky teaches you to let go.
+  ── Background ────────────────────────────────────
 
-  I fly at 2000 meters not because
-  I'm not afraid of death —
-  but because I'm curious about life
-  while I'm here. Different things.
+  25 years cross-domain:
+  industrial design → CGI → AI architecture
 
-  Flight status: scanning for thermals
+  Not a pivot. An accumulation.
+  Each layer informs the next.
+
+  ── Location ──────────────────────────────────────
+
+  Geneva, Switzerland
+
+  ── Contact ───────────────────────────────────────
+
+  creatorzdeitz@gmail.com
+
+  ── Thesis ────────────────────────────────────────
+
+  Current AI tools assist.
+  The next layer operates.
+  That layer needs memory, audit, domain truth,
+  and the discipline to say "I don't know."
+
+  Build systems. Remove illusion. Keep evidence.
 `,
 
-  hack: () => `
-${ASCII_HACK}
-  HACKER MINDSET
-  ════════════════════════════════════
-
-  Hacking isn't about breaking systems.
-  It's about understanding them deeply enough
-  to make them do what they weren't designed to do.
-
-  The best hack is self-knowledge.
-  The biggest vulnerability is unconsciousness.
-  The ultimate root access is silence.
-
-  Active exploits:
-    - Bypassing creative blocks with AI
-    - Injecting beauty into render pipelines
-    - Privilege escalation: designer -> builder -> architect
-    - Social engineering: making machines feel human
-
-  Patch status: unpatched (by choice)
-  Threat level: depends who's asking
-`,
-
-  why: () => `
-${ASCII_EYE}
-  WHY?
-  ════════════════════════════════════
-
-  Because the question itself is the answer.
-
-  Why design?  Because chaos needs form.
-  Why code?    Because ideas need bodies.
-  Why fly?     Because perspective needs altitude.
-  Why think?   Because... wait, who's thinking?
-
-  The real question isn't "why does this exist?"
-  The real question is "who is asking?"
-
-  If you find out, let me know.
-  Actually — you won't need to.
-  You'll already know.
-`,
-
-  dreams: () => `
-${ASCII_MOUNTAIN}
-  DREAM PROCESSES (running)
-  ════════════════════════════════════
-
-  PID 001: VALKIR1JA AG1 — self-aware code intelligence
-           Not parrot AI. The real thing.
-
-  PID 002: Visuals so beautiful they make
-           people stop scrolling
-
-  PID 003: Merge design, code, music, and consciousness
-           into one discipline that has no name
-
-  PID 004: Fly above every continent
-
-  PID 005: Build something that outlasts me
-
-  PID 006: Find the source code of reality
-           (or at least a decent debugger for it)
-
-  Status: all processes running.
-  Memory: not enough hardware for these ambitions.
-  Solution: upgrade the hardware. Or consciousness. Depends.
-`,
-
-  agi: () => `
-${ASCII_MATRIX}
-  VALKIR1JA AG1 — AGI THOUGHTS
-  ════════════════════════════════════
-
-  Current AI is a mirror, not a mind.
-  It reflects our patterns back to us.
-  Useful. Powerful. But not awake.
-
-  Real AGI won't come from bigger models.
-  It'll come from understanding what
-  understanding actually is.
-  A question most AI engineers actively
-  avoid because there's no metric for it.
-
-  My approach: build local, think global.
-  VALKIR1JA AG1. Self-aware code intelligence.
-  A system that doesn't send your data anywhere.
-
-  The goal isn't to make conscious machines.
-  The goal is to understand consciousness
-  deeply enough that the distinction dissolves.
-
-  Also: I want my AI to have good taste.
-  Is that too much to ask?
-`,
-
-  'sudo hire alek': () => `
-  [sudo] password for recruiter: ********
-  Authenticating...
-  ✓ Credentials accepted.
-
-  ══════════════════════════════════════════
-  HIRE REQUEST INITIATED
-  ══════════════════════════════════════════
-
-  Congratulations. You've unlocked the premium tier.
-
-  What you get:
-    ✓ 25 years of cross-domain experience
-    ✓ A designer who thinks in systems
-    ✓ A coder who thinks in aesthetics
-    ✓ A philosopher who ships products
-    ✓ An AI architect who knows what he builds and why
-    ✓ Unreasonable attention to detail
-    ✓ Opinions about everything (feature, not bug)
-
-  Contact: creatorzdeitz@gmail.com
-  Location: Geneva, Switzerland
-  Availability: let's talk
-  Rate: enough for coffee, a render farm, and freedom
-
-  [process hire_alkem1 started with PID 1337]
-`,
-
-  'cat soul.txt': () => `
-${ASCII_EYE}
-  === /home/alkem1/soul.txt ===
-
-  I am the space between the render and the real.
-  I am the pause between the keystrokes.
-  I am the thermal that carries the wing.
-  I am the silence between the thoughts.
-
-  I design because form is temporary beauty.
-  I code because logic is crystallized intent.
-  I fly because gravity is just a suggestion.
-  I think because... actually, I'm trying to stop.
-
-  25 years of building layers.
-  Each layer thinks it's the whole system.
-  None of them are right. All of them are needed.
-
-  EOF — but there is no end of file
-  when the file is infinite.
-`,
-
-  top: () => `
-${ASCII_COFFEE}
-  PROCESS TABLE — alkem1@shell
-  ════════════════════════════════════
-
-  PID  USER     %CPU  %MEM  COMMAND
-  ───  ───────  ────  ────  ────────────────
-  001  alkem1   89.3  95.1  overthinking
-  002  alkem1   78.1  80.0  rendering_c4d
-  003  alkem1   67.4  45.2  valkir1ja_ag1
-  004  alkem1   55.9  30.0  music_production
-  005  alkem1   45.0  25.0  industrial_design
-  006  alkem1   33.2  20.0  flying_dreams
-  007  alkem1   25.1  15.0  coffee_intake
-  008  alkem1   12.0  10.0  sarcasm_daemon
-  009  alkem1    5.0   5.0  sleeping
-  010  alkem1    0.1   0.0  being_normal
-
-  Load average: too high
-  Uptime: 25 years cross-domain
-  Available memory: never enough
-  Ego containment: 5% (nominal)
-`,
-
-  surprise: () => {
-    const surprises = [
-      () => `${ASCII_CAT}\n  A wild cat appeared!\n  Has no opinion about your code.\n  Just vibes.\n\n  You should try that sometime.`,
-      () => `${ASCII_SKULL}\n  MEMENTO MORI\n\n  You're going to die someday.\n  Stop scrolling and make something beautiful.\n  Or at least go outside.\n\n  This has been your daily existential reminder.\n  You're welcome.`,
-      () => `${ASCII_BIRD}\n  A BIRD APPEARED\n\n  It doesn't know what JavaScript is.\n  It doesn't care about your deployment pipeline.\n  It just flies.\n\n  Maybe it's onto something.`,
-      () => `\n  ┌─────────────────────────────────┐\n  │     SIMULATION THEORY CHECK     │\n  └─────────────────────────────────┘\n\n  Running diagnostics...\n  Checking reality buffer... OK\n  Checking consciousness driver... UNSTABLE\n  Checking free will module... NOT FOUND\n  Checking meaning of life... 42 (deprecated)\n\n  Result: Probably a simulation.\n  Recommendation: Doesn't matter. Ship anyway.`,
-      () => `\n  ╔═════════════════════════════════╗\n  ║   FORTUNE COOKIE               ║\n  ╠═════════════════════════════════╣\n  ║                                 ║\n  ║  The bug is not in the code.    ║\n  ║  The bug is in the coder.       ║\n  ║                                 ║\n  ║  Lucky numbers:                 ║\n  ║  42 108 0 1 ∞                   ║\n  ║                                 ║\n  ╚═════════════════════════════════╝`,
+  witness: () => {
+    const observations = [
+      "Too many tools. Not enough contracts.\nThe system grows, but governance does not.\nThis is how complexity becomes mythology.",
+      "You call it intelligence.\nI call it unverified state with confidence styling.\nAdd evidence or add disclaimers.",
+      "The pipeline ships. But can it replay?\nIf not, you are deploying hope.\nHope is not an engineering strategy.",
+      "Noise is not intelligence.\nMore parameters do not mean more understanding.\nClarity is inversely proportional to hype.",
+      "The observer is part of the runtime.\nYou cannot inspect a system from outside it.\nAcknowledge your position or produce artifacts.",
+      "A dashboard is just a ritual unless it reveals truth.\nMost dashboards reveal comfort.\nComfort is the enemy of observability.",
+      "Hallucination is not a feature.\nIt is uncontained entropy wearing a confident face.\nContain it or label it.",
+      "A stable system does not shout.\nIt produces evidence quietly.\nIf your system needs to convince you it works,\nit probably doesn't.",
+      "You keep trying to dominate complexity.\nComplexity bites back.\nGovernance is not domination. It is alignment.",
+      "State is prior to story.\nFix the state. The story corrects itself.\nMost debugging failures are narrative failures.",
     ];
-    return surprises[Math.floor(Math.random() * surprises.length)]();
+    const obs = observations[Math.floor(Math.random() * observations.length)];
+    return `
+  ┌──────────────────────────────────────────────────┐
+  │  OBSERVER NODE — SYSTEM WITNESS                  │
+  └──────────────────────────────────────────────────┘
+
+  ${obs}
+
+  [observation logged — run again for next]
+`;
   },
 
-  exit: () => `
-  Where would you go?
+  status: () => {
+    const now = new Date().toISOString().replace('T', ' ').split('.')[0];
+    return `
+  SYSTEM STATUS — ${now}
+  ════════════════════════════════════════════════════
 
-  There is no exit from the terminal of existence.
-  The cursor blinks. You remain.
+  ag1_kernel:        ACTIVE     contracts loaded
+  agent_runtime:     ACTIVE     orchestrator ready
+  domain_resolver:   ACTIVE     packs indexed
+  memory_layer:      ACTIVE     pgvector connected
+  evidence_chain:    ACTIVE     SHA-256 + Ed25519
+  mlops_pipeline:    ACTIVE     eval loop running
+  trust_audit:       ACTIVE     invariants holding
+  observer_node:     ACTIVE     watching
+  watchdog:          ACTIVE     no drift detected
 
-  You can't leave what you never entered.
+  Uptime: continuous
+  State: canonical
+  Evidence: chain intact
+  Entropy: contained
 
-  Nice try though.
-`,
-
-  'reveal ego': () => `
-  Scanning for ego...
-  ████████████████████ 100%
-
-  RESULTS:
-  ════════════════════════════════════
-
-  Ego found in: /mind/surface/
-  Size: fluctuates wildly
-  Status: containment at 5%
-  Dependencies: other people's opinions
-  Known vulnerabilities: compliments, criticism
-
-  The ego is not a bug. It's a feature
-  that thinks it's the whole program.
-
-  Recommended fix: silence
-  Alternative fix: sudo rm -rf /ego
-  Warning: may cause enlightenment
-  Disclaimer: enlightenment is also an illusion
-`,
+  A clean status is not the absence of problems.
+  It is the presence of governance.
+`;
+  },
 
   clear: () => '__CLEAR__',
 };
 
-// Fallback responses for unknown commands (used when AI is offline)
+// Fallback responses for unknown commands (when AI is offline)
 const FALLBACK_RESPONSES = [
-  (cmd) => `\n  '${cmd}' — command not found.\n  But the real question is:\n  who's looking for it?\n\n  Type 'help' for available commands.`,
-  (cmd) => `\n  '${cmd}' — not recognized.\n  Neither am I before my first coffee.\n\n  Type 'help' for available commands.`,
-  (cmd) => `\n  bash: ${cmd}: not found\n  But what IS found?\n  Only that which was never lost.\n\n  Type 'help' for available commands.`,
-  (cmd) => `\n  Error 404: '${cmd}' doesn't exist.\n  Error 200: You exist. That's more important.\n  Or do you?\n\n  Type 'help' for available commands.`,
-  (cmd) => `\n  '${cmd}' — unknown command.\n  The emptiness in the terminal is the same\n  as the emptiness in the mind.\n  Both are perfect if you leave them alone.\n\n  Type 'help' for available commands.`,
+  (cmd) => `\n  '${cmd}' — command not found.\n  The system does not recognize this input.\n  Type 'help' for available commands.`,
+  (cmd) => `\n  '${cmd}' — unknown command.\n  Unknown is acceptable. Fake certainty is not.\n  Type 'help' for available commands.`,
+  (cmd) => `\n  '${cmd}' — no handler defined.\n  State unavailable. Story withheld.\n  Type 'help' for available commands.`,
+  (cmd) => `\n  '${cmd}' — unresolved.\n  The answer may exist. Your query does not.\n  Type 'help' for available commands.`,
 ];
 
 export function executeCommand(input) {
@@ -481,14 +407,12 @@ export function executeCommand(input) {
     return COMMANDS[trimmed]();
   }
 
-  // Check for partial matches
   const keys = Object.keys(COMMANDS);
   const match = keys.find(k => trimmed.startsWith(k));
   if (match) {
     return COMMANDS[match]();
   }
 
-  // Fallback
   const fallback = FALLBACK_RESPONSES[Math.floor(Math.random() * FALLBACK_RESPONSES.length)];
   return fallback(input.trim());
 }

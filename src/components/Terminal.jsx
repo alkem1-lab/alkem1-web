@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { executeCommand, COMMANDS, ASYNC_COMMANDS } from '../data/commands';
 import { askPersona, clearChatHistory } from '../data/aiChat';
 import AnimatedLogo from './AnimatedLogo';
+import MediaEmbed from './MediaEmbed';
 
 const WELCOME_TEXT = `  ALKEM1 AG1 // Operator Console
   Self-aware code intelligence.
@@ -145,6 +146,16 @@ export default function Terminal() {
 
     if (COMMANDS[trimmed]) {
       const result = executeCommand(cmd);
+      // Check if command returns media (object with text + media)
+      if (result && typeof result === 'object' && result.text) {
+        typeOutput(result.text, () => {
+          // After text is typed, add media embed
+          if (result.media) {
+            setHistory(prev => [...prev, { type: 'media', media: result.media }]);
+          }
+        });
+        return;
+      }
       typeOutput(result);
       return;
     }
@@ -242,6 +253,7 @@ export default function Terminal() {
         const commands = [
           'help', 'overview', 'architecture', 'runtime', 'domain',
           'mlops', 'stack', 'determinism', 'philosophy',
+          'showreel', 'technical', 'portfolio',
           'whoami', 'contact', 'commit', 'evidence', 'witness',
           'verify', 'prove', 'status', 'clear',
         ];
@@ -272,6 +284,12 @@ export default function Terminal() {
           <div key={i} className={`terminal-entry ${entry.type}`}>
             {entry.type === 'logo' ? (
               <AnimatedLogo state={logoState} />
+            ) : entry.type === 'media' ? (
+              <MediaEmbed
+                type={entry.media.type}
+                url={entry.media.url}
+                label={entry.media.label}
+              />
             ) : entry.type === 'command' ? (
               <div className="command-line">
                 <span className="prompt">ag1@operator:~$</span>

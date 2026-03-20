@@ -5,6 +5,7 @@ import {
   proveDeterminism,
   verifyChain,
 } from './artifactStore';
+import { LINKS } from './links';
 
 export const COMMANDS = {
   help: () => `
@@ -22,6 +23,11 @@ export const COMMANDS = {
     philosophy     — the bridge between chaos and order
     whoami         — operator identity
     contact        — communication ports
+
+  ── visual ────────────────────────────────────
+    showreel       — creative showreel (video)
+    technical      — technical showreel (video)
+    portfolio      — full portfolio map (Miro)
 
   ── operator ──────────────────────────────────
     commit <msg>   — seal a message as artifact
@@ -364,6 +370,26 @@ export const COMMANDS = {
   This is not philosophy for decoration.
   This is architecture for systems that must work.
 `,
+
+  showreel: () => ({
+    text: `  Visual work is not the center of this interface.
+  But it exists.
+
+  Signal is visual. Terminal is just the entry point.`,
+    media: { type: 'youtube', url: LINKS.showreel, label: 'Creative Showreel' },
+  }),
+
+  technical: () => ({
+    text: `  Technical execution. Pipeline discipline.
+  Where systems thinking meets visual output.`,
+    media: { type: 'youtube', url: LINKS.technical, label: 'Technical Showreel' },
+  }),
+
+  portfolio: () => ({
+    text: `  Full portfolio map — architecture, projects, process.
+  Not a slideshow. A system diagram.`,
+    media: { type: 'link', url: LINKS.miro, label: 'Open Portfolio Map (Miro)' },
+  }),
 
   contact: () => `
   COMMUNICATION PORTS

@@ -54,31 +54,45 @@ export default function Terminal() {
     if (inputRef.current) inputRef.current.focus();
   }, []);
 
+  // Scroll to bottom of terminal-body whenever needed
+  const scrollToBottom = useCallback(() => {
+    if (containerRef.current) {
+      const body = containerRef.current.querySelector('.terminal-body');
+      if (body) body.scrollTop = body.scrollHeight;
+    }
+    // Also try scrollIntoView on the input
+    setTimeout(() => {
+      inputRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }, 150);
+  }, []);
+
   useEffect(() => {
     focusInput();
     const handleGlobalKey = () => focusInput();
     window.addEventListener('keydown', handleGlobalKey);
 
-    // Mobile keyboard: resize terminal to visible viewport
+    // Mobile keyboard handling
     const vv = window.visualViewport;
     if (vv) {
       const onResize = () => {
-        document.documentElement.style.setProperty('--vvh', `${vv.height}px`);
-        // Scroll input into view after keyboard opens
-        setTimeout(() => {
-          inputRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
-        }, 100);
+        // Set CSS variable to visual viewport height
+        const h = vv.height;
+        document.documentElement.style.setProperty('--vvh', `${h}px`);
+        // Scroll input visible after keyboard resize
+        scrollToBottom();
       };
       vv.addEventListener('resize', onResize);
+      vv.addEventListener('scroll', onResize);
       onResize();
       return () => {
         window.removeEventListener('keydown', handleGlobalKey);
         vv.removeEventListener('resize', onResize);
+        vv.removeEventListener('scroll', onResize);
       };
     }
 
     return () => window.removeEventListener('keydown', handleGlobalKey);
-  }, [focusInput]);
+  }, [focusInput, scrollToBottom]);
 
   const typeOutput = useCallback((text, callback) => {
     setIsTyping(true);
@@ -280,9 +294,10 @@ export default function Terminal() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 onFocus={() => {
-                  setTimeout(() => {
-                    inputRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
-                  }, 300);
+                  // Mobile: scroll to input when keyboard opens
+                  setTimeout(() => scrollToBottom(), 100);
+                  setTimeout(() => scrollToBottom(), 400);
+                  setTimeout(() => scrollToBottom(), 800);
                 }}
                 className="terminal-input"
                 autoFocus

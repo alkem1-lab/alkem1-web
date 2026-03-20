@@ -193,7 +193,9 @@
 .terminal-body {
   flex: 1;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 20px;
+  padding-bottom: 80px;
   scroll-behavior: smooth;
 }
 
@@ -333,12 +335,17 @@
 /* ═══════════════════════════════════ */
 
 @media (max-width: 768px) {
+  .app {
+    height: var(--vvh, 100dvh);
+    overflow: hidden;
+  }
+
   .terminal-container {
-    height: 100dvh;
+    height: var(--vvh, 100dvh);
   }
 
   .terminal {
-    height: 100dvh;
+    height: var(--vvh, 100dvh);
   }
 
   .boot-screen {
@@ -351,6 +358,7 @@
 
   .terminal-body {
     padding: 12px;
+    padding-bottom: 60px;
   }
 
   .prompt {
@@ -359,7 +367,7 @@
 
   .command-text,
   .terminal-input {
-    font-size: 12px;
+    font-size: 16px; /* prevents iOS zoom on focus */
   }
 
   .output-text {
@@ -369,12 +377,16 @@
 
   .terminal-hints {
     gap: 6px;
-    padding: 8px 12px;
+    padding: 6px 12px;
   }
 
   .hint {
-    font-size: 10px;
-    padding: 3px 8px;
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .input-line {
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 }
 

@@ -5,16 +5,66 @@
 
 .media-label {
   font-family: var(--font);
-  font-size: 10px;
-  color: #333;
+  font-size: 9px;
+  color: #2a2a2a;
   margin-bottom: 8px;
   letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ── YouTube lazy embed ────────────────── */
+
+.yt-thumb-btn {
+  position: relative;
+  width: 100%;
+  display: block;
+  border: 1px solid #1a1a1a;
+  border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #111;
+  padding: 0;
+}
+
+.yt-thumb {
+  width: 100%;
+  display: block;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.yt-thumb-btn:hover .yt-thumb {
+  opacity: 0.9;
+}
+
+.yt-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.yt-play-text {
+  font-family: var(--font);
+  font-size: 11px;
+  color: #ccc;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.5px;
+}
+
+.yt-thumb-btn:hover .yt-play-text {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .media-video {
   position: relative;
   width: 100%;
-  padding-bottom: 56.25%; /* 16:9 */
+  padding-bottom: 56.25%;
   background: #111;
   border: 1px solid #1a1a1a;
   border-radius: 2px;
@@ -32,9 +82,30 @@
 
 .media-caption {
   font-family: var(--font);
+  font-size: 9px;
+  color: #333;
+  margin-top: 6px;
+}
+
+/* ── Miro card ─────────────────────────── */
+
+.miro-card {
+  border: 1px solid #1a1a1a;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.miro-title {
+  font-family: var(--font);
+  font-size: 11px;
+  color: #888;
+}
+
+.miro-desc {
+  font-family: var(--font);
   font-size: 10px;
   color: #444;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .media-link {
@@ -46,6 +117,7 @@
   border: 1px solid #1a1a1a;
   border-radius: 2px;
   display: inline-block;
+  margin-top: 10px;
   transition: border-color 0.2s;
 }
 
@@ -58,8 +130,49 @@
   opacity: 0.5;
 }
 
+/* ── Work menu ─────────────────────────── */
+
+.work-menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.work-option {
+  border: 1px solid #1a1a1a;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.01);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: var(--font);
+}
+
+.work-option:hover {
+  border-color: var(--green-dark);
+  background: rgba(0, 255, 65, 0.03);
+}
+
+.work-option-label {
+  font-size: 11px;
+  color: #999;
+}
+
+.work-option:hover .work-option-label {
+  color: var(--green);
+}
+
+.work-option-desc {
+  font-size: 9px;
+  color: #444;
+  margin-top: 4px;
+}
+
 @media (max-width: 768px) {
   .media-embed {
     max-width: 100%;
+  }
+  .work-menu {
+    grid-template-columns: 1fr;
   }
 }

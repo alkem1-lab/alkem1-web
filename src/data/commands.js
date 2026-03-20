@@ -5,7 +5,7 @@ import {
   proveDeterminism,
   verifyChain,
 } from './artifactStore';
-import { LINKS } from './links';
+import { LINKS, WORK_OPTIONS } from './links';
 
 export const COMMANDS = {
   help: () => `
@@ -25,6 +25,7 @@ export const COMMANDS = {
     contact        — communication ports
 
   ── visual ────────────────────────────────────
+    work           — all channels (unified menu)
     showreel       — creative showreel (video)
     technical      — technical showreel (video)
     portfolio      — full portfolio map (Miro)
@@ -371,24 +372,36 @@ export const COMMANDS = {
   This is architecture for systems that must work.
 `,
 
+  work: () => ({
+    text: `  Multiple layers of work. Not everything fits one link.
+
+  showreel   — visual / creative work
+  technical  — technical reel
+  portfolio  — Miro map of projects and process
+  mlops      — AG1, systems, architecture
+
+  Choose a signal. Or type the command directly.`,
+    media: { type: 'work-menu', options: WORK_OPTIONS },
+  }),
+
   showreel: () => ({
     text: `  Visual work is not the center of this interface.
   But it exists.
 
   Signal is visual. Terminal is just the entry point.`,
-    media: { type: 'youtube', url: LINKS.showreel, label: 'Creative Showreel' },
+    media: { type: 'youtube', videoId: LINKS.showreel.videoId, label: LINKS.showreel.label },
   }),
 
   technical: () => ({
     text: `  Technical execution. Pipeline discipline.
   Where systems thinking meets visual output.`,
-    media: { type: 'youtube', url: LINKS.technical, label: 'Technical Showreel' },
+    media: { type: 'youtube', videoId: LINKS.technical.videoId, label: LINKS.technical.label },
   }),
 
   portfolio: () => ({
     text: `  Full portfolio map — architecture, projects, process.
   Not a slideshow. A system diagram.`,
-    media: { type: 'link', url: LINKS.miro, label: 'Open Portfolio Map (Miro)' },
+    media: { type: 'miro', url: LINKS.portfolio.url, label: LINKS.portfolio.label, description: LINKS.portfolio.description },
   }),
 
   contact: () => `

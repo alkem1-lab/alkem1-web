@@ -62,7 +62,7 @@
 /* ── State reactions ──────────────── */
 
 .state-thinking .logo-path {
-  animation: thinkPulse 1s steps(2) infinite;
+  animation: thinkPulse 0.4s steps(2) infinite;
 }
 
 .state-success .logo-path {

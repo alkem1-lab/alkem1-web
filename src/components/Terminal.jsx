@@ -253,7 +253,7 @@ export default function Terminal() {
         const commands = [
           'help', 'overview', 'architecture', 'runtime', 'domain',
           'mlops', 'stack', 'determinism', 'philosophy',
-          'showreel', 'technical', 'portfolio',
+          'work', 'showreel', 'technical', 'portfolio',
           'whoami', 'contact', 'commit', 'evidence', 'witness',
           'verify', 'prove', 'status', 'clear',
         ];
@@ -262,6 +262,26 @@ export default function Terminal() {
       }
     }
   }, [commandHistory, historyIndex, input]);
+
+  const handleWorkSelect = useCallback((item) => {
+    if (item.kind === 'command' && item.command) {
+      // Execute internal command
+      setInput(item.command);
+      setTimeout(() => {
+        const fakeEvent = { preventDefault: () => {} };
+        // Simulate typing the command
+        setHistory(prev => [...prev, { type: 'command', content: item.command }]);
+        if (COMMANDS[item.command]) {
+          const result = executeCommand(item.command);
+          typeOutput(typeof result === 'string' ? result : result.text);
+        }
+      }, 100);
+    } else if (item.kind === 'youtube' && item.videoId) {
+      setHistory(prev => [...prev, { type: 'media', media: { type: 'youtube', videoId: item.videoId, label: item.label } }]);
+    } else if (item.kind === 'miro' && item.url) {
+      window.open(item.url, '_blank', 'noopener,noreferrer');
+    }
+  }, [typeOutput]);
 
   return (
     <div className="terminal" onClick={focusInput} ref={containerRef}>
@@ -289,6 +309,10 @@ export default function Terminal() {
                 type={entry.media.type}
                 url={entry.media.url}
                 label={entry.media.label}
+                description={entry.media.description}
+                videoId={entry.media.videoId}
+                options={entry.media.options}
+                onSelect={handleWorkSelect}
               />
             ) : entry.type === 'command' ? (
               <div className="command-line">

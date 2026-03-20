@@ -58,6 +58,25 @@ export default function Terminal() {
     focusInput();
     const handleGlobalKey = () => focusInput();
     window.addEventListener('keydown', handleGlobalKey);
+
+    // Mobile keyboard: resize terminal to visible viewport
+    const vv = window.visualViewport;
+    if (vv) {
+      const onResize = () => {
+        document.documentElement.style.setProperty('--vvh', `${vv.height}px`);
+        // Scroll input into view after keyboard opens
+        setTimeout(() => {
+          inputRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
+        }, 100);
+      };
+      vv.addEventListener('resize', onResize);
+      onResize();
+      return () => {
+        window.removeEventListener('keydown', handleGlobalKey);
+        vv.removeEventListener('resize', onResize);
+      };
+    }
+
     return () => window.removeEventListener('keydown', handleGlobalKey);
   }, [focusInput]);
 
@@ -244,6 +263,11 @@ export default function Terminal() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
+                onFocus={() => {
+                  setTimeout(() => {
+                    inputRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
+                  }, 300);
+                }}
                 className="terminal-input"
                 autoFocus
                 spellCheck={false}

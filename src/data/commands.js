@@ -383,40 +383,38 @@ export const COMMANDS = {
   OPERATOR IDENTITY
   ════════════════════════════════════════════════════
 
-  Aleksandar Stefanovic // ALKEM1
-  Builder of AG1 systems.
+  Aleksandar Stefanovic // Alek // ALKEM1
 
-  ── Roles ─────────────────────────────────────────
+  Not a resume in human form.
+  More like a long-running systems experiment
+  with decent taste and low tolerance for noise.
 
-  AG1 architect — self-aware code intelligence
-  Domain systems — structured truth, not guesses
-  MLOps engineer — from eval to verifiable deploy
-  Runtime builder — state, contracts, observability
+  ── Path ──────────────────────────────────────────
 
-  ── Background ────────────────────────────────────
-
-  25 years cross-domain:
-  industrial design → CGI → AI architecture
+  electronics + music → DMX lighting → web →
+  industrial design → Swiss watchmaking →
+  CGI / VFX → AI architecture → MLOps
 
   Not a pivot. An accumulation.
-  Each layer informs the next.
+  Each domain taught the same structural laws
+  wearing different skins.
 
-  ── Location ──────────────────────────────────────
+  ── What stuck ────────────────────────────────────
+
+  Watchmaking taught tolerances and modularity.
+  VFX taught pipeline discipline.
+  Electronics taught signal and timing.
+  Design taught constraint.
+  AI became the convergence layer.
+
+  ── Current ───────────────────────────────────────
+
+  Building AG1 — self-aware code intelligence.
+  Less chatbot theater, more governed intelligence.
+  Less black box, more traceable state.
 
   Geneva, Switzerland
-
-  ── Contact ───────────────────────────────────────
-
   creatorzdeitz@gmail.com
-
-  ── Thesis ────────────────────────────────────────
-
-  Current AI tools assist.
-  The next layer operates.
-  That layer needs memory, audit, domain truth,
-  and the discipline to say "I don't know."
-
-  Build systems. Remove illusion. Keep evidence.
 `,
 
   witness: () => {

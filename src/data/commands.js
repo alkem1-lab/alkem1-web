@@ -1,20 +1,34 @@
+import {
+  commitArtifact,
+  getEvidence,
+  witnessArtifact,
+  proveDeterminism,
+  verifyChain,
+} from './artifactStore';
+
 export const COMMANDS = {
   help: () => `
   Available commands:
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+  ── navigate ──────────────────────────────────
     overview       — what is AG1 and why it exists
     architecture   — system layers and dependencies
     runtime        — agent execution and state
     domain         — domain packs and structured truth
     mlops          — pipeline, evals, deployment gates
     stack          — technologies by responsibility
-    evidence       — verification, audit, trust layer
     determinism    — why deterministic architecture
     philosophy     — the bridge between chaos and order
     whoami         — operator identity
     contact        — communication ports
-    witness        — system observations
+
+  ── operator ──────────────────────────────────
+    commit <msg>   — seal a message as artifact
+    evidence       — list recent artifacts + hashes
+    witness <id>   — full trace for one artifact
+    verify         — check artifact chain integrity
+    prove <input>  — determinism proof (same in = same hash)
     status         — current system state
     clear          — clear terminal
 
@@ -432,6 +446,7 @@ export const COMMANDS = {
 
   status: () => {
     const now = new Date().toISOString().replace('T', ' ').split('.')[0];
+    const chain = verifyChain();
     return `
   SYSTEM STATUS — ${now}
   ════════════════════════════════════════════════════
@@ -440,23 +455,168 @@ export const COMMANDS = {
   agent_runtime:     ACTIVE     orchestrator ready
   domain_resolver:   ACTIVE     packs indexed
   memory_layer:      ACTIVE     pgvector connected
-  evidence_chain:    ACTIVE     SHA-256 + Ed25519
+  evidence_chain:    ACTIVE     SHA-256
   mlops_pipeline:    ACTIVE     eval loop running
-  trust_audit:       ACTIVE     invariants holding
   observer_node:     ACTIVE     watching
   watchdog:          ACTIVE     no drift detected
 
-  Uptime: continuous
-  State: canonical
-  Evidence: chain intact
-  Entropy: contained
+  artifact_chain:    ${chain.length} artifacts sealed
+  chain_integrity:   ${chain.valid ? 'VALID' : 'BROKEN at index ' + chain.break_at}
 
-  A clean status is not the absence of problems.
-  It is the presence of governance.
+  State: canonical
+  Entropy: contained
 `;
   },
 
   clear: () => '__CLEAR__',
+};
+
+// ─── Async commands (need special handling) ──────────────────────
+
+export const ASYNC_COMMANDS = {
+  commit: async (args) => {
+    if (!args) {
+      return `\n  Usage: commit <message>\n  Example: commit interested in AG1 architecture\n\n  Seals your input as a traceable artifact.`;
+    }
+    const artifact = await commitArtifact(args);
+    return `
+  ARTIFACT SEALED
+  ════════════════════════════════════════════════════
+
+  commit_id:      ${artifact.id}
+  sha256:         ${artifact.hash}
+  prev_hash:      ${artifact.prev_hash}...
+  timestamp:      ${artifact.timestamp}
+  classification: ${artifact.classification}
+  status:         ${artifact.status}
+  state:          ${artifact.state_transition}
+
+  Message recorded. Evidence chain updated.
+`;
+  },
+
+  evidence: async () => {
+    const artifacts = getEvidence(8);
+    if (artifacts.length === 0) {
+      return `\n  No artifacts recorded.\n  Use 'commit <message>' to seal your first artifact.`;
+    }
+    const chain = verifyChain();
+    let output = `
+  EVIDENCE LOG — recent artifacts
+  ════════════════════════════════════════════════════
+
+  ID        SHA256 (short)     CLASS          STATUS   TIME
+  ────────  ─────────────────  ─────────────  ───────  ─────────────────────\n`;
+
+    for (const a of artifacts) {
+      const time = a.timestamp.replace('T', ' ').split('.')[0];
+      output += `  ${a.id}    ${a.hash.substring(0, 16)}   ${a.classification.padEnd(13)}  ${a.status}  ${time}\n`;
+    }
+
+    output += `\n  Chain: ${chain.length} artifacts | Integrity: ${chain.valid ? 'VALID' : 'BROKEN'}`;
+    output += `\n\n  Use 'witness <id>' for full trace of any artifact.`;
+    return output;
+  },
+
+  witness: async (args) => {
+    if (!args) {
+      // Show observer node observation if no ID given
+      const observations = [
+        "Too many tools. Not enough contracts.\nThe system grows, but governance does not.",
+        "You call it intelligence.\nI call it unverified state with confidence styling.",
+        "The pipeline ships. But can it replay?\nHope is not an engineering strategy.",
+        "Noise is not intelligence.\nClarity is inversely proportional to hype.",
+        "The observer is part of the runtime.\nAcknowledge your position or produce artifacts.",
+        "A stable system does not shout.\nIt produces evidence quietly.",
+        "State is prior to story.\nFix the state. The story corrects itself.",
+      ];
+      const obs = observations[Math.floor(Math.random() * observations.length)];
+      return `\n  ┌──────────────────────────────────────────────────┐\n  │  OBSERVER NODE                                   │\n  └──────────────────────────────────────────────────┘\n\n  ${obs}\n\n  Tip: use 'witness <id>' to trace a specific artifact.`;
+    }
+
+    const artifact = witnessArtifact(args.trim());
+    if (!artifact) {
+      return `\n  Artifact '${args.trim()}' not found.\n  Use 'evidence' to see available artifacts.`;
+    }
+
+    return `
+  ARTIFACT TRACE — ${artifact.id}
+  ════════════════════════════════════════════════════
+
+  ── Identity ──────────────────────────────────────
+  commit_id:         ${artifact.id}
+  sha256:            ${artifact.hash}
+  prev_hash:         ${artifact.prev_hash}...
+
+  ── Payload ───────────────────────────────────────
+  raw_input:         ${artifact.message}
+  normalized:        ${artifact.normalized_payload}
+  classification:    ${artifact.classification}
+  topic:             ${artifact.topic}
+
+  ── State ─────────────────────────────────────────
+  timestamp:         ${artifact.timestamp}
+  status:            ${artifact.status}
+  state_transition:  ${artifact.state_transition}
+
+  ── Verification ──────────────────────────────────
+  hash_algorithm:    SHA-256
+  chain_linked:      prev_hash → current hash
+  integrity:         sealed, immutable
+
+  Trace complete. This artifact is verifiable.
+`;
+  },
+
+  prove: async (args) => {
+    const input = args || 'determinism is not rigidity';
+    const result = await proveDeterminism(input);
+    return `
+  DETERMINISM PROOF
+  ════════════════════════════════════════════════════
+
+  ── Input ─────────────────────────────────────────
+  raw:       ${result.input}
+  payload:   ${result.payload}
+
+  ── Hashes (3 independent runs) ───────────────────
+  run_1:     ${result.hash1}
+  run_2:     ${result.hash2}
+  run_3:     ${result.hash3}
+
+  ── Result ────────────────────────────────────────
+  match:     ${result.match ? 'TRUE — all identical' : 'FALSE — divergence detected'}
+
+  Same input. Same transformation. Same output.
+  Three times. No variance. No ambiguity.
+
+  This is what determinism means in practice.
+  Not philosophy. Engineering.
+`;
+  },
+
+  verify: async () => {
+    const chain = verifyChain();
+    const artifacts = getEvidence(3);
+    let output = `
+  CHAIN VERIFICATION
+  ════════════════════════════════════════════════════
+
+  artifacts:   ${chain.length}
+  integrity:   ${chain.valid ? 'VALID — no breaks detected' : 'BROKEN — break at index ' + chain.break_at}
+  algorithm:   SHA-256
+  linking:     prev_hash chain\n`;
+
+    if (artifacts.length > 0) {
+      output += `\n  ── Latest artifacts ──────────────────────────────\n`;
+      for (const a of artifacts) {
+        output += `  ${a.id}  ${a.hash.substring(0, 24)}...  ${a.status}\n`;
+      }
+    }
+
+    output += `\n  Each artifact links to the previous via hash.\n  Tamper one, break the chain. That is the point.`;
+    return output;
+  },
 };
 
 // Fallback responses for unknown commands (when AI is offline)

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { executeCommand, COMMANDS } from '../data/commands';
+import { executeCommand, COMMANDS, ASYNC_COMMANDS } from '../data/commands';
 import { askPersona, clearChatHistory } from '../data/aiChat';
 import AnimatedLogo from './AnimatedLogo';
 
@@ -135,6 +135,21 @@ export default function Terminal() {
       return;
     }
 
+    // Check async operator commands (commit, evidence, witness, prove, verify)
+    const parts = cmd.match(/^(\S+)\s*(.*)?$/);
+    const cmdName = parts ? parts[1].toLowerCase() : trimmed;
+    const cmdArgs = parts ? (parts[2] || '').trim() : '';
+
+    if (ASYNC_COMMANDS[cmdName]) {
+      setIsTyping(true);
+      setLogoState('thinking');
+      const result = await ASYNC_COMMANDS[cmdName](cmdArgs || undefined);
+      setLogoState('success');
+      setTimeout(() => setLogoState('idle'), 400);
+      typeOutput(result);
+      return;
+    }
+
     // AI query — operator-style thinking phrases
     setIsTyping(true);
     setLogoState('thinking');
@@ -212,8 +227,9 @@ export default function Terminal() {
       if (partial) {
         const commands = [
           'help', 'overview', 'architecture', 'runtime', 'domain',
-          'mlops', 'stack', 'evidence', 'determinism', 'philosophy',
-          'whoami', 'contact', 'witness', 'status', 'clear',
+          'mlops', 'stack', 'determinism', 'philosophy',
+          'whoami', 'contact', 'commit', 'evidence', 'witness',
+          'verify', 'prove', 'status', 'clear',
         ];
         const match = commands.find(c => c.startsWith(partial));
         if (match) setInput(match);

@@ -221,8 +221,6 @@ app.post('/api/notify', async (req, res) => {
 
 // ─── Remote command polling ─────────────────────────────────────────
 
-let lastProcessedId = 0;
-
 app.get('/api/last-command', async (req, res) => {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) return res.json({ command: null });
@@ -236,11 +234,8 @@ app.get('/api/last-command', async (req, res) => {
     const rawText = update.message?.text?.trim();
     const updateId = update.update_id;
 
-    if (!rawText || updateId <= lastProcessedId || !rawText.startsWith('/')) {
-      return res.json({ command: null });
-    }
+    if (!rawText || !rawText.startsWith('/')) return res.json({ command: null });
 
-    lastProcessedId = updateId;
     const spaceIdx = rawText.indexOf(' ');
     const command = spaceIdx > 0 ? rawText.slice(1, spaceIdx).toLowerCase() : rawText.slice(1).toLowerCase();
     const payload = spaceIdx > 0 ? rawText.slice(spaceIdx + 1) : null;

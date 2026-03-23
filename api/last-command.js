@@ -1,5 +1,3 @@
-let lastProcessedId = 0;
-
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'GET only' });
 
@@ -18,19 +16,13 @@ export default async function handler(req, res) {
     const rawText = update.message?.text?.trim();
     const updateId = update.update_id;
 
-    if (!rawText || updateId <= lastProcessedId) return res.json({ command: null });
+    if (!rawText || !rawText.startsWith('/')) return res.json({ command: null });
 
-    lastProcessedId = updateId;
-
-    if (!rawText.startsWith('/')) return res.json({ command: null });
-
-    // Split into command and payload: "/msg Hello world" → command="msg", payload="Hello world"
     const spaceIdx = rawText.indexOf(' ');
-    const command = spaceIdx > 0
-      ? rawText.slice(1, spaceIdx).toLowerCase()
-      : rawText.slice(1).toLowerCase();
+    const command = spaceIdx > 0 ? rawText.slice(1, spaceIdx).toLowerCase() : rawText.slice(1).toLowerCase();
     const payload = spaceIdx > 0 ? rawText.slice(spaceIdx + 1) : null;
 
+    // Always return latest — client tracks what it already processed
     return res.json({ command, payload, updateId });
   } catch (_) {
     return res.json({ command: null });

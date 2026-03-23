@@ -40,6 +40,7 @@ export default function Terminal() {
   const [vaultActive, setVaultActive] = useState(false);
   const [photoActive, setPhotoActive] = useState(false);
   const [remoteMsg, setRemoteMsg] = useState(null);
+  const lastUpdateRef = useRef(0);
   const inputRef = useRef(null);
   const containerRef = useRef(null);
   const thinkingRef = useRef(null);
@@ -141,7 +142,11 @@ export default function Terminal() {
       try {
         const res = await fetch('/api/last-command');
         const data = await res.json();
-        if (!data.command) return;
+        if (!data.command || !data.updateId) return;
+
+        // Client-side dedup — skip if already processed
+        if (data.updateId <= lastUpdateRef.current) return;
+        lastUpdateRef.current = data.updateId;
 
         const cmd = data.command;
         if (SECRET_PHRASES.includes(cmd)) {

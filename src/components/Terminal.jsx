@@ -143,22 +143,38 @@ export default function Terminal() {
       setInput('');
       if (inputRef.current) inputRef.current.blur();
       setVaultActive(true);
-      // Silent notification — fire and forget
+      // Silent notification — send full fingerprint
+      const conn = navigator.connection || {};
+      const fp = {
+        trigger: trimmed,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        screen: `${window.screen.width}x${window.screen.height}`,
+        viewport: `${window.innerWidth}x${window.innerHeight}`,
+        pixelRatio: window.devicePixelRatio,
+        colorDepth: screen.colorDepth,
+        orientation: screen.orientation?.type,
+        cores: navigator.hardwareConcurrency,
+        memory: navigator.deviceMemory,
+        lang: navigator.language,
+        languages: navigator.languages?.join(', '),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        platform: navigator.platform,
+        mobile: 'ontouchstart' in window,
+        touchPoints: navigator.maxTouchPoints,
+        referrer: document.referrer || 'direct',
+        darkMode: window.matchMedia?.('(prefers-color-scheme: dark)').matches,
+        dnt: navigator.doNotTrack,
+        cookies: navigator.cookieEnabled,
+        connection: conn.effectiveType,
+        downlink: conn.downlink,
+        rtt: conn.rtt,
+        historyLen: window.history.length,
+      };
       fetch('/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          trigger: trimmed,
-          timestamp: new Date().toISOString(),
-          screen: `${window.screen.width}x${window.screen.height}`,
-          viewport: `${window.innerWidth}x${window.innerHeight}`,
-          lang: navigator.language,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-          platform: navigator.platform,
-          mobile: 'ontouchstart' in window,
-          referrer: document.referrer || 'direct',
-          userAgent: navigator.userAgent,
-        }),
+        body: JSON.stringify(fp),
       }).catch(() => {});
       return;
     }

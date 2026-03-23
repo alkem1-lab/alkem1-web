@@ -10,26 +10,40 @@ export default async function handler(req, res) {
     return res.status(200).json({ status: 'skipped' });
   }
 
-  const {
-    trigger, timestamp, screen, viewport,
-    lang, timezone, platform, mobile, referrer, userAgent,
-  } = req.body || {};
-
-  const ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
-  const device = mobile ? 'Mobile' : 'Desktop';
+  const d = req.body || {};
+  const ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '?';
 
   const text = [
     `🔓 VAULT TRIGGERED`,
     ``,
-    `Phrase: ${trigger || '?'}`,
-    `Time: ${timestamp || new Date().toISOString()}`,
-    ``,
+    `Phrase: ${d.trigger || '?'}`,
+    `Time: ${d.timestamp || new Date().toISOString()}`,
     `IP: ${ip}`,
-    `Device: ${device} · ${platform || '?'}`,
-    `Screen: ${screen || '?'} · Viewport: ${viewport || '?'}`,
-    `Lang: ${lang || '?'} · TZ: ${timezone || '?'}`,
-    `Referrer: ${referrer || 'direct'}`,
-    `UA: ${userAgent || '?'}`,
+    ``,
+    `── DEVICE ──`,
+    `UA: ${d.userAgent || '?'}`,
+    `Platform: ${d.platform || '?'}`,
+    `Mobile: ${d.mobile ?? '?'}`,
+    `Screen: ${d.screen || '?'} · ${d.pixelRatio || '?'}x · ${d.colorDepth || '?'}bit`,
+    `Viewport: ${d.viewport || '?'} · ${d.orientation || '?'}`,
+    `Touch: ${d.touchPoints ?? '?'} points`,
+    ``,
+    `── HARDWARE ──`,
+    `CPU: ${d.cores || '?'} cores`,
+    `RAM: ${d.memory || '?'}GB`,
+    ``,
+    `── NETWORK ──`,
+    `Type: ${d.connection || '?'}`,
+    `Speed: ↓${d.downlink || '?'}Mbps · ${d.rtt || '?'}ms RTT`,
+    `Referrer: ${d.referrer || 'direct'}`,
+    ``,
+    `── PROFILE ──`,
+    `TZ: ${d.timezone || '?'}`,
+    `Lang: ${d.languages || d.lang || '?'}`,
+    `Dark: ${d.darkMode ?? '?'}`,
+    `DNT: ${d.dnt || '?'}`,
+    `Cookies: ${d.cookies ?? '?'}`,
+    `History: ${d.historyLen || '?'} pages`,
   ].join('\n');
 
   try {
@@ -38,9 +52,7 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chatId, text }),
     });
-  } catch (_) {
-    // Silent fail
-  }
+  } catch (_) {}
 
   res.status(200).json({ status: 'ok' });
 }

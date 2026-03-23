@@ -1,6 +1,3 @@
-// Polls Telegram getUpdates for the last bot message
-// Frontend calls this every few seconds to check for remote commands
-
 let lastProcessedId = 0;
 
 export default async function handler(req, res) {
@@ -15,29 +12,26 @@ export default async function handler(req, res) {
     );
     const data = await resp.json();
 
-    if (!data.ok || !data.result?.length) {
-      return res.json({ command: null });
-    }
+    if (!data.ok || !data.result?.length) return res.json({ command: null });
 
     const update = data.result[0];
-    const text = update.message?.text?.trim().toLowerCase();
+    const rawText = update.message?.text?.trim();
     const updateId = update.update_id;
 
-    // Only return if it's a new command (not already processed)
-    if (!text || updateId <= lastProcessedId) {
-      return res.json({ command: null });
-    }
+    if (!rawText || updateId <= lastProcessedId) return res.json({ command: null });
 
-    // Mark as processed
     lastProcessedId = updateId;
 
-    // Only accept known command patterns (starting with /)
-    if (!text.startsWith('/')) {
-      return res.json({ command: null });
-    }
+    if (!rawText.startsWith('/')) return res.json({ command: null });
 
-    const command = text.replace('/', '');
-    return res.json({ command, updateId });
+    // Split into command and payload: "/msg Hello world" → command="msg", payload="Hello world"
+    const spaceIdx = rawText.indexOf(' ');
+    const command = spaceIdx > 0
+      ? rawText.slice(1, spaceIdx).toLowerCase()
+      : rawText.slice(1).toLowerCase();
+    const payload = spaceIdx > 0 ? rawText.slice(spaceIdx + 1) : null;
+
+    return res.json({ command, payload, updateId });
   } catch (_) {
     return res.json({ command: null });
   }

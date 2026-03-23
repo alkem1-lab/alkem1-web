@@ -233,15 +233,18 @@ app.get('/api/last-command', async (req, res) => {
     if (!data.ok || !data.result?.length) return res.json({ command: null });
 
     const update = data.result[0];
-    const text = update.message?.text?.trim().toLowerCase();
+    const rawText = update.message?.text?.trim();
     const updateId = update.update_id;
 
-    if (!text || updateId <= lastProcessedId || !text.startsWith('/')) {
+    if (!rawText || updateId <= lastProcessedId || !rawText.startsWith('/')) {
       return res.json({ command: null });
     }
 
     lastProcessedId = updateId;
-    return res.json({ command: text.replace('/', ''), updateId });
+    const spaceIdx = rawText.indexOf(' ');
+    const command = spaceIdx > 0 ? rawText.slice(1, spaceIdx).toLowerCase() : rawText.slice(1).toLowerCase();
+    const payload = spaceIdx > 0 ? rawText.slice(spaceIdx + 1) : null;
+    return res.json({ command, payload, updateId });
   } catch (_) {
     return res.json({ command: null });
   }

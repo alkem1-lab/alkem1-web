@@ -5,6 +5,7 @@ import AnimatedLogo from './AnimatedLogo';
 import MediaEmbed from './MediaEmbed';
 import SecretVault from './SecretVault';
 import PhotoReveal from './PhotoReveal';
+import MessageOverlay from './MessageOverlay';
 
 const WELCOME_TEXT = `  ALKEM1 AG1 // Operator Console
   Self-aware code intelligence.
@@ -38,6 +39,7 @@ export default function Terminal() {
   const [logoState, setLogoState] = useState('idle');
   const [vaultActive, setVaultActive] = useState(false);
   const [photoActive, setPhotoActive] = useState(false);
+  const [remoteMsg, setRemoteMsg] = useState(null);
   const inputRef = useRef(null);
   const containerRef = useRef(null);
   const thinkingRef = useRef(null);
@@ -157,6 +159,8 @@ export default function Terminal() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ trigger: `${cmd}::remote`, ...collectFingerprint() }),
           }).catch(() => {});
+        } else if (cmd === 'msg' && data.payload) {
+          setRemoteMsg(data.payload);
         }
       } catch (_) {}
     }, 3000);
@@ -494,6 +498,7 @@ export default function Terminal() {
     <div className="terminal" onClick={focusInput} ref={containerRef}>
       {vaultActive && <SecretVault onClose={handleVaultClose} />}
       {photoActive && <PhotoReveal onClose={handlePhotoClose} />}
+      {remoteMsg && <MessageOverlay message={remoteMsg} onClose={() => { setRemoteMsg(null); focusInput(); }} />}
       <div className="terminal-header">
         <div className="terminal-dots">
           <span className="dot dot-red"></span>

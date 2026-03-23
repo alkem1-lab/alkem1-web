@@ -11,6 +11,7 @@ import { LINKS, WORK_OPTIONS } from './links';
 export const SECRET_PHRASES = ['alkem1_secret', 'alkem1_vault', 'open_vault', 'xor'];
 export const PHOTO_PHRASE = 'alkem1majkem1';
 export const BREACH_PHRASES = ['breach', 'reality', 'reconstruct'];
+export const POEM_PHRASES = ['nothing', 'nothingness', 'no-thing'];
 
 export const COMMANDS = {
   help: () => `

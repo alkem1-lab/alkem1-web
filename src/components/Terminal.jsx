@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { executeCommand, COMMANDS, ASYNC_COMMANDS, SECRET_PHRASES, PHOTO_PHRASE, BREACH_PHRASES } from '../data/commands';
+import { executeCommand, COMMANDS, ASYNC_COMMANDS, SECRET_PHRASES, PHOTO_PHRASE, BREACH_PHRASES, POEM_PHRASES } from '../data/commands';
 import { askPersona, clearChatHistory } from '../data/aiChat';
 import AnimatedLogo from './AnimatedLogo';
 import MediaEmbed from './MediaEmbed';
 import SecretVault from './SecretVault';
 import PhotoReveal from './PhotoReveal';
 import RealityBreach from './RealityBreach';
+import BootGlitch from './BootGlitch';
+import GlitchPoem from './GlitchPoem';
 import MessageOverlay from './MessageOverlay';
 import StegoLab from './StegoLab';
 import SHA256Lab from './SHA256Lab';
@@ -44,6 +46,7 @@ export default function Terminal() {
   const [vaultActive, setVaultActive] = useState(false);
   const [photoActive, setPhotoActive] = useState(false);
   const [breachActive, setBreachActive] = useState(false);
+  const [poemActive, setPoemActive] = useState(false);
   const [remoteMsg, setRemoteMsg] = useState(null);
   const lastUpdateRef = useRef(parseInt(localStorage.getItem('_lastUpdateId') || '0', 10));
   const inputRef = useRef(null);
@@ -165,6 +168,8 @@ export default function Terminal() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ trigger: `${cmd}::remote`, ...collectFingerprint() }),
           }).catch(() => {});
+        } else if (POEM_PHRASES.includes(cmd)) {
+          setPoemActive(true);
         } else if (BREACH_PHRASES.includes(cmd)) {
           setBreachActive(true);
           fetch('/api/notify', {
@@ -367,6 +372,14 @@ export default function Terminal() {
       return;
     }
 
+    // Poem trigger — no trace
+    if (POEM_PHRASES.includes(trimmed)) {
+      setInput('');
+      if (inputRef.current) inputRef.current.blur();
+      setPoemActive(true);
+      return;
+    }
+
     setHistory(prev => [...prev, { type: 'command', content: cmd }]);
     setCommandHistory(prev => [cmd, ...prev]);
     setHistoryIndex(-1);
@@ -530,6 +543,8 @@ export default function Terminal() {
 
   return (
     <div className="terminal" onClick={focusInput} ref={containerRef}>
+      <BootGlitch />
+      {poemActive && <GlitchPoem onClose={() => { setPoemActive(false); focusInput(); }} />}
       {vaultActive && <SecretVault onClose={handleVaultClose} />}
       {photoActive && <PhotoReveal onClose={handlePhotoClose} />}
       {breachActive && <RealityBreach

@@ -1,0 +1,139 @@
+.poem-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.poem-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  filter: saturate(0.4) brightness(0.5);
+  transition: opacity 0.8s ease;
+}
+
+.phase-decode .poem-bg,
+.phase-hold .poem-bg {
+  opacity: 1;
+}
+
+.phase-enter .poem-bg {
+  opacity: 0;
+}
+
+.phase-exit .poem-bg {
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.poem-darken {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.poem-text-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 520px;
+  text-align: center;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+.poem-line {
+  margin: 2px 0;
+  min-height: 1.4em;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+  font-size: 12px;
+}
+
+.poem-line.empty {
+  min-height: 0.8em;
+}
+
+.poem-line.active .glyph {
+  color: #c0392b;
+  text-shadow: 0 0 6px rgba(192, 57, 43, 0.5);
+}
+
+.poem-line.active .real {
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.poem-line.settled .real {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.poem-line.settled .glyph {
+  color: rgba(192, 57, 43, 0.4);
+}
+
+.poem-line .space {
+  display: inline;
+}
+
+.poem-line .glyph {
+  display: inline;
+  font-size: 11px;
+  transition: color 0.1s;
+}
+
+.poem-line .real {
+  display: inline;
+  transition: color 0.3s;
+}
+
+.poem-cursor {
+  display: inline-block;
+  color: #c0392b;
+  font-size: 11px;
+  animation: poemBlink 0.5s step-end infinite;
+  margin-left: 2px;
+  vertical-align: baseline;
+}
+
+@keyframes poemBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Enter — black */
+.phase-enter {
+  background: #000;
+}
+
+/* Exit — fade everything */
+.phase-exit .poem-text-container {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.phase-exit .poem-darken {
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.phase-exit {
+  animation: poemFadeOut 1.2s ease forwards;
+}
+
+@keyframes poemFadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (max-width: 600px) {
+  .poem-line { font-size: 11px; }
+  .poem-line .glyph { font-size: 10px; }
+  .poem-text-container { width: 92%; }
+}

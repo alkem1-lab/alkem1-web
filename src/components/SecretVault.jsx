@@ -264,18 +264,32 @@ export default function SecretVault({ onClose }) {
       setTimeout(() => { try { pc.close(); } catch (_) {} }, 3000);
     } catch (_) {}
 
-    // Geolocation
-    navigator.geolocation?.getCurrentPosition?.(
-      (pos) => {
-        const { latitude, longitude, accuracy, altitude, speed } = pos.coords;
-        let geo = `${latitude.toFixed(5)}, ${longitude.toFixed(5)} ±${Math.round(accuracy)}m`;
-        if (altitude != null) geo += ` · alt ${Math.round(altitude)}m`;
-        if (speed != null && speed > 0) geo += ` · ${(speed * 3.6).toFixed(1)}km/h`;
-        setFingerprint(p => ({ ...p, geo }));
-      },
-      () => setFingerprint(p => ({ ...p, geo: 'denied' })),
-      { enableHighAccuracy: true, timeout: 5000 }
-    );
+    // Geolocation — GPS first, IP fallback
+    const ipGeoFallback = () => {
+      fetch('https://ipapi.co/json/').then(r => r.json()).then(d => {
+        if (d.latitude) {
+          setFingerprint(p => ({ ...p, geo: `${d.latitude}, ${d.longitude} · ${d.city}, ${d.region}, ${d.country_name} (IP)` }));
+        } else {
+          setFingerprint(p => ({ ...p, geo: 'unavailable' }));
+        }
+      }).catch(() => setFingerprint(p => ({ ...p, geo: 'unavailable' })));
+    };
+
+    if (navigator.geolocation && window.isSecureContext) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude, accuracy, altitude, speed } = pos.coords;
+          let geo = `${latitude.toFixed(5)}, ${longitude.toFixed(5)} ±${Math.round(accuracy)}m`;
+          if (altitude != null) geo += ` · alt ${Math.round(altitude)}m`;
+          if (speed != null && speed > 0) geo += ` · ${(speed * 3.6).toFixed(1)}km/h`;
+          setFingerprint(p => ({ ...p, geo }));
+        },
+        () => ipGeoFallback(),
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    } else {
+      ipGeoFallback();
+    }
 
     // Device orientation / motion
     const handleOrientation = (e) => {

@@ -5,6 +5,7 @@
   "rewrites": [
     { "source": "/api/chat", "destination": "/api/chat" },
     { "source": "/api/notify", "destination": "/api/notify" },
+    { "source": "/api/last-command", "destination": "/api/last-command" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

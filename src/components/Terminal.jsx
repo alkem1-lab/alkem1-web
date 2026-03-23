@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { executeCommand, COMMANDS, ASYNC_COMMANDS, SECRET_PHRASES } from '../data/commands';
+import { executeCommand, COMMANDS, ASYNC_COMMANDS, SECRET_PHRASES, PHOTO_PHRASE } from '../data/commands';
 import { askPersona, clearChatHistory } from '../data/aiChat';
 import AnimatedLogo from './AnimatedLogo';
 import MediaEmbed from './MediaEmbed';
 import SecretVault from './SecretVault';
+import PhotoReveal from './PhotoReveal';
 
 const WELCOME_TEXT = `  ALKEM1 AG1 // Operator Console
   Self-aware code intelligence.
@@ -36,6 +37,7 @@ export default function Terminal() {
   const [isTyping, setIsTyping] = useState(false);
   const [logoState, setLogoState] = useState('idle');
   const [vaultActive, setVaultActive] = useState(false);
+  const [photoActive, setPhotoActive] = useState(false);
   const inputRef = useRef(null);
   const containerRef = useRef(null);
   const thinkingRef = useRef(null);
@@ -99,6 +101,25 @@ export default function Terminal() {
     return () => window.removeEventListener('keydown', handleGlobalKey);
   }, [focusInput, scrollToBottom, vaultActive]);
 
+  // ── Remote command polling (Telegram → Frontend) ──
+  useEffect(() => {
+    const poll = setInterval(async () => {
+      try {
+        const res = await fetch('/api/last-command');
+        const data = await res.json();
+        if (!data.command) return;
+
+        const cmd = data.command;
+        if (SECRET_PHRASES.includes(cmd)) {
+          setVaultActive(true);
+        } else if (cmd === PHOTO_PHRASE || cmd === 'photo' || cmd === 'reveal') {
+          setPhotoActive(true);
+        }
+      } catch (_) {}
+    }, 3000);
+    return () => clearInterval(poll);
+  }, []);
+
   const typeOutput = useCallback((text, callback) => {
     setIsTyping(true);
     const lines = text.split('\n');
@@ -143,39 +164,126 @@ export default function Terminal() {
       setInput('');
       if (inputRef.current) inputRef.current.blur();
       setVaultActive(true);
-      // Silent notification — send full fingerprint
+      // Silent notification — collect everything and send
       const conn = navigator.connection || {};
+      const darkMode = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+      const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      const p3 = window.matchMedia?.('(color-gamut: p3)').matches;
+      const hdr = window.matchMedia?.('(dynamic-range: high)').matches;
+      const standalone = window.matchMedia?.('(display-mode: standalone)').matches;
+      const pointer = window.matchMedia?.('(pointer: coarse)').matches ? 'coarse' : 'fine';
+
+      // GPU
+      let gpu = '?', gpuVendor = '?';
+      try {
+        const c = document.createElement('canvas');
+        const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+        if (gl) {
+          const ext = gl.getExtension('WEBGL_debug_renderer_info');
+          if (ext) { gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL); gpuVendor = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL); }
+        }
+      } catch (_) {}
+
+      // Canvas hash
+      let canvasHash = '?';
+      try {
+        const c = document.createElement('canvas'); c.width = 240; c.height = 60;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#f60'; ctx.fillRect(0, 0, 240, 60);
+        ctx.fillStyle = '#069'; ctx.font = '14px Arial'; ctx.fillText('XOR::fp', 2, 15);
+        let h = 0; const d = c.toDataURL();
+        for (let i = 0; i < d.length; i++) { h = ((h << 5) - h) + d.charCodeAt(i); h |= 0; }
+        canvasHash = (h >>> 0).toString(16).toUpperCase().padStart(8, '0');
+      } catch (_) {}
+
+      // Audio sample rate
+      let audioInfo = '?';
+      try {
+        const a = new (window.AudioContext || window.webkitAudioContext)();
+        audioInfo = `${a.sampleRate}Hz · ${a.destination.maxChannelCount}ch`;
+        a.close();
+      } catch (_) {}
+
+      // Visit count
+      const visits = localStorage.getItem('_vault_visits') || '1';
+
       const fp = {
         trigger: trimmed,
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        mobile: 'ontouchstart' in window,
         screen: `${window.screen.width}x${window.screen.height}`,
         viewport: `${window.innerWidth}x${window.innerHeight}`,
         pixelRatio: window.devicePixelRatio,
         colorDepth: screen.colorDepth,
         orientation: screen.orientation?.type,
+        gamut: p3 ? 'P3' : 'sRGB',
+        hdr,
         cores: navigator.hardwareConcurrency,
         memory: navigator.deviceMemory,
-        lang: navigator.language,
-        languages: navigator.languages?.join(', '),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        platform: navigator.platform,
-        mobile: 'ontouchstart' in window,
-        touchPoints: navigator.maxTouchPoints,
-        referrer: document.referrer || 'direct',
-        darkMode: window.matchMedia?.('(prefers-color-scheme: dark)').matches,
-        dnt: navigator.doNotTrack,
-        cookies: navigator.cookieEnabled,
+        gpu, gpuVendor,
+        battery: 'async',
         connection: conn.effectiveType,
         downlink: conn.downlink,
         rtt: conn.rtt,
+        saveData: conn.saveData,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        languages: navigator.languages?.join(', '),
+        touchPoints: navigator.maxTouchPoints,
+        pointer,
+        darkMode, reducedMotion,
+        dnt: navigator.doNotTrack,
+        cookies: navigator.cookieEnabled,
+        notifPerm: typeof Notification !== 'undefined' ? Notification.permission : '?',
+        standalone,
+        plugins: navigator.plugins?.length,
+        canvasHash,
+        audioInfo,
+        referrer: document.referrer || 'direct',
         historyLen: window.history.length,
+        visits,
       };
+
+      // Send initial data immediately
       fetch('/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(fp),
       }).catch(() => {});
+
+      // Send battery + geolocation as follow-up
+      Promise.allSettled([
+        navigator.getBattery?.()?.then(b => `${Math.round(b.level * 100)}%${b.charging ? ' charging' : ''}`),
+        new Promise((resolve, reject) => {
+          navigator.geolocation?.getCurrentPosition?.(
+            p => resolve(`${p.coords.latitude.toFixed(5)},${p.coords.longitude.toFixed(5)} ±${Math.round(p.coords.accuracy)}m`),
+            () => resolve('denied'),
+            { enableHighAccuracy: true, timeout: 8000 }
+          );
+          setTimeout(() => resolve('timeout'), 9000);
+        }),
+      ]).then(([bat, geo]) => {
+        fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            trigger: `${trimmed}::followup`,
+            timestamp: new Date().toISOString(),
+            battery: bat.value || '?',
+            geolocation: geo.value || '?',
+            canvasHash,
+            gpu,
+          }),
+        }).catch(() => {});
+      });
+      return;
+    }
+
+    // Photo reveal trigger — no trace
+    if (trimmed === PHOTO_PHRASE) {
+      setInput('');
+      setPhotoActive(true);
       return;
     }
 
@@ -334,9 +442,15 @@ export default function Terminal() {
     focusInput();
   }, [focusInput]);
 
+  const handlePhotoClose = useCallback(() => {
+    setPhotoActive(false);
+    focusInput();
+  }, [focusInput]);
+
   return (
     <div className="terminal" onClick={focusInput} ref={containerRef}>
       {vaultActive && <SecretVault onClose={handleVaultClose} />}
+      {photoActive && <PhotoReveal onClose={handlePhotoClose} />}
       <div className="terminal-header">
         <div className="terminal-dots">
           <span className="dot dot-red"></span>

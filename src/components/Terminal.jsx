@@ -147,7 +147,18 @@ export default function Terminal() {
       fetch('/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ trigger: trimmed, timestamp: new Date().toISOString() }),
+        body: JSON.stringify({
+          trigger: trimmed,
+          timestamp: new Date().toISOString(),
+          screen: `${window.screen.width}x${window.screen.height}`,
+          viewport: `${window.innerWidth}x${window.innerHeight}`,
+          lang: navigator.language,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          platform: navigator.platform,
+          mobile: 'ontouchstart' in window,
+          referrer: document.referrer || 'direct',
+          userAgent: navigator.userAgent,
+        }),
       }).catch(() => {});
       return;
     }

@@ -10,19 +10,36 @@ export default async function handler(req, res) {
     return res.status(200).json({ status: 'skipped' });
   }
 
-  const { trigger, timestamp } = req.body || {};
-  const ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
+  const {
+    trigger, timestamp, screen, viewport,
+    lang, timezone, platform, mobile, referrer, userAgent,
+  } = req.body || {};
 
-  const text = `🔓 VAULT TRIGGERED\n\nPhrase: ${trigger || 'unknown'}\nTime: ${timestamp || new Date().toISOString()}\nIP: ${ip}`;
+  const ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
+  const device = mobile ? 'Mobile' : 'Desktop';
+
+  const text = [
+    `🔓 VAULT TRIGGERED`,
+    ``,
+    `Phrase: ${trigger || '?'}`,
+    `Time: ${timestamp || new Date().toISOString()}`,
+    ``,
+    `IP: ${ip}`,
+    `Device: ${device} · ${platform || '?'}`,
+    `Screen: ${screen || '?'} · Viewport: ${viewport || '?'}`,
+    `Lang: ${lang || '?'} · TZ: ${timezone || '?'}`,
+    `Referrer: ${referrer || 'direct'}`,
+    `UA: ${userAgent || '?'}`,
+  ].join('\n');
 
   try {
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' }),
+      body: JSON.stringify({ chat_id: chatId, text }),
     });
   } catch (_) {
-    // Silent fail — vault UX must never break
+    // Silent fail
   }
 
   res.status(200).json({ status: 'ok' });

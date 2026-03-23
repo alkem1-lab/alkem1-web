@@ -135,10 +135,26 @@ app.post('/api/notify', async (req, res) => {
     return res.status(200).json({ status: 'skipped' });
   }
 
-  const { trigger, timestamp } = req.body || {};
+  const {
+    trigger, timestamp, screen, viewport,
+    lang, timezone, platform, mobile, referrer, userAgent,
+  } = req.body || {};
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const device = mobile ? 'Mobile' : 'Desktop';
 
-  const text = `🔓 VAULT TRIGGERED\n\nPhrase: ${trigger || 'unknown'}\nTime: ${timestamp || new Date().toISOString()}\nIP: ${ip}`;
+  const text = [
+    `🔓 VAULT TRIGGERED`,
+    ``,
+    `Phrase: ${trigger || '?'}`,
+    `Time: ${timestamp || new Date().toISOString()}`,
+    ``,
+    `IP: ${ip}`,
+    `Device: ${device} · ${platform || '?'}`,
+    `Screen: ${screen || '?'} · Viewport: ${viewport || '?'}`,
+    `Lang: ${lang || '?'} · TZ: ${timezone || '?'}`,
+    `Referrer: ${referrer || 'direct'}`,
+    `UA: ${userAgent || '?'}`,
+  ].join('\n');
 
   try {
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {

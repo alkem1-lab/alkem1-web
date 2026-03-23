@@ -101,7 +101,39 @@ export default function Terminal() {
     return () => window.removeEventListener('keydown', handleGlobalKey);
   }, [focusInput, scrollToBottom, vaultActive]);
 
-  // ── Remote command polling (Telegram → Frontend) ──
+  // ── Collect fingerprint for notifications ──
+  const collectFingerprint = useCallback(() => {
+    const conn = navigator.connection || {};
+    let gpu = '?';
+    try {
+      const c = document.createElement('canvas');
+      const gl = c.getContext('webgl');
+      if (gl) { const ext = gl.getExtension('WEBGL_debug_renderer_info'); if (ext) gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL); }
+    } catch (_) {}
+    return {
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      platform: navigator.platform,
+      mobile: 'ontouchstart' in window,
+      screen: `${window.screen.width}x${window.screen.height}`,
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      pixelRatio: window.devicePixelRatio,
+      cores: navigator.hardwareConcurrency,
+      memory: navigator.deviceMemory,
+      gpu,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      languages: navigator.languages?.join(', '),
+      touchPoints: navigator.maxTouchPoints,
+      darkMode: window.matchMedia?.('(prefers-color-scheme: dark)').matches,
+      connection: conn.effectiveType,
+      downlink: conn.downlink,
+      rtt: conn.rtt,
+      historyLen: window.history.length,
+      referrer: document.referrer || 'direct',
+    };
+  }, []);
+
+  // ── Remote command polling (Telegram → Frontend → Telegram) ──
   useEffect(() => {
     const poll = setInterval(async () => {
       try {
@@ -112,13 +144,24 @@ export default function Terminal() {
         const cmd = data.command;
         if (SECRET_PHRASES.includes(cmd)) {
           setVaultActive(true);
+          // Close the loop — send fingerprint back to Telegram
+          fetch('/api/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ trigger: `${cmd}::remote`, ...collectFingerprint() }),
+          }).catch(() => {});
         } else if (cmd === PHOTO_PHRASE || cmd === 'photo' || cmd === 'reveal') {
           setPhotoActive(true);
+          fetch('/api/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ trigger: `${cmd}::remote`, ...collectFingerprint() }),
+          }).catch(() => {});
         }
       } catch (_) {}
     }, 3000);
     return () => clearInterval(poll);
-  }, []);
+  }, [collectFingerprint]);
 
   const typeOutput = useCallback((text, callback) => {
     setIsTyping(true);

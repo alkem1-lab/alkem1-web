@@ -30,14 +30,72 @@ export default function SecretVault({ onClose }) {
   const [step, setStep] = useState(0);
 
   // Collect visitor fingerprint on mount
-  const fingerprint = useMemo(() => ({
-    screen: `${window.screen.width}×${window.screen.height}`,
-    viewport: `${window.innerWidth}×${window.innerHeight}`,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    language: navigator.language,
-    platform: navigator.platform || '?',
-    device: ('ontouchstart' in window) ? 'Mobile' : 'Desktop',
-  }), []);
+  const [fingerprint, setFingerprint] = useState(() => {
+    // GPU via WebGL
+    let gpu = '?';
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (gl) {
+        const ext = gl.getExtension('WEBGL_debug_renderer_info');
+        if (ext) gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+      }
+    } catch (_) {}
+
+    // Canvas fingerprint hash
+    let canvasHash = '?';
+    try {
+      const c = document.createElement('canvas');
+      c.width = 200; c.height = 50;
+      const ctx = c.getContext('2d');
+      ctx.textBaseline = 'top';
+      ctx.font = '14px Arial';
+      ctx.fillStyle = '#f60';
+      ctx.fillRect(0, 0, 200, 50);
+      ctx.fillStyle = '#069';
+      ctx.fillText('XOR::fingerprint', 2, 15);
+      const data = c.toDataURL();
+      let hash = 0;
+      for (let i = 0; i < data.length; i++) {
+        hash = ((hash << 5) - hash) + data.charCodeAt(i);
+        hash |= 0;
+      }
+      canvasHash = (hash >>> 0).toString(16).toUpperCase().padStart(8, '0');
+    } catch (_) {}
+
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const darkMode = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+
+    return {
+      screen: `${window.screen.width}×${window.screen.height}`,
+      viewport: `${window.innerWidth}×${window.innerHeight}`,
+      pixelRatio: `${window.devicePixelRatio}x`,
+      colorDepth: `${screen.colorDepth}bit`,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      language: navigator.language,
+      platform: navigator.platform || '?',
+      device: ('ontouchstart' in window) ? 'Mobile' : 'Desktop',
+      cores: navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} cores` : '?',
+      memory: navigator.deviceMemory ? `${navigator.deviceMemory}GB` : '?',
+      gpu,
+      touchPoints: `${navigator.maxTouchPoints || 0}`,
+      connection: conn ? `${conn.effectiveType || '?'} · ${conn.downlink || '?'}Mbps` : '?',
+      darkMode: darkMode ? 'enabled' : 'disabled',
+      dnt: navigator.doNotTrack === '1' ? 'enabled' : 'disabled',
+      canvasHash,
+      battery: 'reading...',
+    };
+  });
+
+  // Battery is async
+  useEffect(() => {
+    navigator.getBattery?.().then(b => {
+      setFingerprint(prev => ({
+        ...prev,
+        battery: `${Math.round(b.level * 100)}%${b.charging ? ' ⚡ charging' : ''}`,
+      }));
+    }).catch(() => {});
+  }, []);
 
   // Compute XOR dynamically
   const xorData = useMemo(() => {
@@ -183,12 +241,19 @@ export default function SecretVault({ onClose }) {
         {step >= 27 && <div className="v-fingerprint-header">── YOUR SIGNAL ──</div>}
         {step >= 28 && (
           <div className="v-fingerprint-block">
-            <div className="v-fp"><span className="v-fp-label">SCREEN</span><span className="v-fp-val">{fingerprint.screen}</span></div>
-            <div className="v-fp"><span className="v-fp-label">VIEWPORT</span><span className="v-fp-val">{fingerprint.viewport}</span></div>
+            <div className="v-fp"><span className="v-fp-label">DEVICE</span><span className="v-fp-val">{fingerprint.device} · {fingerprint.platform}</span></div>
+            <div className="v-fp"><span className="v-fp-label">SCREEN</span><span className="v-fp-val">{fingerprint.screen} · {fingerprint.pixelRatio} · {fingerprint.colorDepth}</span></div>
+            <div className="v-fp"><span className="v-fp-label">CPU</span><span className="v-fp-val">{fingerprint.cores}</span></div>
+            <div className="v-fp"><span className="v-fp-label">MEMORY</span><span className="v-fp-val">{fingerprint.memory}</span></div>
+            <div className="v-fp"><span className="v-fp-label">GPU</span><span className="v-fp-val">{fingerprint.gpu}</span></div>
+            <div className="v-fp"><span className="v-fp-label">BATTERY</span><span className="v-fp-val">{fingerprint.battery}</span></div>
+            <div className="v-fp"><span className="v-fp-label">NETWORK</span><span className="v-fp-val">{fingerprint.connection}</span></div>
             <div className="v-fp"><span className="v-fp-label">TIMEZONE</span><span className="v-fp-val">{fingerprint.timezone}</span></div>
             <div className="v-fp"><span className="v-fp-label">LANGUAGE</span><span className="v-fp-val">{fingerprint.language}</span></div>
-            <div className="v-fp"><span className="v-fp-label">PLATFORM</span><span className="v-fp-val">{fingerprint.platform}</span></div>
-            <div className="v-fp"><span className="v-fp-label">DEVICE</span><span className="v-fp-val">{fingerprint.device}</span></div>
+            <div className="v-fp"><span className="v-fp-label">TOUCH</span><span className="v-fp-val">{fingerprint.touchPoints} points</span></div>
+            <div className="v-fp"><span className="v-fp-label">DARK MODE</span><span className="v-fp-val">{fingerprint.darkMode}</span></div>
+            <div className="v-fp"><span className="v-fp-label">DNT</span><span className="v-fp-val">{fingerprint.dnt}</span></div>
+            <div className="v-fp"><span className="v-fp-label">CANVAS ID</span><span className="v-fp-val">{fingerprint.canvasHash}</span></div>
           </div>
         )}
         {step >= 29 && (

@@ -1,0 +1,215 @@
+/* ═══════════════════════════════════ */
+/*         REALITY BREACH             */
+/* ═══════════════════════════════════ */
+
+.breach-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 9999;
+  background: #000;
+  overflow: hidden;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+/* ── Phase: Freeze ── */
+.phase-freeze {
+  background: rgba(0, 0, 0, 0.85);
+  animation: freezeFlicker 0.3s ease-out;
+}
+
+@keyframes freezeFlicker {
+  0%, 100% { opacity: 1; }
+  25% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+  75% { opacity: 0.1; }
+}
+
+/* ── Phase: Corrupt ── */
+.phase-corrupt {
+  background: #000;
+}
+
+.breach-corrupt {
+  position: absolute;
+  inset: 0;
+}
+
+.corrupt-char {
+  position: absolute;
+  color: #c0392b;
+  font-family: inherit;
+  opacity: 0;
+  animation: charFadeIn 0.2s ease forwards;
+  text-shadow: 0 0 4px rgba(192, 57, 43, 0.4);
+  pointer-events: none;
+}
+
+@keyframes charFadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: var(--char-opacity, 0.4); transform: translateY(0); }
+}
+
+.corrupt-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.corrupt-line {
+  color: #c0392b;
+  font-size: 11px;
+  letter-spacing: 2px;
+  opacity: 0;
+  animation: corruptLineIn 0.3s ease forwards;
+  margin: 6px 0;
+}
+
+.corrupt-line.delay1 { animation-delay: 0.4s; }
+.corrupt-line.delay2 { animation-delay: 0.8s; }
+
+@keyframes corruptLineIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 0.8; transform: translateX(0); }
+}
+
+/* ── Phase: Void ── */
+.phase-void {
+  background: #000;
+}
+
+.breach-void {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.void-cursor {
+  color: #333;
+  font-size: 14px;
+  animation: voidBlink 0.6s step-end infinite;
+}
+
+@keyframes voidBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ── Canvas (noise + reconstruct + reveal) ── */
+.breach-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.breach-canvas.visible {
+  opacity: 1;
+}
+
+/* ── Phase: Noise ── */
+.phase-noise .breach-canvas {
+  filter: contrast(1.2) brightness(0.8);
+}
+
+/* ── Phase: Reconstruct ── */
+.phase-reconstruct .breach-canvas {
+  filter: contrast(1.05);
+}
+
+/* ── Phase: Reveal ── */
+.phase-reveal .breach-canvas,
+.phase-seal .breach-canvas {
+  filter: none;
+}
+
+/* ── Reveal text ── */
+.breach-reveal-text {
+  position: absolute;
+  bottom: 15%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.reveal-line {
+  opacity: 0;
+  animation: revealFadeIn 0.6s ease forwards;
+}
+
+.reveal-line.main {
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: 1px;
+  margin: 4px 0;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.reveal-line.sub {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  margin-top: 12px;
+}
+
+.reveal-line.delay1 { animation-delay: 0.4s; }
+.reveal-line.delay2 { animation-delay: 1.0s; }
+
+@keyframes revealFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Seal ── */
+.breach-seal {
+  position: absolute;
+  bottom: 5%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  opacity: 0;
+  animation: sealIn 0.4s ease 0.3s forwards;
+}
+
+.seal-line {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  margin: 3px 0;
+}
+
+@keyframes sealIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Phase: Seal — fade out ── */
+.phase-seal {
+  animation: sealFadeOut 1.5s ease 0.8s forwards;
+}
+
+@keyframes sealFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ── Mobile adjustments ── */
+@media (max-width: 600px) {
+  .reveal-line.main {
+    font-size: 11px;
+  }
+  .reveal-line.sub {
+    font-size: 9px;
+  }
+  .corrupt-line {
+    font-size: 10px;
+  }
+}

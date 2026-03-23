@@ -10,6 +10,7 @@ import { LINKS, WORK_OPTIONS } from './links';
 // Secret phrases that trigger the vault overlay
 export const SECRET_PHRASES = ['alkem1_secret', 'alkem1_vault', 'open_vault', 'xor'];
 export const PHOTO_PHRASE = 'alkem1majkem1';
+export const BREACH_PHRASES = ['breach', 'reality', 'reconstruct'];
 
 export const COMMANDS = {
   help: () => `

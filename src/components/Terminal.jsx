@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { executeCommand, COMMANDS, ASYNC_COMMANDS, SECRET_PHRASES, PHOTO_PHRASE } from '../data/commands';
+import { executeCommand, COMMANDS, ASYNC_COMMANDS, SECRET_PHRASES, PHOTO_PHRASE, BREACH_PHRASES } from '../data/commands';
 import { askPersona, clearChatHistory } from '../data/aiChat';
 import AnimatedLogo from './AnimatedLogo';
 import MediaEmbed from './MediaEmbed';
 import SecretVault from './SecretVault';
 import PhotoReveal from './PhotoReveal';
+import RealityBreach from './RealityBreach';
 import MessageOverlay from './MessageOverlay';
 import StegoLab from './StegoLab';
 import SHA256Lab from './SHA256Lab';
@@ -42,6 +43,7 @@ export default function Terminal() {
   const [logoState, setLogoState] = useState('idle');
   const [vaultActive, setVaultActive] = useState(false);
   const [photoActive, setPhotoActive] = useState(false);
+  const [breachActive, setBreachActive] = useState(false);
   const [remoteMsg, setRemoteMsg] = useState(null);
   const lastUpdateRef = useRef(0);
   const inputRef = useRef(null);
@@ -157,6 +159,13 @@ export default function Terminal() {
         if (SECRET_PHRASES.includes(cmd)) {
           setVaultActive(true);
           // Close the loop — send fingerprint back to Telegram
+          fetch('/api/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ trigger: `${cmd}::remote`, ...collectFingerprint() }),
+          }).catch(() => {});
+        } else if (BREACH_PHRASES.includes(cmd)) {
+          setBreachActive(true);
           fetch('/api/notify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -344,6 +353,19 @@ export default function Terminal() {
       return;
     }
 
+    // Reality breach trigger — no trace
+    if (BREACH_PHRASES.includes(trimmed)) {
+      setInput('');
+      if (inputRef.current) inputRef.current.blur();
+      setBreachActive(true);
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trigger: `breach::${trimmed}`, ...collectFingerprint() }),
+      }).catch(() => {});
+      return;
+    }
+
     setHistory(prev => [...prev, { type: 'command', content: cmd }]);
     setCommandHistory(prev => [cmd, ...prev]);
     setHistoryIndex(-1);
@@ -509,6 +531,14 @@ export default function Terminal() {
     <div className="terminal" onClick={focusInput} ref={containerRef}>
       {vaultActive && <SecretVault onClose={handleVaultClose} />}
       {photoActive && <PhotoReveal onClose={handlePhotoClose} />}
+      {breachActive && <RealityBreach
+        onClose={() => { setBreachActive(false); focusInput(); }}
+        onTerminalMessage={(msg) => {
+          setHistory(prev => [...prev,
+            { type: 'output', content: `\n  ${msg}\n` }
+          ]);
+        }}
+      />}
       {remoteMsg && <MessageOverlay message={remoteMsg} onClose={() => { setRemoteMsg(null); focusInput(); }} />}
       <div className="terminal-header">
         <div className="terminal-dots">

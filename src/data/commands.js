@@ -7,6 +7,9 @@ import {
 } from './artifactStore';
 import { LINKS, WORK_OPTIONS } from './links';
 
+// Secret phrases that trigger the vault overlay
+export const SECRET_PHRASES = ['alkem1_secret', 'alkem1_vault', 'open_vault', 'xor'];
+
 export const COMMANDS = {
   help: () => `
   Available commands:
@@ -41,6 +44,8 @@ export const COMMANDS = {
 
   Or ask anything about AG1, determinism, domain
   intelligence, or self-aware code systems.
+
+  Not all routes are documented.
 `,
 
   overview: () => `

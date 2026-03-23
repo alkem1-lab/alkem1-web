@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { executeCommand, COMMANDS, ASYNC_COMMANDS } from '../data/commands';
+import { executeCommand, COMMANDS, ASYNC_COMMANDS, SECRET_PHRASES } from '../data/commands';
 import { askPersona, clearChatHistory } from '../data/aiChat';
 import AnimatedLogo from './AnimatedLogo';
 import MediaEmbed from './MediaEmbed';
+import SecretVault from './SecretVault';
 
 const WELCOME_TEXT = `  ALKEM1 AG1 // Operator Console
   Self-aware code intelligence.
@@ -34,6 +35,7 @@ export default function Terminal() {
   const [showCursor, setShowCursor] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [logoState, setLogoState] = useState('idle');
+  const [vaultActive, setVaultActive] = useState(false);
   const inputRef = useRef(null);
   const containerRef = useRef(null);
   const thinkingRef = useRef(null);
@@ -52,8 +54,8 @@ export default function Terminal() {
   }, [history]);
 
   const focusInput = useCallback(() => {
-    if (inputRef.current) inputRef.current.focus();
-  }, []);
+    if (inputRef.current && !vaultActive) inputRef.current.focus();
+  }, [vaultActive]);
 
   // Scroll to bottom of terminal-body whenever needed
   const scrollToBottom = useCallback(() => {
@@ -69,7 +71,9 @@ export default function Terminal() {
 
   useEffect(() => {
     focusInput();
-    const handleGlobalKey = () => focusInput();
+    const handleGlobalKey = () => {
+      if (!vaultActive) focusInput();
+    };
     window.addEventListener('keydown', handleGlobalKey);
 
     // Mobile keyboard handling
@@ -93,7 +97,7 @@ export default function Terminal() {
     }
 
     return () => window.removeEventListener('keydown', handleGlobalKey);
-  }, [focusInput, scrollToBottom]);
+  }, [focusInput, scrollToBottom, vaultActive]);
 
   const typeOutput = useCallback((text, callback) => {
     setIsTyping(true);
@@ -132,12 +136,21 @@ export default function Terminal() {
     const cmd = input.trim();
     if (!cmd) return;
 
+    const trimmed = cmd.toLowerCase();
+
+    // Secret vault trigger — no trace left in any history
+    if (SECRET_PHRASES.includes(trimmed)) {
+      setInput('');
+      if (inputRef.current) inputRef.current.blur();
+      setVaultActive(true);
+      return;
+    }
+
     setHistory(prev => [...prev, { type: 'command', content: cmd }]);
     setCommandHistory(prev => [cmd, ...prev]);
     setHistoryIndex(-1);
     setInput('');
 
-    const trimmed = cmd.toLowerCase();
     if (trimmed === 'clear') {
       setHistory([]);
       clearChatHistory();
@@ -283,8 +296,14 @@ export default function Terminal() {
     }
   }, [typeOutput]);
 
+  const handleVaultClose = useCallback(() => {
+    setVaultActive(false);
+    focusInput();
+  }, [focusInput]);
+
   return (
     <div className="terminal" onClick={focusInput} ref={containerRef}>
+      {vaultActive && <SecretVault onClose={handleVaultClose} />}
       <div className="terminal-header">
         <div className="terminal-dots">
           <span className="dot dot-red"></span>

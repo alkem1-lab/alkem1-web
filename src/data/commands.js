@@ -34,6 +34,11 @@ export const COMMANDS = {
     technical      — technical showreel (video)
     portfolio      — full portfolio map (Miro)
 
+  ── labs ──────────────────────────────────────
+    stego          — steganography: hide data in images
+    sha256         — SHA-256 avalanche + mining demo
+    neural         — neural network: live XOR training
+
   ── operator ──────────────────────────────────
     commit <msg>   — seal a message as artifact
     evidence       — list recent artifacts + hashes
@@ -510,6 +515,27 @@ export const COMMANDS = {
   Entropy: contained
 `;
   },
+
+  stego: () => ({
+    text: `  STEGANOGRAPHY LAB
+  Hide messages inside images using LSB encoding + XOR encryption.
+  The image looks identical. The data is invisible.`,
+    media: { type: 'lab', component: 'stego' },
+  }),
+
+  sha256: () => ({
+    text: `  SHA-256 LAB
+  Explore the avalanche effect and proof-of-work mining.
+  One bit changes everything.`,
+    media: { type: 'lab', component: 'sha256' },
+  }),
+
+  neural: () => ({
+    text: `  NEURAL NETWORK LAB
+  Train a 2-layer perceptron to solve XOR.
+  Watch weights evolve through backpropagation.`,
+    media: { type: 'lab', component: 'neural' },
+  }),
 
   clear: () => '__CLEAR__',
 };

@@ -6,6 +6,9 @@ import MediaEmbed from './MediaEmbed';
 import SecretVault from './SecretVault';
 import PhotoReveal from './PhotoReveal';
 import MessageOverlay from './MessageOverlay';
+import StegoLab from './StegoLab';
+import SHA256Lab from './SHA256Lab';
+import NeuralLab from './NeuralLab';
 
 const WELCOME_TEXT = `  ALKEM1 AG1 // Operator Console
   Self-aware code intelligence.
@@ -460,6 +463,7 @@ export default function Terminal() {
           'help', 'overview', 'architecture', 'runtime', 'domain',
           'mlops', 'stack', 'determinism', 'philosophy',
           'work', 'showreel', 'technical', 'portfolio',
+          'stego', 'sha256', 'neural',
           'whoami', 'contact', 'commit', 'evidence', 'witness',
           'verify', 'prove', 'status', 'clear',
         ];
@@ -523,6 +527,10 @@ export default function Terminal() {
           <div key={i} className={`terminal-entry ${entry.type}`}>
             {entry.type === 'logo' ? (
               <AnimatedLogo state={logoState} />
+            ) : entry.type === 'media' && entry.media?.type === 'lab' ? (
+              entry.media.component === 'stego' ? <StegoLab /> :
+              entry.media.component === 'sha256' ? <SHA256Lab /> :
+              entry.media.component === 'neural' ? <NeuralLab /> : null
             ) : entry.type === 'media' ? (
               <MediaEmbed
                 type={entry.media.type}
@@ -580,7 +588,9 @@ export default function Terminal() {
         <span className="hint" onClick={() => { setInput('evidence'); }}>evidence</span>
         <span className="hint" onClick={() => { setInput('determinism'); }}>determinism</span>
         <span className="hint" onClick={() => { setInput('philosophy'); }}>philosophy</span>
-        <span className="hint" onClick={() => { setInput('witness'); }}>witness</span>
+        <span className="hint" onClick={() => { setInput('stego'); }}>stego</span>
+        <span className="hint" onClick={() => { setInput('sha256'); }}>sha256</span>
+        <span className="hint" onClick={() => { setInput('neural'); }}>neural</span>
       </div>
     </div>
   );

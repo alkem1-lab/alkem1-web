@@ -1,0 +1,176 @@
+.sha-lab {
+  padding: 12px 0;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 11px;
+  color: #b0b0b0;
+}
+.sha-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.sha-tab {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  color: #555;
+  padding: 4px 16px;
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+.sha-tab.active {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+.sha-desc {
+  color: #555;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.sha-inputs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.sha-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sha-row label {
+  color: #666;
+  font-size: 10px;
+  font-weight: 600;
+}
+.sha-input {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  color: #e0e0e0;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 11px;
+  width: 140px;
+  outline: none;
+}
+.sha-input:focus { border-color: #c0392b; }
+.sha-results { margin-top: 8px; }
+.hash-block {
+  margin-bottom: 6px;
+}
+.hash-label {
+  color: #666;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.hash-value {
+  color: #e0e0e0;
+  word-break: break-all;
+  font-size: 10px;
+  line-height: 1.4;
+}
+.bit-grid {
+  margin: 12px 0;
+  padding: 8px;
+  background: #050505;
+  border: 1px solid #1a1a1a;
+}
+.bit-label {
+  color: #555;
+  font-size: 9px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.bits-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  line-height: 1.1;
+}
+.bit {
+  font-size: 8px;
+  width: 6px;
+  text-align: center;
+  display: inline-block;
+}
+.bit.same { color: #222; }
+.bit.flipped { color: #c0392b; text-shadow: 0 0 3px #c0392b44; }
+.avalanche-stat {
+  margin-top: 8px;
+  padding: 6px 0;
+  border-top: 1px solid #1a1a1a;
+}
+.stat-num {
+  color: #c0392b;
+  font-size: 16px;
+  font-weight: 700;
+}
+.stat-label { color: #888; }
+.stat-note { color: #555; font-style: italic; }
+.mine-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.mine-controls label {
+  color: #666;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.sha-select {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  color: #e0e0e0;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 10px;
+  outline: none;
+}
+.mine-status { margin-bottom: 8px; }
+.mine-counter { color: #888; }
+.mine-num { color: #e0e0e0; font-weight: 600; }
+.mine-spinner { color: #c0392b; animation: spin 0.8s linear infinite; }
+@keyframes spin {
+  0% { content: '⠋'; }
+  25% { content: '⠙'; }
+  50% { content: '⠹'; }
+  75% { content: '⠸'; }
+}
+.mine-result {
+  background: #0a0f0a;
+  border: 1px solid #27ae6033;
+  padding: 10px 12px;
+  margin-top: 8px;
+}
+.mine-found {
+  color: #27ae60;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.mine-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+.mine-label {
+  color: #555;
+  font-size: 9px;
+  letter-spacing: 1px;
+  width: 50px;
+  flex-shrink: 0;
+}
+.mine-val {
+  color: #e0e0e0;
+  word-break: break-all;
+  font-size: 10px;
+}
+.mine-prefix {
+  color: #27ae60;
+  font-weight: 700;
+}

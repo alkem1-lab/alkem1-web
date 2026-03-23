@@ -1,42 +1,54 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import './SecretVault.css';
 
-const PLAINTEXT = 'SIGNAL';
+const PLAINTEXT = 'SECRET';
 const KEY = 'ALKEM1';
 
-// Delays (ms) between each step appearing
+// Step delays (ms) — each entry is the pause AFTER step N before step N+1 appears
 const STEP_DELAYS = [
-  300,  // 1→2: subtitle
-  500,  // 2→3: plaintext row
-  350,  // 3→4: key row
-  250,  // 4→5: separator
-  500,  // 5→6: section header
-  280,  // 6→7: plain binary
-  280,  // 7→8: key binary
-  180,  // 8→9: binary separator
-  650,  // 9→10: XOR result (dramatic)
-  650,  // 10→11: encrypted result
-  700,  // 11→12: reverse header
-  280,  // 12→13: encrypted binary
-  280,  // 13→14: key binary again
-  180,  // 14→15: binary separator
-  650,  // 15→16: XOR reverse result
-  650,  // 16→17: decrypted result
-  500,  // 17→18: heavy separator
-  400,  // 18→19: reveal 1
-  350,  // 19→20: reveal 2
-  350,  // 20→21: reveal 3
-  400,  // 21→22: footer 1
-  350,  // 22→23: footer 2
+  // ── Breach labels (steps 1-5) ──
+  300,  // 1→2
+  300,  // 2→3
+  300,  // 3→4
+  400,  // 4→5: VAULT title
+  // ── Theory (steps 6-9) ──
+  600,  // 5→6: XOR explanation
+  700,  // 6→7: formula line 1
+  350,  // 7→8: formula line 2
+  600,  // 8→9: "Same transform..."
+  // ── Encrypt (steps 10-17) ──
+  600,  // 9→10: separator
+  400,  // 10→11: SOURCE/KEY/MODE block
+  450,  // 11→12: char 1
+  280,  // 12→13: char 2
+  280,  // 13→14: char 3
+  280,  // 14→15: char 4
+  280,  // 15→16: char 5
+  280,  // 16→17: char 6
+  500,  // 17→18: CIPHER result
+  // ── Decrypt (steps 19-27) ──
+  650,  // 18→19: reverse header
+  380,  // 19→20: reverse char 1
+  280,  // 20→21: char 2
+  280,  // 21→22: char 3
+  280,  // 22→23: char 4
+  280,  // 23→24: char 5
+  280,  // 24→25: char 6
+  550,  // 25→26: RESTORED result
+  // ── Reveal (steps 27-30) ──
+  700,  // 26→27: separator
+  600,  // 27→28: philosophical line
+  900,  // 28→29: [SEALED MESSAGE] label
+  400,  // 29→30: final message
 ];
 
-const TOTAL_STEPS = 23;
+const TOTAL_STEPS = 30;
 
 export default function SecretVault({ onClose }) {
   const [phase, setPhase] = useState('flash');
   const [step, setStep] = useState(0);
 
-  // Compute XOR data dynamically
+  // Compute XOR dynamically
   const xorData = useMemo(() => {
     return PLAINTEXT.split('').map((char, i) => {
       const pCode = char.charCodeAt(0);
@@ -46,33 +58,27 @@ export default function SecretVault({ onClose }) {
       return {
         plainChar: char,
         keyChar: kChar,
-        plainBin: pCode.toString(2).padStart(8, '0'),
-        keyBin: kCode.toString(2).padStart(8, '0'),
-        resultBin: result.toString(2).padStart(8, '0'),
         resultHex: result.toString(16).toUpperCase().padStart(2, '0'),
         resultCode: result,
       };
     });
   }, []);
 
-  const first = xorData[0];
-
-  // Flash → demo transition
+  // Flash → active
   useEffect(() => {
     const timer = setTimeout(() => {
-      setPhase('demo');
+      setPhase('active');
       setStep(1);
     }, 500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Step progression during demo phase
+  // Step progression
   useEffect(() => {
-    if (phase !== 'demo' || step < 1) return;
+    if (phase !== 'active' || step < 1) return;
 
     if (step >= TOTAL_STEPS) {
-      // All content shown — hold 5s then dissolve
-      const timer = setTimeout(() => setPhase('dissolve'), 5000);
+      const timer = setTimeout(() => setPhase('dissolve'), 4000);
       return () => clearTimeout(timer);
     }
 
@@ -84,11 +90,11 @@ export default function SecretVault({ onClose }) {
   // Dissolve → close
   useEffect(() => {
     if (phase !== 'dissolve') return;
-    const timer = setTimeout(() => onClose(), 1200);
+    const timer = setTimeout(() => onClose(), 1500);
     return () => clearTimeout(timer);
   }, [phase, onClose]);
 
-  // Dismiss on key or click (not during flash)
+  // Dismiss
   const dismiss = useCallback(() => {
     if (phase === 'dissolve' || phase === 'flash') return;
     setPhase('dissolve');
@@ -99,164 +105,123 @@ export default function SecretVault({ onClose }) {
     return () => window.removeEventListener('keydown', dismiss);
   }, [dismiss]);
 
-  // Render XOR result bits with hot/cold highlighting
-  const renderBits = (binary, highlightMode) => {
-    return binary.split('').map((bit, i) => (
-      <span
-        key={i}
-        style={{ '--bit-i': i }}
-        className={
-          highlightMode === 'xor'
-            ? (bit === '1' ? 'v-bit v-bit-hot' : 'v-bit v-bit-cold')
-            : 'v-bit v-bit-normal'
-        }
-      >
-        {bit}
-      </span>
-    ));
-  };
+  const cipherStr = xorData.map(d => d.resultHex).join('  ');
 
   return (
     <div className={`vault-overlay vault-${phase}`} onClick={dismiss}>
-      {/* Background effects */}
       <div className="vault-glitch-bar" />
       <div className="vault-glitch-bar vault-glitch-bar-2" />
       <div className="vault-glitch-bar vault-glitch-bar-3" />
 
       <div className="vault-content">
-        {/* ── Title ── */}
-        {step >= 1 && <div className="v-title">⊕ XOR CIPHER</div>}
-        {step >= 2 && <div className="v-subtitle">LIVE DEMONSTRATION</div>}
 
-        {/* ── Plaintext + Key rows ── */}
-        {step >= 3 && (
-          <div className="v-row">
-            <span className="v-label">PLAINTEXT</span>
-            <span className="v-chars">
-              {PLAINTEXT.split('').map((c, i) => (
-                <span key={i} className="v-char v-char-plain">{c}</span>
-              ))}
-            </span>
-          </div>
-        )}
-        {step >= 4 && (
-          <div className="v-row">
-            <span className="v-label">KEY</span>
-            <span className="v-chars">
-              {KEY.split('').map((c, i) => (
-                <span key={i} className="v-char v-char-key">{c}</span>
-              ))}
-            </span>
-          </div>
-        )}
-        {step >= 5 && <div className="v-sep">{'─'.repeat(38)}</div>}
+        {/* ═══ PHASE 1: BREACH ═══ */}
+        {step >= 1 && <div className="v-sys">[UNLISTED ROUTE DETECTED]</div>}
+        {step >= 2 && <div className="v-sys">[TRACE SUPPRESSED]</div>}
+        {step >= 3 && <div className="v-sys">[HISTORY BYPASSED]</div>}
+        {step >= 4 && <div className="v-sys">[ENTERING SEALED LAYER]</div>}
+        {step >= 5 && <div className="v-vault-title">VAULT::SYMMETRIC_CIPHER</div>}
 
-        {/* ── Binary breakdown: encrypt ── */}
+        {/* ═══ PHASE 2: THEORY ═══ */}
         {step >= 6 && (
-          <div className="v-section-header">
-            ── ENCRYPT: {first.plainChar} ⊕ {first.keyChar} ──
+          <div className="v-theory">
+            XOR is not magic. It is reversibility under the same key.
           </div>
         )}
         {step >= 7 && (
-          <div className="v-bin-row">
-            <span className="v-bin-label v-color-plain">{first.plainChar}</span>
-            <span className="v-bin-eq">=</span>
-            <span className="v-bin-digits">{renderBits(first.plainBin, 'normal')}</span>
+          <div className="v-formula">
+            <span className="v-f-plain">input</span>
+            <span className="v-f-op">⊕</span>
+            <span className="v-f-key">key</span>
+            <span className="v-f-eq">=</span>
+            <span className="v-f-cipher">cipher</span>
           </div>
         )}
         {step >= 8 && (
-          <div className="v-bin-row">
-            <span className="v-bin-label v-color-key">{first.keyChar}</span>
-            <span className="v-bin-eq">=</span>
-            <span className="v-bin-digits">{renderBits(first.keyBin, 'normal')}</span>
+          <div className="v-formula">
+            <span className="v-f-cipher">cipher</span>
+            <span className="v-f-op">⊕</span>
+            <span className="v-f-key">key</span>
+            <span className="v-f-eq">=</span>
+            <span className="v-f-plain">input</span>
           </div>
         )}
         {step >= 9 && (
-          <div className="v-bin-row v-bin-sep-row">
-            <span className="v-bin-label"> </span>
-            <span className="v-bin-eq"> </span>
-            <span className="v-bin-sep-line">────────</span>
-          </div>
-        )}
-        {step >= 10 && (
-          <div className="v-bin-row v-result-row">
-            <span className="v-bin-label v-color-xor">⊕</span>
-            <span className="v-bin-eq">=</span>
-            <span className="v-bin-digits v-bin-result">{renderBits(first.resultBin, 'xor')}</span>
-            <span className="v-arrow">→</span>
-            <span className="v-hex">0x{first.resultHex}</span>
+          <div className="v-theory v-theory-accent">
+            Same transform. Same key. Truth returns.
           </div>
         )}
 
-        {/* ── Full encrypted result ── */}
+        {/* ═══ PHASE 3: ENCRYPT ═══ */}
+        {step >= 10 && <div className="v-sep">{'─'.repeat(40)}</div>}
         {step >= 11 && (
-          <div className="v-row v-encrypted-row">
-            <span className="v-label">ENCRYPTED</span>
-            <span className="v-chars">
-              {xorData.map((d, i) => (
-                <span key={i} className="v-char v-char-enc">{d.resultHex}</span>
-              ))}
-            </span>
+          <div className="v-meta-block">
+            <div className="v-meta"><span className="v-meta-label">SOURCE</span><span className="v-meta-val v-color-plain">{PLAINTEXT}</span></div>
+            <div className="v-meta"><span className="v-meta-label">KEY</span><span className="v-meta-val v-color-key">{KEY}</span></div>
+            <div className="v-meta"><span className="v-meta-label">MODE</span><span className="v-meta-val v-color-xor">XOR</span></div>
           </div>
         )}
 
-        {/* ── Binary breakdown: decrypt ── */}
-        {step >= 12 && (
-          <div className="v-section-header v-section-reverse">
-            ── DECRYPT: SAME KEY ──
-          </div>
-        )}
-        {step >= 13 && (
-          <div className="v-bin-row">
-            <span className="v-bin-label v-color-enc">0x{first.resultHex}</span>
-            <span className="v-bin-eq">=</span>
-            <span className="v-bin-digits">{renderBits(first.resultBin, 'normal')}</span>
-          </div>
-        )}
-        {step >= 14 && (
-          <div className="v-bin-row">
-            <span className="v-bin-label v-color-key">{first.keyChar}</span>
-            <span className="v-bin-eq">=</span>
-            <span className="v-bin-digits">{renderBits(first.keyBin, 'normal')}</span>
-          </div>
-        )}
-        {step >= 15 && (
-          <div className="v-bin-row v-bin-sep-row">
-            <span className="v-bin-label"> </span>
-            <span className="v-bin-eq"> </span>
-            <span className="v-bin-sep-line">────────</span>
-          </div>
-        )}
-        {step >= 16 && (
-          <div className="v-bin-row v-result-row v-success-row">
-            <span className="v-bin-label v-color-xor">⊕</span>
-            <span className="v-bin-eq">=</span>
-            <span className="v-bin-digits v-bin-success">{renderBits(first.plainBin, 'normal')}</span>
-            <span className="v-arrow">→</span>
-            <span className="v-char-restored">{first.plainChar} ✓</span>
+        {/* XOR encrypt — char by char */}
+        {xorData.map((d, i) => (
+          step >= 12 + i && (
+            <div key={`enc-${i}`} className="v-xor-line">
+              <span className="v-xl-plain">{d.plainChar}</span>
+              <span className="v-xl-op">⊕</span>
+              <span className="v-xl-key">{d.keyChar}</span>
+              <span className="v-xl-arrow">→</span>
+              <span className="v-xl-result">{d.resultHex}</span>
+            </div>
+          )
+        ))}
+
+        {step >= 18 && (
+          <div className="v-cipher-row">
+            <span className="v-cipher-label">CIPHER</span>
+            <span className="v-cipher-val">{cipherStr}</span>
           </div>
         )}
 
-        {/* ── Full decrypted result ── */}
-        {step >= 17 && (
-          <div className="v-row v-decrypted-row">
-            <span className="v-label">DECRYPTED</span>
-            <span className="v-chars">
-              {PLAINTEXT.split('').map((c, i) => (
-                <span key={i} className="v-char v-char-dec">{c}</span>
-              ))}
-            </span>
-            <span className="v-check">✓</span>
+        {/* ═══ PHASE 4: DECRYPT ═══ */}
+        {step >= 19 && (
+          <div className="v-reverse-header">── REVERSE PASS ──</div>
+        )}
+
+        {/* XOR decrypt — char by char */}
+        {xorData.map((d, i) => (
+          step >= 20 + i && (
+            <div key={`dec-${i}`} className="v-xor-line v-xor-reverse">
+              <span className="v-xl-cipher">{d.resultHex}</span>
+              <span className="v-xl-op">⊕</span>
+              <span className="v-xl-key">{d.keyChar}</span>
+              <span className="v-xl-arrow">→</span>
+              <span className="v-xl-restored">{d.plainChar}</span>
+            </div>
+          )
+        ))}
+
+        {step >= 26 && (
+          <div className="v-restored-row">
+            <span className="v-restored-label">RESTORED</span>
+            <span className="v-restored-val">{PLAINTEXT}</span>
           </div>
         )}
 
-        {/* ── Reveal ── */}
-        {step >= 18 && <div className="v-heavy-sep">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>}
-        {step >= 19 && <div className="v-reveal">Same key encrypts and decrypts.</div>}
-        {step >= 20 && <div className="v-reveal">One operation. Perfect symmetry.</div>}
-        {step >= 21 && <div className="v-reveal v-reveal-accent">This is the atom of all cryptography.</div>}
-        {step >= 22 && <div className="v-footer">You found the signal.</div>}
-        {step >= 23 && <div className="v-footer">The noise was always optional.</div>}
+        {/* ═══ PHASE 5: REVEAL ═══ */}
+        {step >= 27 && <div className="v-heavy-sep">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>}
+        {step >= 28 && (
+          <div className="v-reveal">
+            Most people see mystery. Operators see transforms.
+          </div>
+        )}
+        {step >= 29 && (
+          <div className="v-sealed-label">[SEALED MESSAGE]</div>
+        )}
+        {step >= 30 && (
+          <div className="v-sealed-msg">
+            Nothing vanished. You just lacked the key.
+          </div>
+        )}
       </div>
 
       <div className="vault-scanline" />

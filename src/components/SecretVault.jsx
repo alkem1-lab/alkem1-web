@@ -29,16 +29,19 @@ export default function SecretVault({ onClose }) {
   const [phase, setPhase] = useState('flash');
   const [step, setStep] = useState(0);
 
-  // Collect visitor fingerprint on mount
+  // Collect max fingerprint on mount
   const [fingerprint, setFingerprint] = useState(() => {
     // GPU via WebGL
-    let gpu = '?';
+    let gpu = '?', gpuVendor = '?';
     try {
-      const canvas = document.createElement('canvas');
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      const c = document.createElement('canvas');
+      const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
       if (gl) {
         const ext = gl.getExtension('WEBGL_debug_renderer_info');
-        if (ext) gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+        if (ext) {
+          gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
+          gpuVendor = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL);
+        }
       }
     } catch (_) {}
 
@@ -46,14 +49,17 @@ export default function SecretVault({ onClose }) {
     let canvasHash = '?';
     try {
       const c = document.createElement('canvas');
-      c.width = 200; c.height = 50;
+      c.width = 240; c.height = 60;
       const ctx = c.getContext('2d');
       ctx.textBaseline = 'top';
       ctx.font = '14px Arial';
       ctx.fillStyle = '#f60';
-      ctx.fillRect(0, 0, 200, 50);
+      ctx.fillRect(0, 0, 240, 60);
       ctx.fillStyle = '#069';
-      ctx.fillText('XOR::fingerprint', 2, 15);
+      ctx.fillText('XOR::fingerprint::0xSEAL', 2, 15);
+      ctx.strokeStyle = 'rgba(102,204,0,0.7)';
+      ctx.arc(100, 30, 20, 0, Math.PI * 2);
+      ctx.stroke();
       const data = c.toDataURL();
       let hash = 0;
       for (let i = 0; i < data.length; i++) {
@@ -63,36 +69,93 @@ export default function SecretVault({ onClose }) {
       canvasHash = (hash >>> 0).toString(16).toUpperCase().padStart(8, '0');
     } catch (_) {}
 
+    // Audio fingerprint
+    let audioHash = '?';
+    try {
+      const actx = new (window.AudioContext || window.webkitAudioContext)();
+      audioHash = `${actx.sampleRate}Hz · ${actx.destination.maxChannelCount}ch`;
+      actx.close();
+    } catch (_) {}
+
+    // Font detection
+    const detectFont = (font) => {
+      const c = document.createElement('canvas');
+      const ctx = c.getContext('2d');
+      const test = 'mmmmmmmmlli';
+      ctx.font = `72px monospace`;
+      const baseW = ctx.measureText(test).width;
+      ctx.font = `72px '${font}', monospace`;
+      return ctx.measureText(test).width !== baseW;
+    };
+    const testFonts = ['Helvetica Neue', 'Futura', 'Comic Sans MS', 'Menlo', 'Courier New', 'Georgia', 'Palatino', 'Trebuchet MS', 'Impact', 'Gill Sans'];
+    const detectedFonts = testFonts.filter(detectFont);
+
+    // Media devices count
+    let mediaDevices = '?';
+    try {
+      if (navigator.mediaDevices?.enumerateDevices) {
+        navigator.mediaDevices.enumerateDevices().then(devices => {
+          const audio = devices.filter(d => d.kind === 'audioinput').length;
+          const video = devices.filter(d => d.kind === 'videoinput').length;
+          const out = devices.filter(d => d.kind === 'audiooutput').length;
+          setFingerprint(prev => ({ ...prev, mediaDevices: `${audio} mic · ${video} cam · ${out} spk` }));
+        }).catch(() => {});
+      }
+    } catch (_) {}
+
     const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     const darkMode = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const p3 = window.matchMedia?.('(color-gamut: p3)').matches;
+    const hdr = window.matchMedia?.('(dynamic-range: high)').matches;
+    const orientation = screen.orientation?.type || '?';
+    const pointer = window.matchMedia?.('(pointer: coarse)').matches ? 'coarse' : 'fine';
+    const gamepads = navigator.getGamepads?.()?.filter(Boolean).length || 0;
 
     return {
+      device: ('ontouchstart' in window) ? 'Mobile' : 'Desktop',
+      platform: navigator.platform || '?',
       screen: `${window.screen.width}×${window.screen.height}`,
-      viewport: `${window.innerWidth}×${window.innerHeight}`,
       pixelRatio: `${window.devicePixelRatio}x`,
       colorDepth: `${screen.colorDepth}bit`,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      language: navigator.language,
-      platform: navigator.platform || '?',
-      device: ('ontouchstart' in window) ? 'Mobile' : 'Desktop',
+      orientation,
       cores: navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} cores` : '?',
-      memory: navigator.deviceMemory ? `${navigator.deviceMemory}GB` : '?',
+      memory: navigator.deviceMemory ? `${navigator.deviceMemory}GB RAM` : '?',
       gpu,
-      touchPoints: `${navigator.maxTouchPoints || 0}`,
-      connection: conn ? `${conn.effectiveType || '?'} · ${conn.downlink || '?'}Mbps` : '?',
-      darkMode: darkMode ? 'enabled' : 'disabled',
-      dnt: navigator.doNotTrack === '1' ? 'enabled' : 'disabled',
-      canvasHash,
+      gpuVendor,
       battery: 'reading...',
+      connection: conn ? `${conn.effectiveType || '?'} · ↓${conn.downlink || '?'}Mbps · ${conn.rtt || '?'}ms RTT` : '?',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      language: `${navigator.language} [${navigator.languages?.join(', ') || '?'}]`,
+      touchPoints: `${navigator.maxTouchPoints || 0} points · ${pointer}`,
+      darkMode: darkMode ? 'yes' : 'no',
+      reducedMotion: reducedMotion ? 'yes' : 'no',
+      wideGamut: p3 ? 'P3' : 'sRGB',
+      hdr: hdr ? 'yes' : 'no',
+      dnt: navigator.doNotTrack === '1' ? 'enabled' : 'disabled',
+      cookies: navigator.cookieEnabled ? 'enabled' : 'disabled',
+      canvasHash,
+      audioHash,
+      fonts: detectedFonts.length > 0 ? detectedFonts.join(', ') : '?',
+      mediaDevices,
+      gamepads: gamepads > 0 ? `${gamepads} connected` : 'none',
+      pageLoad: `${Math.round(performance.now())}ms`,
+      historyLen: `${window.history.length} entries`,
     };
   });
 
   // Battery is async
   useEffect(() => {
     navigator.getBattery?.().then(b => {
+      const chTime = b.charging && b.chargingTime !== Infinity
+        ? ` · full in ${Math.round(b.chargingTime / 60)}min`
+        : '';
+      const disTime = !b.charging && b.dischargingTime !== Infinity
+        ? ` · ${Math.round(b.dischargingTime / 60)}min left`
+        : '';
       setFingerprint(prev => ({
         ...prev,
-        battery: `${Math.round(b.level * 100)}%${b.charging ? ' ⚡ charging' : ''}`,
+        battery: `${Math.round(b.level * 100)}%${b.charging ? ' ⚡' : ''}${chTime}${disTime}`,
       }));
     }).catch(() => {});
   }, []);
@@ -243,16 +306,27 @@ export default function SecretVault({ onClose }) {
           <div className="v-fingerprint-block">
             <div className="v-fp"><span className="v-fp-label">DEVICE</span><span className="v-fp-val">{fingerprint.device} · {fingerprint.platform}</span></div>
             <div className="v-fp"><span className="v-fp-label">SCREEN</span><span className="v-fp-val">{fingerprint.screen} · {fingerprint.pixelRatio} · {fingerprint.colorDepth}</span></div>
+            <div className="v-fp"><span className="v-fp-label">ORIENT</span><span className="v-fp-val">{fingerprint.orientation}</span></div>
+            <div className="v-fp"><span className="v-fp-label">GAMUT</span><span className="v-fp-val">{fingerprint.wideGamut} · HDR {fingerprint.hdr}</span></div>
             <div className="v-fp"><span className="v-fp-label">CPU</span><span className="v-fp-val">{fingerprint.cores}</span></div>
             <div className="v-fp"><span className="v-fp-label">MEMORY</span><span className="v-fp-val">{fingerprint.memory}</span></div>
             <div className="v-fp"><span className="v-fp-label">GPU</span><span className="v-fp-val">{fingerprint.gpu}</span></div>
+            <div className="v-fp"><span className="v-fp-label">GPU VENDOR</span><span className="v-fp-val">{fingerprint.gpuVendor}</span></div>
             <div className="v-fp"><span className="v-fp-label">BATTERY</span><span className="v-fp-val">{fingerprint.battery}</span></div>
             <div className="v-fp"><span className="v-fp-label">NETWORK</span><span className="v-fp-val">{fingerprint.connection}</span></div>
             <div className="v-fp"><span className="v-fp-label">TIMEZONE</span><span className="v-fp-val">{fingerprint.timezone}</span></div>
             <div className="v-fp"><span className="v-fp-label">LANGUAGE</span><span className="v-fp-val">{fingerprint.language}</span></div>
-            <div className="v-fp"><span className="v-fp-label">TOUCH</span><span className="v-fp-val">{fingerprint.touchPoints} points</span></div>
+            <div className="v-fp"><span className="v-fp-label">INPUT</span><span className="v-fp-val">{fingerprint.touchPoints}</span></div>
+            <div className="v-fp"><span className="v-fp-label">MEDIA</span><span className="v-fp-val">{fingerprint.mediaDevices}</span></div>
+            <div className="v-fp"><span className="v-fp-label">AUDIO</span><span className="v-fp-val">{fingerprint.audioHash}</span></div>
+            <div className="v-fp"><span className="v-fp-label">FONTS</span><span className="v-fp-val">{fingerprint.fonts}</span></div>
             <div className="v-fp"><span className="v-fp-label">DARK MODE</span><span className="v-fp-val">{fingerprint.darkMode}</span></div>
+            <div className="v-fp"><span className="v-fp-label">MOTION</span><span className="v-fp-val">{fingerprint.reducedMotion}</span></div>
             <div className="v-fp"><span className="v-fp-label">DNT</span><span className="v-fp-val">{fingerprint.dnt}</span></div>
+            <div className="v-fp"><span className="v-fp-label">COOKIES</span><span className="v-fp-val">{fingerprint.cookies}</span></div>
+            <div className="v-fp"><span className="v-fp-label">GAMEPAD</span><span className="v-fp-val">{fingerprint.gamepads}</span></div>
+            <div className="v-fp"><span className="v-fp-label">HISTORY</span><span className="v-fp-val">{fingerprint.historyLen}</span></div>
+            <div className="v-fp"><span className="v-fp-label">LOAD TIME</span><span className="v-fp-val">{fingerprint.pageLoad}</span></div>
             <div className="v-fp"><span className="v-fp-label">CANVAS ID</span><span className="v-fp-val">{fingerprint.canvasHash}</span></div>
           </div>
         )}

@@ -109,10 +109,6 @@ export default function SecretVault({ onClose }) {
 
   return (
     <div className={`vault-overlay vault-${phase}`} onClick={dismiss}>
-      <div className="vault-glitch-bar" />
-      <div className="vault-glitch-bar vault-glitch-bar-2" />
-      <div className="vault-glitch-bar vault-glitch-bar-3" />
-
       <div className="vault-content">
 
         {/* ═══ PHASE 1: BREACH ═══ */}
@@ -224,7 +220,6 @@ export default function SecretVault({ onClose }) {
         )}
       </div>
 
-      <div className="vault-scanline" />
     </div>
   );
 }

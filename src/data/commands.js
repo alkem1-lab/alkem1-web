@@ -688,12 +688,34 @@ export const ASYNC_COMMANDS = {
   },
 };
 
+// Simple Levenshtein for typo detection
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const d = Array.from({ length: m + 1 }, (_, i) => [i]);
+  for (let j = 1; j <= n; j++) d[0][j] = j;
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+(a[i-1]!==b[j-1]?1:0));
+  return d[m][n];
+}
+
+function findClosest(input) {
+  const all = [...Object.keys(COMMANDS), 'commit', 'evidence', 'witness', 'verify', 'prove'];
+  let best = null, bestDist = 3; // max 2 edits
+  for (const cmd of all) {
+    const dist = levenshtein(input.toLowerCase(), cmd);
+    if (dist < bestDist) { bestDist = dist; best = cmd; }
+  }
+  return best;
+}
+
 // Fallback responses for unknown commands (when AI is offline)
 const FALLBACK_RESPONSES = [
-  (cmd) => `\n  '${cmd}' — command not found.\n  The system does not recognize this input.\n  Type 'help' for available commands.`,
-  (cmd) => `\n  '${cmd}' — unknown command.\n  Unknown is acceptable. Fake certainty is not.\n  Type 'help' for available commands.`,
-  (cmd) => `\n  '${cmd}' — no handler defined.\n  State unavailable. Story withheld.\n  Type 'help' for available commands.`,
-  (cmd) => `\n  '${cmd}' — unresolved.\n  The answer may exist. Your query does not.\n  Type 'help' for available commands.`,
+  (cmd) => {
+    const suggestion = findClosest(cmd);
+    if (suggestion) return `\n  '${cmd}' — unknown command.\n  Did you mean '${suggestion}'?\n  Type 'help' for all commands.`;
+    return `\n  '${cmd}' — unknown input.\n  Type 'help' for available commands.`;
+  },
 ];
 
 export function executeCommand(input) {

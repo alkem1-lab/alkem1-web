@@ -61,7 +61,9 @@ export default function Terminal() {
     }
   }, [history]);
 
-  const focusInput = useCallback(() => {
+  const focusInput = useCallback((e) => {
+    // Don't steal focus from lab inputs/buttons/selects
+    if (e?.target?.closest?.('.stego-lab, .sha-lab, .neural-lab')) return;
     if (inputRef.current && !vaultActive) inputRef.current.focus();
   }, [vaultActive]);
 
@@ -79,8 +81,8 @@ export default function Terminal() {
 
   useEffect(() => {
     focusInput();
-    const handleGlobalKey = () => {
-      if (!vaultActive) focusInput();
+    const handleGlobalKey = (e) => {
+      if (!vaultActive && !e.target.closest?.('.stego-lab, .sha-lab, .neural-lab')) focusInput();
     };
     window.addEventListener('keydown', handleGlobalKey);
 

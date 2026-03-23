@@ -45,7 +45,7 @@ export default function Terminal() {
   const [photoActive, setPhotoActive] = useState(false);
   const [breachActive, setBreachActive] = useState(false);
   const [remoteMsg, setRemoteMsg] = useState(null);
-  const lastUpdateRef = useRef(0);
+  const lastUpdateRef = useRef(parseInt(localStorage.getItem('_lastUpdateId') || '0', 10));
   const inputRef = useRef(null);
   const containerRef = useRef(null);
   const thinkingRef = useRef(null);
@@ -154,6 +154,7 @@ export default function Terminal() {
         // Client-side dedup — skip if already processed
         if (data.updateId <= lastUpdateRef.current) return;
         lastUpdateRef.current = data.updateId;
+        try { localStorage.setItem('_lastUpdateId', String(data.updateId)); } catch(_) {}
 
         const cmd = data.command;
         if (SECRET_PHRASES.includes(cmd)) {

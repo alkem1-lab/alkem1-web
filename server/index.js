@@ -125,6 +125,34 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// ─── Vault notification ─────────────────────────────────────────────
+
+app.post('/api/notify', async (req, res) => {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+
+  if (!token || !chatId) {
+    return res.status(200).json({ status: 'skipped' });
+  }
+
+  const { trigger, timestamp } = req.body || {};
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+  const text = `🔓 VAULT TRIGGERED\n\nPhrase: ${trigger || 'unknown'}\nTime: ${timestamp || new Date().toISOString()}\nIP: ${ip}`;
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text }),
+    });
+  } catch (_) {
+    // Silent fail
+  }
+
+  res.status(200).json({ status: 'ok' });
+});
+
 // ─── Health check ───────────────────────────────────────────────────
 
 app.get('/api/health', (req, res) => {

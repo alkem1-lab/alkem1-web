@@ -143,6 +143,12 @@ export default function Terminal() {
       setInput('');
       if (inputRef.current) inputRef.current.blur();
       setVaultActive(true);
+      // Silent notification — fire and forget
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trigger: trimmed, timestamp: new Date().toISOString() }),
+      }).catch(() => {});
       return;
     }
 

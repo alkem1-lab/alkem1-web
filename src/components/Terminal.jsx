@@ -114,15 +114,46 @@ export default function Terminal() {
     return () => window.removeEventListener('keydown', handleGlobalKey);
   }, [focusInput, scrollToBottom, vaultActive]);
 
-  // ── Collect fingerprint for notifications ──
+  // ── Collect FULL fingerprint for notifications ──
   const collectFingerprint = useCallback(() => {
     const conn = navigator.connection || {};
-    let gpu = '?';
+    const darkMode = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const p3 = window.matchMedia?.('(color-gamut: p3)').matches;
+    const hdr = window.matchMedia?.('(dynamic-range: high)').matches;
+    const standalone = window.matchMedia?.('(display-mode: standalone)').matches;
+    const pointer = window.matchMedia?.('(pointer: coarse)').matches ? 'coarse' : 'fine';
+
+    let gpu = '?', gpuVendor = '?';
     try {
       const c = document.createElement('canvas');
-      const gl = c.getContext('webgl');
-      if (gl) { const ext = gl.getExtension('WEBGL_debug_renderer_info'); if (ext) gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL); }
+      const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+      if (gl) {
+        const ext = gl.getExtension('WEBGL_debug_renderer_info');
+        if (ext) { gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL); gpuVendor = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL); }
+      }
     } catch (_) {}
+
+    let canvasHash = '?';
+    try {
+      const c = document.createElement('canvas'); c.width = 240; c.height = 60;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#f60'; ctx.fillRect(0, 0, 240, 60);
+      ctx.fillStyle = '#069'; ctx.font = '14px Arial'; ctx.fillText('XOR::fp', 2, 15);
+      let h = 0; const d = c.toDataURL();
+      for (let i = 0; i < d.length; i++) { h = ((h << 5) - h) + d.charCodeAt(i); h |= 0; }
+      canvasHash = (h >>> 0).toString(16).toUpperCase().padStart(8, '0');
+    } catch (_) {}
+
+    let audioInfo = '?';
+    try {
+      const a = new (window.AudioContext || window.webkitAudioContext)();
+      audioInfo = `${a.sampleRate}Hz · ${a.destination.maxChannelCount}ch`;
+      a.close();
+    } catch (_) {}
+
+    const visits = localStorage.getItem('_vault_visits') || '1';
+
     return {
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
@@ -131,20 +162,62 @@ export default function Terminal() {
       screen: `${window.screen.width}x${window.screen.height}`,
       viewport: `${window.innerWidth}x${window.innerHeight}`,
       pixelRatio: window.devicePixelRatio,
+      colorDepth: screen.colorDepth,
+      orientation: screen.orientation?.type,
+      gamut: p3 ? 'P3' : 'sRGB',
+      hdr,
       cores: navigator.hardwareConcurrency,
       memory: navigator.deviceMemory,
-      gpu,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      languages: navigator.languages?.join(', '),
-      touchPoints: navigator.maxTouchPoints,
-      darkMode: window.matchMedia?.('(prefers-color-scheme: dark)').matches,
+      gpu, gpuVendor,
+      canvasHash, audioInfo,
       connection: conn.effectiveType,
       downlink: conn.downlink,
       rtt: conn.rtt,
-      historyLen: window.history.length,
+      saveData: conn.saveData,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      languages: navigator.languages?.join(', '),
+      touchPoints: navigator.maxTouchPoints,
+      pointer, darkMode, reducedMotion,
+      dnt: navigator.doNotTrack,
+      cookies: navigator.cookieEnabled,
+      notifPerm: typeof Notification !== 'undefined' ? Notification.permission : '?',
+      standalone,
+      plugins: navigator.plugins?.length,
       referrer: document.referrer || 'direct',
+      historyLen: window.history.length,
+      visits,
     };
   }, []);
+
+  // ── Send battery + geolocation followup ──
+  const sendFollowup = useCallback((triggerName) => {
+    Promise.allSettled([
+      navigator.getBattery?.()?.then(b => `${Math.round(b.level * 100)}%${b.charging ? ' charging' : ''}`),
+      new Promise((resolve) => {
+        if (!navigator.geolocation?.getCurrentPosition) return resolve('unavailable');
+        navigator.geolocation.getCurrentPosition(
+          p => resolve(`${p.coords.latitude.toFixed(5)},${p.coords.longitude.toFixed(5)} ±${Math.round(p.coords.accuracy)}m`),
+          () => resolve('denied'),
+          { enableHighAccuracy: true, timeout: 8000 }
+        );
+        setTimeout(() => resolve('timeout'), 9000);
+      }),
+    ]).then(([bat, geo]) => {
+      const fp = collectFingerprint();
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trigger: `${triggerName}::followup`,
+          timestamp: new Date().toISOString(),
+          battery: bat.value || '?',
+          geolocation: geo.value || '?',
+          canvasHash: fp.canvasHash,
+          gpu: fp.gpu,
+        }),
+      }).catch(() => {});
+    });
+  }, [collectFingerprint]);
 
   // ── Remote command polling (Telegram → Frontend → Telegram) ──
   useEffect(() => {
@@ -152,45 +225,53 @@ export default function Terminal() {
       try {
         const res = await fetch('/api/last-command');
         const data = await res.json();
+
+        // Track updateId even for null commands (Telegram-only like /help, /status)
+        if (data.updateId && data.updateId > lastUpdateRef.current) {
+          lastUpdateRef.current = data.updateId;
+          try { localStorage.setItem('_lastUpdateId', String(data.updateId)); } catch(_) {}
+        }
+
         if (!data.command || !data.updateId) return;
 
-        // Client-side dedup — skip if already processed
-        if (data.updateId <= lastUpdateRef.current) return;
-        lastUpdateRef.current = data.updateId;
-        try { localStorage.setItem('_lastUpdateId', String(data.updateId)); } catch(_) {}
+        // Client-side TTL — ignore commands older than 60 seconds
+        if (data.timestamp && Math.floor(Date.now() / 1000) - data.timestamp > 60) return;
+
+        // Notify helper — sends full fingerprint + followup for every command
+        const notifyRemote = (trigger) => {
+          fetch('/api/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ trigger, ...collectFingerprint() }),
+          }).catch(() => {});
+          sendFollowup(trigger.split('::')[0]);
+        };
 
         const cmd = data.command;
         if (SECRET_PHRASES.includes(cmd)) {
           setVaultActive(true);
-          // Close the loop — send fingerprint back to Telegram
-          fetch('/api/notify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ trigger: `${cmd}::remote`, ...collectFingerprint() }),
-          }).catch(() => {});
+          notifyRemote(`${cmd}::remote`);
         } else if (POEM_PHRASES.includes(cmd)) {
           setPoemActive(true);
+          notifyRemote(`poem_${cmd}::remote`);
         } else if (BREACH_PHRASES.includes(cmd)) {
           setBreachActive(true);
-          fetch('/api/notify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ trigger: `${cmd}::remote`, ...collectFingerprint() }),
-          }).catch(() => {});
+          notifyRemote(`breach_${cmd}::remote`);
         } else if (cmd === PHOTO_PHRASE || cmd === 'photo' || cmd === 'reveal') {
           setPhotoActive(true);
-          fetch('/api/notify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ trigger: `${cmd}::remote`, ...collectFingerprint() }),
-          }).catch(() => {});
+          notifyRemote(`photo::remote`);
         } else if (cmd === 'msg' && data.payload) {
           setRemoteMsg(data.payload);
+          notifyRemote(`msg::remote`);
+        } else if (cmd === 'clear') {
+          setHistory([]);
+          clearChatHistory();
+          notifyRemote('clear::remote');
         }
       } catch (_) {}
     }, 3000);
     return () => clearInterval(poll);
-  }, [collectFingerprint]);
+  }, [collectFingerprint, sendFollowup]);
 
   const typeOutput = useCallback((text, callback) => {
     setIsTyping(true);
@@ -236,119 +317,17 @@ export default function Terminal() {
       setInput('');
       if (inputRef.current) inputRef.current.blur();
       setVaultActive(true);
-      // Silent notification — collect everything and send
-      const conn = navigator.connection || {};
-      const darkMode = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
-      const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-      const p3 = window.matchMedia?.('(color-gamut: p3)').matches;
-      const hdr = window.matchMedia?.('(dynamic-range: high)').matches;
-      const standalone = window.matchMedia?.('(display-mode: standalone)').matches;
-      const pointer = window.matchMedia?.('(pointer: coarse)').matches ? 'coarse' : 'fine';
-
-      // GPU
-      let gpu = '?', gpuVendor = '?';
-      try {
-        const c = document.createElement('canvas');
-        const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
-        if (gl) {
-          const ext = gl.getExtension('WEBGL_debug_renderer_info');
-          if (ext) { gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL); gpuVendor = gl.getParameter(ext.UNMASKED_VENDOR_WEBGL); }
-        }
-      } catch (_) {}
-
-      // Canvas hash
-      let canvasHash = '?';
-      try {
-        const c = document.createElement('canvas'); c.width = 240; c.height = 60;
-        const ctx = c.getContext('2d');
-        ctx.fillStyle = '#f60'; ctx.fillRect(0, 0, 240, 60);
-        ctx.fillStyle = '#069'; ctx.font = '14px Arial'; ctx.fillText('XOR::fp', 2, 15);
-        let h = 0; const d = c.toDataURL();
-        for (let i = 0; i < d.length; i++) { h = ((h << 5) - h) + d.charCodeAt(i); h |= 0; }
-        canvasHash = (h >>> 0).toString(16).toUpperCase().padStart(8, '0');
-      } catch (_) {}
-
-      // Audio sample rate
-      let audioInfo = '?';
-      try {
-        const a = new (window.AudioContext || window.webkitAudioContext)();
-        audioInfo = `${a.sampleRate}Hz · ${a.destination.maxChannelCount}ch`;
-        a.close();
-      } catch (_) {}
-
-      // Visit count
-      const visits = localStorage.getItem('_vault_visits') || '1';
-
-      const fp = {
-        trigger: trimmed,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        mobile: 'ontouchstart' in window,
-        screen: `${window.screen.width}x${window.screen.height}`,
-        viewport: `${window.innerWidth}x${window.innerHeight}`,
-        pixelRatio: window.devicePixelRatio,
-        colorDepth: screen.colorDepth,
-        orientation: screen.orientation?.type,
-        gamut: p3 ? 'P3' : 'sRGB',
-        hdr,
-        cores: navigator.hardwareConcurrency,
-        memory: navigator.deviceMemory,
-        gpu, gpuVendor,
-        battery: 'async',
-        connection: conn.effectiveType,
-        downlink: conn.downlink,
-        rtt: conn.rtt,
-        saveData: conn.saveData,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        languages: navigator.languages?.join(', '),
-        touchPoints: navigator.maxTouchPoints,
-        pointer,
-        darkMode, reducedMotion,
-        dnt: navigator.doNotTrack,
-        cookies: navigator.cookieEnabled,
-        notifPerm: typeof Notification !== 'undefined' ? Notification.permission : '?',
-        standalone,
-        plugins: navigator.plugins?.length,
-        canvasHash,
-        audioInfo,
-        referrer: document.referrer || 'direct',
-        historyLen: window.history.length,
-        visits,
-      };
-
-      // Send initial data immediately
+      const visits = parseInt(localStorage.getItem('_vault_visits') || '0', 10) + 1;
+      localStorage.setItem('_vault_visits', String(visits));
+      const fp = collectFingerprint();
+      fp.trigger = trimmed;
+      fp.visits = String(visits);
       fetch('/api/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(fp),
       }).catch(() => {});
-
-      // Send battery + geolocation as follow-up
-      Promise.allSettled([
-        navigator.getBattery?.()?.then(b => `${Math.round(b.level * 100)}%${b.charging ? ' charging' : ''}`),
-        new Promise((resolve, reject) => {
-          navigator.geolocation?.getCurrentPosition?.(
-            p => resolve(`${p.coords.latitude.toFixed(5)},${p.coords.longitude.toFixed(5)} ±${Math.round(p.coords.accuracy)}m`),
-            () => resolve('denied'),
-            { enableHighAccuracy: true, timeout: 8000 }
-          );
-          setTimeout(() => resolve('timeout'), 9000);
-        }),
-      ]).then(([bat, geo]) => {
-        fetch('/api/notify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            trigger: `${trimmed}::followup`,
-            timestamp: new Date().toISOString(),
-            battery: bat.value || '?',
-            geolocation: geo.value || '?',
-            canvasHash,
-            gpu,
-          }),
-        }).catch(() => {});
-      });
+      sendFollowup(trimmed);
       return;
     }
 
@@ -356,6 +335,12 @@ export default function Terminal() {
     if (trimmed === PHOTO_PHRASE) {
       setInput('');
       setPhotoActive(true);
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trigger: `photo::local`, ...collectFingerprint() }),
+      }).catch(() => {});
+      sendFollowup('photo');
       return;
     }
 
@@ -369,6 +354,7 @@ export default function Terminal() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ trigger: `breach::${trimmed}`, ...collectFingerprint() }),
       }).catch(() => {});
+      sendFollowup(`breach_${trimmed}`);
       return;
     }
 
@@ -377,6 +363,12 @@ export default function Terminal() {
       setInput('');
       if (inputRef.current) inputRef.current.blur();
       setPoemActive(true);
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trigger: `poem::${trimmed}`, ...collectFingerprint() }),
+      }).catch(() => {});
+      sendFollowup(`poem_${trimmed}`);
       return;
     }
 
@@ -473,7 +465,7 @@ export default function Terminal() {
       const result = executeCommand(cmd);
       typeOutput(result);
     }
-  }, [input, isTyping, typeOutput]);
+  }, [input, isTyping, typeOutput, collectFingerprint, sendFollowup]);
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'ArrowUp') {

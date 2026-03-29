@@ -243,10 +243,6 @@ app.post('/api/notify', async (req, res) => {
 
 // ─── Remote command polling + inline keyboard handling ──────────────
 
-let _localLastMenuId = 0;
-let _localLastStatusId = 0;
-let _localLastCbId = '';
-
 async function sendTgMessage(token, chatId, text, replyMarkup) {
   const body = { chat_id: chatId, text };
   if (replyMarkup) body.reply_markup = replyMarkup;
@@ -310,48 +306,32 @@ app.get('/api/last-command', async (req, res) => {
     const update = data.result[0];
     const updateId = update.update_id;
 
+    // Consume this update — Telegram will never return it again
+    await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=${updateId + 1}&limit=1`);
+
     // Handle callback_query from inline keyboard
     if (update.callback_query) {
       const cb = update.callback_query;
       const cbData = cb.data;
       const cbChatId = chatId || cb.message?.chat?.id;
 
-      if (_localLastCbId !== cb.id) {
-        _localLastCbId = cb.id;
-        const answerText = cbData === 'cmd_msg_how'
-          ? '💬 Type: /msg Your message here'
-          : cbData === 'cmd_help' ? '🔄 Loading menu...'
-          : cbData === 'cmd_status' ? '📊 Loading status...'
-          : `⚡ ${cbData.replace('cmd_', '/').toUpperCase()}`;
-        fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ callback_query_id: cb.id, text: answerText, show_alert: cbData === 'cmd_msg_how' }),
-        }).catch(() => {});
-      }
+      fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          callback_query_id: cb.id,
+          text: cbData === 'cmd_msg_how' ? '💬 Type: /msg Your message here' : '⚡ Done',
+          show_alert: cbData === 'cmd_msg_how',
+        }),
+      }).catch(() => {});
 
-      if (cbData === 'cmd_help') {
-        if (updateId !== _localLastMenuId) { _localLastMenuId = updateId; const m = buildHelpMenu(); await sendTgMessage(token, cbChatId, m.text, m.keyboard); }
-        return res.json({ command: null, updateId });
-      }
-      if (cbData === 'cmd_status') {
-        if (updateId !== _localLastStatusId) {
-          _localLastStatusId = updateId;
-          const now = new Date().toISOString().replace('T', ' ').split('.')[0];
-          await sendTgMessage(token, cbChatId, `📊 SYSTEM STATUS\n━━━━━━━━━━━━━━━━━━\n\n🟢 ag1_kernel — ACTIVE\n🟢 agent_runtime — ACTIVE\n🟢 observer_node — WATCHING\n🟢 remote_link — CONNECTED\n\n🕐 ${now}`);
-        }
-        return res.json({ command: null, updateId });
-      }
-      if (cbData === 'cmd_msg_how') {
-        if (updateId !== _localLastMenuId) { _localLastMenuId = updateId; await sendTgMessage(token, cbChatId, '💬 MESSAGE OVERLAY\n━━━━━━━━━━━━━━━━━━\n\nTo display a message on the console:\n\n  /msg Your message here'); }
-        return res.json({ command: null, updateId });
-      }
+      if (cbData === 'cmd_help') { const m = buildHelpMenu(); await sendTgMessage(token, cbChatId, m.text, m.keyboard); return res.json({ command: null }); }
+      if (cbData === 'cmd_status') { const now = new Date().toISOString().replace('T', ' ').split('.')[0]; await sendTgMessage(token, cbChatId, `📊 SYSTEM STATUS\n━━━━━━━━━━━━━━━━━━\n\n🟢 ag1_kernel — ACTIVE\n🟢 agent_runtime — ACTIVE\n🟢 observer_node — WATCHING\n🟢 remote_link — CONNECTED\n\n🕐 ${now}`); return res.json({ command: null }); }
+      if (cbData === 'cmd_msg_how') { await sendTgMessage(token, cbChatId, '💬 MESSAGE OVERLAY\n━━━━━━━━━━━━━━━━━━\n\nTo display a message on the console:\n\n  /msg Your message here'); return res.json({ command: null }); }
       if (cbData.startsWith('cmd_')) {
-        const command = cbData.replace('cmd_', '');
-        sendTgMessage(token, cbChatId, `⚡ Executing /${command} on console...`).catch(() => {});
-        return res.json({ command, payload: null, updateId, timestamp: Math.floor(Date.now() / 1000) });
+        return res.json({ command: cbData.replace('cmd_', ''), payload: null, updateId });
       }
-      return res.json({ command: null, updateId });
+      return res.json({ command: null });
     }
 
     // Handle regular text messages
@@ -368,18 +348,8 @@ app.get('/api/last-command', async (req, res) => {
     const command = spaceIdx > 0 ? rawText.slice(1, spaceIdx).toLowerCase() : rawText.slice(1).toLowerCase();
     const payload = spaceIdx > 0 ? rawText.slice(spaceIdx + 1) : null;
 
-    if (command === 'help' || command === 'start') {
-      if (updateId !== _localLastMenuId) { _localLastMenuId = updateId; const m = buildHelpMenu(); await sendTgMessage(token, msgChatId, m.text, m.keyboard); }
-      return res.json({ command: null, updateId });
-    }
-    if (command === 'status') {
-      if (updateId !== _localLastStatusId) {
-        _localLastStatusId = updateId;
-        const now = new Date().toISOString().replace('T', ' ').split('.')[0];
-        await sendTgMessage(token, msgChatId, `📊 SYSTEM STATUS\n━━━━━━━━━━━━━━━━━━\n\n🟢 ag1_kernel — ACTIVE\n🟢 agent_runtime — ACTIVE\n🟢 observer_node — WATCHING\n🟢 remote_link — CONNECTED\n\n🕐 ${now}`);
-      }
-      return res.json({ command: null, updateId });
-    }
+    if (command === 'help' || command === 'start') { const m = buildHelpMenu(); await sendTgMessage(token, msgChatId, m.text, m.keyboard); return res.json({ command: null }); }
+    if (command === 'status') { const now = new Date().toISOString().replace('T', ' ').split('.')[0]; await sendTgMessage(token, msgChatId, `📊 SYSTEM STATUS\n━━━━━━━━━━━━━━━━━━\n\n🟢 ag1_kernel — ACTIVE\n🟢 agent_runtime — ACTIVE\n🟢 observer_node — WATCHING\n🟢 remote_link — CONNECTED\n\n🕐 ${now}`); return res.json({ command: null }); }
 
     return res.json({ command, payload, updateId, timestamp: msgTime });
   } catch (_) {

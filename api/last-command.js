@@ -1,6 +1,3 @@
-// Single dedup — only process each Telegram update once
-let _lastProcessedId = 0;
-
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'GET only' });
 
@@ -13,86 +10,70 @@ export default async function handler(req, res) {
       `https://api.telegram.org/bot${token}/getUpdates?offset=-1&limit=1`
     );
     const data = await resp.json();
-
     if (!data.ok || !data.result?.length) return res.json({ command: null });
 
     const update = data.result[0];
     const updateId = update.update_id;
-    const isNew = updateId !== _lastProcessedId;
-    if (isNew) _lastProcessedId = updateId;
 
-    // ── Handle callback_query from inline keyboard buttons ──
+    // ▸ CONSUME this update — Telegram will never return it again
+    //   This is the ONLY reliable dedup for serverless (no in-memory state)
+    await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=${updateId + 1}&limit=1`);
+
+    // ── Callback query from inline keyboard ──
     if (update.callback_query) {
       const cb = update.callback_query;
       const cbData = cb.data;
       const cbChatId = chatId || cb.message?.chat?.id;
 
-      // Only send Telegram responses once per update
-      if (isNew) {
-        // Answer callback to remove loading spinner
-        const answerText = cbData === 'cmd_msg_how'
-          ? '💬 Type: /msg Your message here'
-          : cbData === 'cmd_help'
-            ? '🔄 Menu loaded'
-            : cbData === 'cmd_status'
-              ? '📊 Status loaded'
-              : `⚡ Sent to console`;
+      // Answer callback (removes loading spinner)
+      fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          callback_query_id: cb.id,
+          text: cbData === 'cmd_msg_how' ? '💬 Type: /msg Your message here' : '⚡ Done',
+          show_alert: cbData === 'cmd_msg_how',
+        }),
+      }).catch(() => {});
 
-        fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            callback_query_id: cb.id,
-            text: answerText,
-            show_alert: cbData === 'cmd_msg_how',
-          }),
-        }).catch(() => {});
+      // Telegram-only responses
+      if (cbData === 'cmd_help') { await sendHelpMenu(token, cbChatId); return res.json({ command: null }); }
+      if (cbData === 'cmd_status') { await sendStatus(token, cbChatId); return res.json({ command: null }); }
+      if (cbData === 'cmd_msg_how') { await sendMsgHelp(token, cbChatId); return res.json({ command: null }); }
 
-        // Telegram-only responses
-        if (cbData === 'cmd_help') await sendHelpMenu(token, cbChatId);
-        if (cbData === 'cmd_status') await sendStatus(token, cbChatId);
-        if (cbData === 'cmd_msg_how') await sendMsgHelp(token, cbChatId);
+      // Forward command to frontend
+      if (cbData.startsWith('cmd_')) {
+        return res.json({ command: cbData.replace('cmd_', ''), payload: null, updateId });
       }
-
-      // Forward command to frontend (frontend deduplicates via updateId)
-      if (cbData.startsWith('cmd_') && !['cmd_help', 'cmd_status', 'cmd_msg_how'].includes(cbData)) {
-        const command = cbData.replace('cmd_', '');
-        return res.json({ command, payload: null, updateId, timestamp: Math.floor(Date.now() / 1000) });
-      }
-
-      return res.json({ command: null, updateId });
+      return res.json({ command: null });
     }
 
-    // ── Handle regular text messages ──
+    // ── Regular text message ──
     const rawText = update.message?.text?.trim();
     const msgTime = update.message?.date;
     const msgChatId = chatId || update.message?.chat?.id;
 
     if (!rawText || !rawText.startsWith('/')) return res.json({ command: null });
 
-    // Ignore stale commands (>60 seconds old)
+    // Stale — silently drop commands older than 60 seconds
     const nowSec = Math.floor(Date.now() / 1000);
-    if (msgTime && nowSec - msgTime > 60) {
-      return res.json({ command: null });
-    }
+    if (msgTime && nowSec - msgTime > 60) return res.json({ command: null });
 
     const spaceIdx = rawText.indexOf(' ');
     const command = spaceIdx > 0 ? rawText.slice(1, spaceIdx).toLowerCase() : rawText.slice(1).toLowerCase();
     const payload = spaceIdx > 0 ? rawText.slice(spaceIdx + 1) : null;
 
-    // /help or /start → send inline keyboard menu (Telegram-only)
+    // Telegram-only commands
     if (command === 'help' || command === 'start') {
-      if (isNew) await sendHelpMenu(token, msgChatId);
-      return res.json({ command: null, updateId });
+      await sendHelpMenu(token, msgChatId);
+      return res.json({ command: null });
     }
-
-    // /status → respond in Telegram (Telegram-only)
     if (command === 'status') {
-      if (isNew) await sendStatus(token, msgChatId);
-      return res.json({ command: null, updateId });
+      await sendStatus(token, msgChatId);
+      return res.json({ command: null });
     }
 
-    // All other commands → forward to frontend
+    // Forward command to frontend
     return res.json({ command, payload, updateId, timestamp: msgTime });
   } catch (_) {
     return res.json({ command: null });

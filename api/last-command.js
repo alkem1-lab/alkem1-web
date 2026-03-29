@@ -1,7 +1,5 @@
-// Track processed updates to avoid duplicate Telegram responses
-let _lastMenuId = 0;
-let _lastStatusId = 0;
-let _lastCbId = '';
+// Single dedup — only process each Telegram update once
+let _lastProcessedId = 0;
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'GET only' });
@@ -20,6 +18,8 @@ export default async function handler(req, res) {
 
     const update = data.result[0];
     const updateId = update.update_id;
+    const isNew = updateId !== _lastProcessedId;
+    if (isNew) _lastProcessedId = updateId;
 
     // ── Handle callback_query from inline keyboard buttons ──
     if (update.callback_query) {
@@ -27,16 +27,16 @@ export default async function handler(req, res) {
       const cbData = cb.data;
       const cbChatId = chatId || cb.message?.chat?.id;
 
-      // Answer callback to remove loading spinner (once per callback)
-      if (_lastCbId !== cb.id) {
-        _lastCbId = cb.id;
+      // Only send Telegram responses once per update
+      if (isNew) {
+        // Answer callback to remove loading spinner
         const answerText = cbData === 'cmd_msg_how'
           ? '💬 Type: /msg Your message here'
           : cbData === 'cmd_help'
-            ? '🔄 Loading menu...'
+            ? '🔄 Menu loaded'
             : cbData === 'cmd_status'
-              ? '📊 Loading status...'
-              : `⚡ ${cbData.replace('cmd_', '/').toUpperCase()}`;
+              ? '📊 Status loaded'
+              : `⚡ Sent to console`;
 
         fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
           method: 'POST',
@@ -47,43 +47,16 @@ export default async function handler(req, res) {
             show_alert: cbData === 'cmd_msg_how',
           }),
         }).catch(() => {});
+
+        // Telegram-only responses
+        if (cbData === 'cmd_help') await sendHelpMenu(token, cbChatId);
+        if (cbData === 'cmd_status') await sendStatus(token, cbChatId);
+        if (cbData === 'cmd_msg_how') await sendMsgHelp(token, cbChatId);
       }
 
-      // Telegram-only responses
-      if (cbData === 'cmd_help') {
-        if (updateId !== _lastMenuId) {
-          _lastMenuId = updateId;
-          await sendHelpMenu(token, cbChatId);
-        }
-        return res.json({ command: null, updateId });
-      }
-      if (cbData === 'cmd_status') {
-        if (updateId !== _lastStatusId) {
-          _lastStatusId = updateId;
-          await sendStatus(token, cbChatId);
-        }
-        return res.json({ command: null, updateId });
-      }
-      if (cbData === 'cmd_msg_how') {
-        if (updateId !== _lastMenuId) {
-          _lastMenuId = updateId;
-          await sendMsgHelp(token, cbChatId);
-        }
-        return res.json({ command: null, updateId });
-      }
-
-      // Forward command to frontend
-      if (cbData.startsWith('cmd_')) {
+      // Forward command to frontend (frontend deduplicates via updateId)
+      if (cbData.startsWith('cmd_') && !['cmd_help', 'cmd_status', 'cmd_msg_how'].includes(cbData)) {
         const command = cbData.replace('cmd_', '');
-        // Confirm execution in Telegram
-        fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: cbChatId,
-            text: `⚡ Executing /${command} on console...`,
-          }),
-        }).catch(() => {});
         return res.json({ command, payload: null, updateId, timestamp: Math.floor(Date.now() / 1000) });
       }
 
@@ -109,19 +82,13 @@ export default async function handler(req, res) {
 
     // /help or /start → send inline keyboard menu (Telegram-only)
     if (command === 'help' || command === 'start') {
-      if (updateId !== _lastMenuId) {
-        _lastMenuId = updateId;
-        await sendHelpMenu(token, msgChatId);
-      }
+      if (isNew) await sendHelpMenu(token, msgChatId);
       return res.json({ command: null, updateId });
     }
 
     // /status → respond in Telegram (Telegram-only)
     if (command === 'status') {
-      if (updateId !== _lastStatusId) {
-        _lastStatusId = updateId;
-        await sendStatus(token, msgChatId);
-      }
+      if (isNew) await sendStatus(token, msgChatId);
       return res.json({ command: null, updateId });
     }
 

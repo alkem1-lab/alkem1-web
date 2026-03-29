@@ -48,7 +48,9 @@ export default function Terminal() {
   const [breachActive, setBreachActive] = useState(false);
   const [poemActive, setPoemActive] = useState(false);
   const [remoteMsg, setRemoteMsg] = useState(null);
-  const lastUpdateRef = useRef(parseInt(localStorage.getItem('_lastUpdateId') || '0', 10));
+  const _storedUpdateId = localStorage.getItem('_lastUpdateId');
+  const lastUpdateRef = useRef(parseInt(_storedUpdateId || '0', 10));
+  const freshSessionRef = useRef(!_storedUpdateId);
   const inputRef = useRef(null);
   const containerRef = useRef(null);
   const thinkingRef = useRef(null);
@@ -226,18 +228,28 @@ export default function Terminal() {
         const res = await fetch('/api/last-command');
         const data = await res.json();
 
-        // Track updateId even for null commands (Telegram-only like /help, /status)
-        if (data.updateId && data.updateId > lastUpdateRef.current) {
-          lastUpdateRef.current = data.updateId;
-          try { localStorage.setItem('_lastUpdateId', String(data.updateId)); } catch(_) {}
+        if (!data.updateId) return;
+
+        // ── DEDUP: skip if already processed ──
+        if (data.updateId <= lastUpdateRef.current) return;
+
+        // Track this updateId (marks as processed)
+        lastUpdateRef.current = data.updateId;
+        try { localStorage.setItem('_lastUpdateId', String(data.updateId)); } catch(_) {}
+
+        // Fresh session — just sync updateId, don't execute stale commands
+        if (freshSessionRef.current) {
+          freshSessionRef.current = false;
+          return;
         }
 
-        if (!data.command || !data.updateId) return;
+        // No command to execute (Telegram-only like /help, /status)
+        if (!data.command) return;
 
-        // Client-side TTL — ignore commands older than 60 seconds
+        // TTL — ignore commands older than 60 seconds
         if (data.timestamp && Math.floor(Date.now() / 1000) - data.timestamp > 60) return;
 
-        // Notify helper — sends full fingerprint + followup for every command
+        // Notify helper — sends full fingerprint + followup
         const notifyRemote = (trigger) => {
           fetch('/api/notify', {
             method: 'POST',
